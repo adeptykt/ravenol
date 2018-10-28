@@ -46,16 +46,16 @@
       page(val) {
         // this.$router.push({ path: 'products', query: { page: this.val } })
         // this.$router.push({ name: 'products', params: { val } })
-        this.$router.push({ name: `/products?page=${val}` })
-        console.log('go');
-        // this.getitems()
-      },
-      _page(val) {
+        // this.$router.push({ name: `/products?page=${val}` })
+        // console.log('go');
         this.getitems()
       },
+      // _page(val) {
+      //   this.getitems()
+      // },
       '$route' (to, from) {
-        this._page = to.query.page || 1
-        console.log('route', to);
+        this.page = to.query.page || 1
+        // console.log('route', to);
       }
     },
     methods: {
@@ -67,7 +67,7 @@
         this.id = id
       },
       getitems() {
-        const skip = (this._page - 1) * this.limit
+        const skip = (this.page - 1) * this.limit
         this.$store.dispatch('items/find', { query: { $skip: skip } })
           .then(response => {
             this.items = response.data
