@@ -32,7 +32,7 @@
                   </v-list-tile-content>
                   <v-list-tile-action>
                     <v-btn icon @click="removeitem(subitem._id)" color="primary">
-                      <v-icon color="grey lighten-1">remove</v-icon>
+                      <v-icon color="grey lighten-1">remove_circle_outline</v-icon>
                     </v-btn>
                   </v-list-tile-action>
                 </v-list-tile>
@@ -137,7 +137,7 @@
                       </v-flex>
                       <v-flex xs1>
                         <v-btn icon @click="removepackage(p)">
-                          <v-icon color="grey lighten-1">remove</v-icon>
+                          <v-icon color="grey lighten-1">remove_circle_outline</v-icon>
                         </v-btn>
                       </v-flex>
                     </v-layout>
