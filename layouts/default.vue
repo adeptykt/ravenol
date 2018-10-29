@@ -128,7 +128,8 @@
         val && val !== this.select && val.length > 2 && this.querySelections(val)
       },
       select(val) {
-        console.log('select', val);
+        this.$router.push({ path: 'products', query: { page: this.val } })
+        // console.log('select', val);
       },
       windowWidth(width) {
         this.marginLeft = (width - 940) / 2;

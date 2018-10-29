@@ -32,7 +32,7 @@
                   </v-list-tile-content>
                   <v-list-tile-action>
                     <v-btn icon @click="removeitem(subitem._id)">
-                      <v-icon color="grey lighten-1">delete_forever</v-icon>
+                      <v-icon color="grey lighten-1">delete</v-icon>
                     </v-btn>
                   </v-list-tile-action>
                 </v-list-tile>
@@ -137,7 +137,7 @@
                       </v-flex>
                       <v-flex xs1>
                         <v-btn icon @click="removepackage(p)">
-                          <v-icon color="grey lighten-1">delete_forever</v-icon>
+                          <v-icon color="grey lighten-1">delete</v-icon>
                         </v-btn>
                       </v-flex>
                     </v-layout>

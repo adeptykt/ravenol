@@ -186,6 +186,7 @@
   width: 375px;
   height: 500px;
   margin: -50px 0;
+  object-fit: cover;
 }
 .product-txt {
   padding-left: 20px;
