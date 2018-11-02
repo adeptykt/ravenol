@@ -34,9 +34,12 @@
       }
     },
     watch: {
-      value(newVal) {
-        this.content = newVal
-        this.myQuillEditor.pasteHTML(newVal)
+      value(val) {
+        this.content = val
+        this.myQuillEditor.pasteHTML(val)
+      },
+      content(val) {
+        this.$emit("input", val)
       }
     },
     mounted() {

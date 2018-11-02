@@ -19,7 +19,9 @@
               <v-toolbar-title>{{item.title}}</v-toolbar-title>
               <v-spacer></v-spacer>
               <v-toolbar-items class="hidden-sm-and-down">
-                <v-btn flat color="primary" @click="opendialog()">Add item</v-btn>
+                <v-btn flat icon color="primary" @click="opendialog()">
+                  <v-icon color="grey lighten-1">add_box</v-icon>
+                </v-btn>
               </v-toolbar-items>
             </v-toolbar>
             <v-list>

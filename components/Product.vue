@@ -1,66 +1,91 @@
 <template>
-  <v-dialog v-model="dialog" max-width="940px">
-    <v-card>
-      <v-card-text>
-        <v-tabs centered color="transparent" slider-color="black">
-          <v-tab v-for="tab in tabs" :key="tab">
-            {{ tab }}
-          </v-tab>
-          <v-tab-item v-for="(tab, n) in tabs" :key="n">
-            <v-container :style="{padding: 0}">
-              <v-layout row v-if="n==0">
-                <v-flex xs5 class="left-info">
-                  <img :src="currentpack.image" class="product-image">
-                  <v-btn depressed dark large color="#a81818" :style="{width: '100%', margin: '20px 0', textTransform: 'none'}">Купить</v-btn>
-                  <span>Артикул: {{currentpack.article}}</span>
-                  <span class="price" v-if="currentpack.price">{{currentpack.price}} р.</span>
-                  <div class="product-packages">
-                    <template v-for="(pack, p) in product.packages">
-                      <v-btn depressed flat :key="p" :class="[p===current ? 'btn-active' : 'btn-normal']" @click="showpackage(p)">{{pack.package}}</v-btn>
+  <div>
+    <div class="blokimg">
+      <div class="overlay" id="imagelarge">
+        <div class="overlay_container">
+          <a href="#close">
+            <img :src="currentpack.image"/>
+          </a>
+        </div>
+      </div>
+    </div>
+    <v-dialog v-model="dialog" max-width="956px">
+      <div class="product-info">
+        <v-toolbar light flat color="white" height="36px" extension-height="36">
+          <v-spacer></v-spacer>
+          <v-toolbar-title :style="{ marginLeft: '20px' }">{{product.name}}</v-toolbar-title>
+          <v-spacer></v-spacer>
+          <v-tabs centered color="transparent" slider-color="black" v-model="model" height="30px" slot="extension">
+            <v-tab v-for="(tab, i) in tabs" :key="i" :href="`#ptab-${i}`">
+              {{ tab }}
+            </v-tab>
+          </v-tabs>
+          <v-btn icon @click="dialog=false">
+            <v-icon>clear</v-icon>
+          </v-btn>
+        </v-toolbar>
+        <v-tabs-items v-model="model">
+          <v-tab-item v-for="(tab, i) in tabs" :key="i" :value="`ptab-${i}`">
+            <v-card flat>
+              <v-card-text>
+                <v-container :style="{padding: 0}">
+                  <v-layout :row="!sharedState.mobile" :column="sharedState.mobile" v-if="i==0">
+                    <v-flex xs5 class="left-info">
+                      <div class="blokimg">
+                        <a href="#imagelarge">
+                          <img :src="currentpack.image" class="product-image">
+                        </a>
+                      </div>
+                      <v-btn depressed dark large color="#a81818" :style="{width: '100%', margin: '10px 0', textTransform: 'none'}">Купить</v-btn>
+                      <span>Артикул: {{currentpack.article}}</span>
+                      <span class="price" v-if="currentpack.price">{{currentpack.price}} &#8381;</span>
+                      <div class="product-packages">
+                        <template v-for="(pack, p) in product.packages">
+                          <v-btn depressed flat :key="p" :class="[p===current ? 'btn-active' : 'btn-normal']" @click="showpackage(p)">{{pack.package}}</v-btn>
+                        </template>
+                      </div>
+                    </v-flex>
+                    <v-flex xs7 class="product-txt">
+                      <div class="scroll">
+                        <!-- <h1>{{product.name}}</h1> -->
+                        <h2>{{product.type}}</h2>
+                        <div class="pr-desc">{{product.description}}</div>
+                        <span v-html="text" class="product-desc"></span>
+                        <div v-if="product.usage && product.usage.length > 0" class="product-usage">
+                          <h2>Применение {{product.name}} обеспечивает:</h2>
+                          <ul>
+                            <template v-for="(usage, i) in product.usage">
+                              <li :key="i">{{usage}}</li>
+                            </template>
+                          </ul>
+                        </div>
+                      </div>
+                    </v-flex>
+                  </v-layout>
+                  <div class="product-select" v-if="i==1">
+                    <div id="head">
+                      <span>Параметр</span>
+                      <span>Ед. измерения</span>
+                      <span>Данные</span>
+                      <span>Метод испытания</span>
+                    </div>
+                    <template v-for="(char, c) in product.characteristics">
+                      <div class="productparam" :key="c">
+                        <span>{{char[0]}}</span>
+                        <span>{{char[1]}}</span>
+                        <span>{{char[2]}}</span>
+                        <span>{{char[3]}}</span>
+                      </div>
                     </template>
                   </div>
-                </v-flex>
-                <v-flex xs7 class="product-txt">
-                  <h1>{{product.name}}</h1>
-                  <h2>{{product.type}}</h2>
-                  <span class="pr-desc">{{product.description}}</span>
-                  <span v-html="text" class="product-desc"></span>
-                  <div v-if="product.usage && product.usage.length > 0" class="product-usage">
-                    <h2>Применение {{product.name}} обеспечивает:</h2>
-                    <ul>
-                      <template v-for="(usage, i) in product.usage">
-                        <li :key="i">{{usage}}</li>
-                      </template>
-                    </ul>
-                  </div>
-                </v-flex>
-              </v-layout>
-              <div class="product-select" v-if="n==1">
-                <div id="head">
-                  <span>Параметр</span>
-                  <span>Ед. измерения</span>
-                  <span>Данные</span>
-                  <span>Метод испытания</span>
-                </div>
-                <template v-for="(char, c) in product.characteristics">
-                  <div class="productparam" :key="c">
-                    <span>{{char[0]}}</span>
-                    <span>{{char[1]}}</span>
-                    <span>{{char[2]}}</span>
-                    <span>{{char[3]}}</span>
-                  </div>
-                </template>
-              </div>
-            </v-container>
+                </v-container>
+              </v-card-text>
+            </v-card>
           </v-tab-item>
-        </v-tabs>
-      </v-card-text>
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn color="primary" flat @click="dialog=false">Close</v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+        </v-tabs-items>
+      </div>
+    </v-dialog>
+  </div>
 </template>
 
 <script>
@@ -71,9 +96,11 @@
     },
     data () {
       return {
+        sharedState: this.$store.state,
+        model: 'ptab-0',
         dialog: false,
         product: {},
-        tabs: ['Основное', 'Характеристики'],
+        tabs: ['Описание', 'Характеристики'],
         name: '',
         text: '',
         price: '',
@@ -84,40 +111,19 @@
         currentpack: {}
       }
     },
-    computed: {
-      internalValue: {
-        get () {
-          return this.dialog
-        },
-        set (val) {
-          this.dialog = val
-        }
-      },
-      // value: {
-      //   // cached: false,
-      //   get: function () {
-      //     return this.dialog
-      //   },
-      //   set: function (val) {
-      //     this.dialog = val
-      //   }
-      // }
-    },
     watch: {
+      model (val, old) {
+        console.log('model', val, old);
+      },
       dialog (val) {
-        this.$emit("updateVisible", val)
+        this.$emit("input", val)
       },
       value (val) {
-        console.log('product watch visible');
         this.dialog = val
-        // if (this.visible && !this.dialog) this.dialog = true
-        // else if (!this.visible && this.dialog) this.dialog = false
       },
       id (id) {
-        console.log('product watch id');
         id && this.$store.dispatch('items/get', id)
           .then(res => {
-            console.log('res', id, res);
             this.product = res
             this.current = 0
             this.text = res.text
@@ -135,6 +141,24 @@
 </script>
 
 <style>
+.product-info .v-window__container {
+  /* overflow-y: auto; */
+  /* height: 685px; */
+}
+.product-info .v-toolbar__content *:last-child.v-btn--icon {
+  margin: 0px;
+}
+.product-info .v-card {
+  overflow-y: hidden;
+  height: 685px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.product-info .v-card__text {
+  padding: 0 12px;
+  width: 100%;
+}
 .product-desc div {
   margin-bottom: 16px;
 }
@@ -183,10 +207,43 @@
   background-color: gray;
 }
 .product-image {
-  width: 375px;
-  height: 500px;
-  margin: -50px 0;
+  max-width: 375px;
+  width: 70%;
+  max-height: 350px;
   object-fit: cover;
+  cursor: zoom-in;
+}
+.blokimg, .blokimg a {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+.overlay{
+  display: none;
+  height: auto;
+  position: absolute;
+  /* left: -14px;
+  top: -12px; */
+  width: auto;
+  z-index: 999;
+}
+.overlay .overlay_container{
+  display: table-cell;
+  vertical-align: middle;
+}
+.overlay_container img {
+  background-color: #007acc;
+  padding: 10px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  cursor: zoom-out;
+}
+.overlay:target {
+  display: table;
+}
+.scroll {
+  overflow-y: auto;
+  max-height: 670px;
 }
 .product-txt {
   padding-left: 20px;
@@ -195,18 +252,22 @@
   margin-bottom: 0;
   font-size: 32px;
   font-weight: 300;
-  margin: 10px 0 20px;
-  text-align: center;
+  margin: 0;
+  text-align: left;
 }
 .product-txt h2 {
   margin-top: 0;
   font-size: 18px;
   font-weight: 700;
   color: #007acc;
-  margin: 20px 0 10px;
+  margin: 0 0 5px;
+}
+.product-txt p {
+  margin-bottom: 0;
 }
 .product-txt .pr-desc {
   font-size: 18px;
+  margin-bottom: 20px;
 }
 .product-select #head {
   align-items: flex-end;

@@ -18,7 +18,8 @@ import {
   VDialog,
   VSelect,
   VTextarea,
-  VAutocomplete
+  VAutocomplete,
+  VBreadcrumbs,
 } from 'vuetify'
 
 Vue.use(Vuetify, {
@@ -40,6 +41,7 @@ Vue.use(Vuetify, {
     VDialog,
     VSelect,
     VTextarea,
-    VAutocomplete
+    VAutocomplete,
+    VBreadcrumbs,
   }
 })
