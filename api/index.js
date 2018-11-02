@@ -4,9 +4,9 @@ import auth from '@feathersjs/authentication-client'
 import feathersStorage from '@/utils/feathers-storage'
 import io from 'socket.io-client'
 
-const socket = io(context.env.apiUrl, { transports: ['websocket'] })
+const socket = io(process.env.apiUrl, { transports: ['websocket'] })
 // const socket = io('https://ravenol-server.herokuapp.com', { transports: ['websocket'] })
-console.log('Api server:', context.env.apiUrl);
+console.log('Api server:', process.env.apiUrl);
 
 const feathersClient = feathers()
   .configure(socketio(socket))
