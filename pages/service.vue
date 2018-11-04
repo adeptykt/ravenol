@@ -111,17 +111,17 @@ export default {
       total_time: 0,
       daytimes: [],
       services: [
-        { name: 'Замена масла', value: 'c1', time: 30 },
-        { name: 'Замена масла в АКПП (частичная)', value: 'c2', time: 30 },
-        { name: 'Замена масла в АКПП (полная)', value: 'c3', time: 150 },
-        { name: 'Замена масла в МКПП', value: 'c4', time: 30 },
-        { name: 'Замена масла в ГУР', value: 'c5', time: 30 },
-        { name: 'Промывка ДВС', value: 'c6', time: 30 },
-        { name: 'Замена фильтров', value: 'c7', time: 30 },
-        { name: 'Тормозная система', value: 'c8', time: 60 },
-        { name: 'Охлаждающая жидкость', value: 'c9', time: 90 },
-        { name: 'Аккумулятор', value: 'c10', time: 30 },
-        { name: 'Свечи зажигания', value: 'c11', time: 30 },
+        { name: 'Замена масла', value: 1, time: 30 },
+        { name: 'Замена масла в АКПП (частичная)', value: 2, time: 30 },
+        { name: 'Замена масла в АКПП (полная)', value: 3, time: 150 },
+        { name: 'Замена масла в МКПП', value: 4, time: 30 },
+        { name: 'Замена масла в ГУР', value: 5, time: 30 },
+        { name: 'Промывка ДВС', value: 6, time: 30 },
+        { name: 'Замена фильтров', value: 7, time: 30 },
+        { name: 'Тормозная система', value: 8, time: 60 },
+        { name: 'Охлаждающая жидкость', value: 9, time: 90 },
+        { name: 'Аккумулятор', value: 10, time: 30 },
+        { name: 'Свечи зажигания', value: 11, time: 30 },
       ],
     }
   },
@@ -138,44 +138,78 @@ export default {
     }
   },
   created() {
-    const days = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота']
-    const current_date = new Date()
-    let d = new Date()
-    if (current_date.getHours() >= 19 && current_date.getMinutes() >= 30) d.setDate(d.getDate() + 1)
-    for (var i = 0; i < 4; i++) {
-      d.setHours(9)
-      d.setMinutes(0)
-      const date = this.local_date(d)
-      let times = []
-      for (var t = 0; t < 22; t++) {
-        times.push({ time: this.local_time(d), busy: d < current_date, selected: false, index: t, date: d })
-        d.setMinutes(d.getMinutes() + 30)
-      }
-      this.daytimes.push({ date, dayweek: days[d.getDay()], times })
-      d.setDate(d.getDate() + 1)
-    }
+    this.fill_daytimes()
     this.$store.dispatch('get_vendors')
   },
   methods: {
+    async fill_daytimes() {
+      const res = await this.$store.dispatch('orders/find', { query: { startDate: { $gt: new Date() } } })
+      this.orders = res.data
+
+      const days = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота']
+      const current_date = new Date()
+      let d = new Date()
+      if (current_date.getHours() > 19 || (current_date.getHours() == 19 && current_date.getMinutes() >= 30)) d.setDate(d.getDate() + 1)
+      this.daytimes = []
+
+      for (var i = 0; i < 4; i++) {
+        d.setHours(9)
+        d.setMinutes(0)
+        d.setSeconds(0)
+        const date = this.local_date(d)
+        let times = []
+        for (var t = 0; t < 22; t++) {
+          let busy = false
+          if (d < current_date) busy = true
+          else {
+            const order = this.orders.find(order => {
+              const local_date = new Date(d)
+              if (new Date(order.startDate) <= local_date && new Date(order.endDate) > local_date) {
+                console.log('orders find', local_date, new Date(order.startDate), order.endDate);
+                return true
+              }
+              return false
+            })
+            if (order) busy = true
+          }
+          times.push({ time: this.local_time(d), busy, selected: false, index: t, date: new Date(d) })
+          d.setMinutes(d.getMinutes() + 30)
+        }
+        this.daytimes.push({ date, dayweek: days[d.getDay()], times })
+        d.setDate(d.getDate() + 1)
+      }
+    },
     order_click() {
       this.errors = []
       if (!this.selected.length) {
         this.dialog = true
         this.errors.push("Не выбрана ни одна услуга")
       }
-      let times = []
-      this.daytimes.map(day => day.times.map(time => { if (time.selected) times.push(time.date) }))
-      if (!times.length) {
+      let times = [], startDate, endDate
+      this.daytimes.map(day => day.times.map(time => {
+        if (time.selected) {
+          if (!startDate) startDate = time.date
+          endDate = new Date(new Date(time.date).setMinutes(time.date.getMinutes() + 30))
+          times.push(time.date)
+        }
+      }))
+      if (!startDate) {
         this.dialog = true
         this.errors.push("Не выбрано время записи")
       }
-      if (!name) {
+      if (!this.name) {
         this.dialog = true
         this.errors.push("Не указано имя")
       }
-      if (!name) {
+      if (!this.phone) {
         this.dialog = true
         this.errors.push("Не указан телефон")
+      }
+      if (!this.dialog) {
+        let services = this.services.filter(s => this.selected.includes(s.value)).map(service => { return { _id: service.value, price: 100 } })
+        const query = { name: this.name, phone: this.phone, startDate, endDate, services }
+        this.$store.dispatch('orders/create', query)
+        this.fill_daytimes()
       }
     },
     calendar_click(day, time, index) {
@@ -188,7 +222,8 @@ export default {
         this.clear_calendar()
         let num_times = this.total_time / 30
         for (var t = index; t < day.times.length; t++) {
-          if (!day.times[t].busy && num_times > 0) {
+          if (day.times[t].busy || num_times == 0) break
+          if (num_times > 0) {
             day.times[t].selected = true
             num_times--
           }
@@ -208,6 +243,11 @@ export default {
         })
         return day
       })
+    },
+    full_date(date) {
+      const two = (s) => { return ("0" + s).slice(-2) }
+      var d = new Date(date)
+      return two(d.getDate()) + "." + two(d.getMonth() + 1) + "." + two(d.getFullYear()) + " " + two(d.getHours()) + ":" + two(d.getMinutes()) + ":" + two(d.getSeconds())
     },
     local_date(date) {
       const two = (s) => { return ("0" + s).slice(-2) }

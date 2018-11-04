@@ -18,7 +18,8 @@ const store = new Vuex.Store({
     service('compositions'),
     service('gears'),
     service('search'),
-    service('models')
+    service('models'),
+    service('orders')
   ],
   state: {
     mobile: false,
