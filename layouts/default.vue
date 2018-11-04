@@ -9,6 +9,7 @@
       fixed
       app
       dark
+      flat
       color="#0070C6"
       :extended="sharedState.mobile"
       height="56px"
@@ -18,31 +19,6 @@
         <a href="/" class="logo">
           <img src="/logo2.svg" alt="Vuetify.js">
         </a>
-        <!-- <v-form ref="form" class="searchForm">
-          <style scoped>
-            .v-text-field.v-text-field--solo .v-input__control {
-              min-height: 20px;
-              padding: 0;
-            }
-            .v-toolbar__content .v-btn--icon {
-              margin: 0px;
-              width: 30px;
-              height: 30px;
-            }
-            .theme--light.v-text-field--solo .v-input__slot {
-              border-radius: 15px;
-            }
-            .v-btn:before {
-              opacity: 0;
-            }
-            .v-toolbar__title {
-              font-weight: 300;
-              font-size: 20px;
-            }
-            .v-toolbar__title:not(:first-child) {
-              margin-left: 0px;
-            }
-          </style> -->
           <div class="search" v-if="!sharedState.mobile">
             <style scoped>
               .search .v-text-field.v-text-field--solo .v-input__control {
@@ -105,16 +81,18 @@
     </v-toolbar>
     <v-content>
       <div>
-        <v-tabs v-model="model" centered color="transparent" slider-color="black">
-          <v-tab
-            v-for="(item, i) in items"
-            :key="i"
-            :to="item.to"
-            v-bind:style="{ fontSize: '18px', textTransform: 'none', fontWiehgt: 400 }"
-          >
-            {{ item.title }}
-          </v-tab>
-        </v-tabs>
+        <div class="main-tabs">
+          <v-tabs v-model="model" centered color="transparent" slider-color="black">
+            <v-tab
+              v-for="(item, i) in items"
+              :key="i"
+              :to="item.to"
+              v-bind:style="{ fontSize: '18px', textTransform: 'none', fontWiehgt: 400 }"
+            >
+              {{ item.title }}
+            </v-tab>
+          </v-tabs>
+        </div>
         <v-container v-bind:class="{main: true}">
           <nuxt />
         </v-container>
@@ -146,7 +124,8 @@ export default {
         { icon: 'bubble_chart', title: 'Продукция', to: '/products' },
         { title: 'Подбор', to: 'selection' },
         { title: 'О нас', to: '/about' },
-        { title: 'admin', to: '/admin' }
+        { title: 'Запись', to: '/service' },
+        // { title: 'admin', to: '/admin' }
       ],
       title: '+7 (914) 2-705-056',
       windowWidth: 0,
@@ -181,9 +160,8 @@ export default {
           this.$router.push({ path: 'selection' })
           this.$store.dispatch('open_gear', val)
         }
-      } else {
-        this.results = []
       }
+      this.results = []
     },
     windowWidth(width) {
       this.maxWidth = this.windowWidth <= 940 ? this.windowWidth  : 940

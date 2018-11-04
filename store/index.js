@@ -17,21 +17,20 @@ const store = new Vuex.Store({
     service('viscosities'),
     service('compositions'),
     service('gears'),
-    service('search')
+    service('search'),
+    service('models')
   ],
   state: {
     mobile: false,
     id: null, // product id
     visible: false, // product visible
     gear_list: [],
+    category_menu: [],
     category_list: [],
     category_id: 0,
-    history: [
-      {
-        name: 'Все',
-        _id: 0
-      },
-    ]
+    history: [],
+    vendors: [],
+    model_list: []
   },
   mutations: {
     set_gear_list (state, data) {
@@ -51,6 +50,37 @@ const store = new Vuex.Store({
         return dispatch('auth/authenticate', { strategy: 'jwt', accessToken });
       }
     },
+    get_vendors({ dispatch, commit, state }) {
+      dispatch('categories/find', { query: { $limit: null, $sort: 'name', parent: 100 } }).then(res => {
+        state.vendors = res.data || []
+      })
+      .catch(error => console.log('get_vendors error:', error))
+    },
+    get_models({ dispatch, commit, state }, category) {
+      const find = "Автомобили " + category.name
+      dispatch('models/find', { query: { _id: category._id } }).then(res => {
+        console.log('models', res);
+        if (res.data && res.data.length)
+        state.model_list = res.data.map(model => {
+          model.name = model.fullname.replace(find, '')
+          return model
+        }).sort((a, b) => {
+          if (a.name > b.name) return 1
+          if (a.name < b.name) return -1
+          return 0
+        })
+      })
+      .catch(error => console.log('get_models error:', error))
+    },
+    category_menu_find({ dispatch, commit, state }) {
+      dispatch('categories/find', { query: { $limit: null, $sort: 'name', parent: 0 } }).then(res => {
+        state.category_menu = res.data || []
+        state.gear_list = []
+        state.category_list = []
+        dispatch('open_gear', state.category_menu[0])
+      })
+      .catch(error => console.log('category_menu_find error:', error))
+    },
     gears_find({ dispatch, commit }, { parent }) {
       dispatch('gears/find', { query: { $limit: null, parent } }).then(res => {
         commit('set_gear_list', res.data)
@@ -65,28 +95,17 @@ const store = new Vuex.Store({
     },
     open_gear({ dispatch, commit, state }, category) {
       console.log('open_gear', category);
+      state.history = []
       const add_history = async (id) => {
         let cat
         if (id) cat = await dispatch('categories/get', id)
-        else cat = state.history[0]
-
-        const index = state.history.findIndex(s => s._id === cat._id)
-        if (index > -1) {
-          state.history = state.history.slice(0, index + 1)
-        } else {
-          if (cat.parent) {
-            let res = await dispatch('categories/get', cat.parent)
-            await add_history(res)
-          }
-          state.history.push(cat)
+        else return
+        if (cat.parent) {
+          state.history.unshift(cat)
+          add_history(cat.parent)
         }
       }
       add_history(category._id)
-      // const index = state.history.findIndex(s => s._id === category._id)
-      // if (index > -1) state.history = state.history.slice(0, index + 1)
-      // else {
-      //   state.history.push(category)
-      // }
 
       state.category_id = category._id
       if (category.isItem) {

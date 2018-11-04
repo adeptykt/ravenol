@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="product-dialog">
     <div class="blokimg">
       <div class="overlay" id="imagelarge">
         <div class="overlay_container">
@@ -9,9 +9,15 @@
         </div>
       </div>
     </div>
-    <v-dialog v-model="dialog" max-width="956px">
+    <v-dialog v-model="dialog" max-width="940px">
+      <style scoped>
+      .v-dialog {
+        border-radius: 6px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, .5)
+      }
+      </style>
       <div class="product-info">
-        <v-toolbar light flat color="white" height="36px" extension-height="36">
+        <v-toolbar light flat color="#FFFFFF" height="46" extension-height="36">
           <v-spacer></v-spacer>
           <v-toolbar-title :style="{ marginLeft: '20px' }">{{product.name}}</v-toolbar-title>
           <v-spacer></v-spacer>
@@ -21,7 +27,7 @@
             </v-tab>
           </v-tabs>
           <v-btn icon @click="dialog=false">
-            <v-icon>clear</v-icon>
+            <v-icon small>clear</v-icon>
           </v-btn>
         </v-toolbar>
         <v-tabs-items v-model="model">
@@ -29,40 +35,42 @@
             <v-card flat>
               <v-card-text>
                 <v-container :style="{padding: 0}">
-                  <v-layout :row="!sharedState.mobile" :column="sharedState.mobile" v-if="i==0">
-                    <v-flex xs5 class="left-info">
+                  <div v-if="tabs[i]=='Информация'">
+                    <!-- <h1>{{product.name}}</h1> -->
+                    <h2>{{product.type}}</h2>
+                    <div class="pr-desc">{{product.description}}</div>
+                    <!-- <div v-if="product.usage && product.usage.length > 0" class="product-usage">
+                    </div> -->
+                  </div>
+                  <v-flex class="packages" v-if="tabs[i]=='Фасовка'">
+                    <v-flex xs12 sm6 md6 lg6>
                       <div class="blokimg">
                         <a href="#imagelarge">
                           <img :src="currentpack.image" class="product-image">
                         </a>
                       </div>
+                    </v-flex>
+                    <v-flex xs12 sm6 md6 lg6>
                       <v-btn depressed dark large color="#a81818" :style="{width: '100%', margin: '10px 0', textTransform: 'none'}">Купить</v-btn>
                       <span>Артикул: {{currentpack.article}}</span>
                       <span class="price" v-if="currentpack.price">{{currentpack.price}} &#8381;</span>
-                      <div class="product-packages">
+                      <div class="product-package">
                         <template v-for="(pack, p) in product.packages">
                           <v-btn depressed flat :key="p" :class="[p===current ? 'btn-active' : 'btn-normal']" @click="showpackage(p)">{{pack.package}}</v-btn>
                         </template>
                       </div>
                     </v-flex>
-                    <v-flex xs7 class="product-txt">
-                      <div class="scroll">
-                        <!-- <h1>{{product.name}}</h1> -->
-                        <h2>{{product.type}}</h2>
-                        <div class="pr-desc">{{product.description}}</div>
-                        <span v-html="text" class="product-desc"></span>
-                        <div v-if="product.usage && product.usage.length > 0" class="product-usage">
-                          <h2>Применение {{product.name}} обеспечивает:</h2>
-                          <ul>
-                            <template v-for="(usage, i) in product.usage">
-                              <li :key="i">{{usage}}</li>
-                            </template>
-                          </ul>
-                        </div>
-                      </div>
-                    </v-flex>
-                  </v-layout>
-                  <div class="product-select" v-if="i==1">
+                  </v-flex>
+                  <div v-html="product.text" class="product-desc" v-if="tabs[i]=='Описание'"></div>
+                  <div class="product-txt" v-if="tabs[i]=='Применение'">
+                    <h2>Применение {{product.name}} обеспечивает:</h2>
+                    <ul>
+                      <template v-for="(usage, i) in product.usage">
+                        <li :key="i">{{usage}}</li>
+                      </template>
+                    </ul>
+                  </div>
+                  <div class="product-select" v-if="tabs[i]=='Параметры'">
                     <div id="head">
                       <span>Параметр</span>
                       <span>Ед. измерения</span>
@@ -100,7 +108,7 @@
         model: 'ptab-0',
         dialog: false,
         product: {},
-        tabs: ['Описание', 'Характеристики'],
+        tabs: ['Информация', 'Описание', 'Фасовка', 'Применение', 'Параметры'],
         name: '',
         text: '',
         price: '',
@@ -141,23 +149,27 @@
 </script>
 
 <style>
-.product-info .v-window__container {
-  /* overflow-y: auto; */
-  /* height: 685px; */
-}
 .product-info .v-toolbar__content *:last-child.v-btn--icon {
   margin: 0px;
 }
+.product-info .v-toolbar__content {
+  border-bottom: 1px solid #e5e5e5;
+}
 .product-info .v-card {
   overflow-y: hidden;
-  height: 685px;
+  height: 585px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
 .product-info .v-card__text {
-  padding: 0 12px;
+  padding: 0 15px 15px 15px;
   width: 100%;
+  height: 100%;
+}
+.product-info .v-card__text .container {
+  height: 100%;
+  overflow-y: auto;
 }
 .product-desc div {
   margin-bottom: 16px;
@@ -168,18 +180,22 @@
   font-weight: 700;
   color: #007acc;
 }
-.left-info span {
+.packages {
+  display: flex;
+  flex-direction: row;
+}
+.packages span {
   display: block;
   width: 100%;
   font-weight: 700;
   text-align: center;
 }
-.left-info .price {
+.packages .price {
   margin: 10px 0;
   font-size: 34px;
   font-weight: 800;
 }
-.product-packages {
+.product-package {
   display: flex;
   flex-flow: row wrap;
   margin: 10px 0;
@@ -187,7 +203,7 @@
 .button-package {
   color: red;
 }
-.product-packages .v-btn {
+.product-package .v-btn {
   display: inline-block;
   width: calc(25% - 4px);
   height: 49px;
@@ -195,14 +211,14 @@
   border-radius: 5px;
   text-transform: none;
 }
-.product-packages .btn-active {
+.product-package .btn-active {
   color: #fff;
   background-color: #007acc;
 }
-.product-packages .btn-normal {
+.product-package .btn-normal {
   background-color: #ececec;
 }
-.product-packages .btn-normal:hover {
+.product-package .btn-normal:hover {
   color: #fff;
   background-color: gray;
 }
@@ -242,8 +258,9 @@
   display: table;
 }
 .scroll {
-  overflow-y: auto;
-  max-height: 670px;
+  /* overflow-y: auto;
+  height: 100%; */
+  /* max-height: 570px; */
 }
 .product-txt {
   padding-left: 20px;

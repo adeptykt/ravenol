@@ -1,6 +1,11 @@
 <template>
-  <v-layout>
-    <v-flex text-xs-center>
+  <div class="selection-container">
+    <v-tabs centered dark max="100px" slider-color="#FFCC00">
+      <v-tab v-for="(tab, i) in this.sharedState.category_menu" :key="i" :href="`#cmenu-${i}`" @click="ontabclick(i)">
+        {{tab.name}}
+      </v-tab>
+    </v-tabs>
+    <div class="selection-body">
       <v-breadcrumbs :items="sharedState.history">
         <v-icon slot="divider">forward</v-icon>
         <template slot="item" slot-scope="props">
@@ -9,31 +14,19 @@
           </a>
         </template>
       </v-breadcrumbs>
-      <div class="tree" v-if="sharedState.category_list.length > 0 && !sharedState.category_id">
-        <v-flex v-for="(item, n) in sharedState.category_list" :key="n" xs6 sm4 md2 lg2>
-          <div class="inline">
-            <a @click="opengear(item)">
-              <img :src="item.image">
-              {{item.name}}
-           </a>
-         </div>
-       </v-flex>
-      </div>
-      <div class="tree" v-if="sharedState.category_list.length > 0 && sharedState.category_id">
+      <div class="selection-category" v-if="sharedState.category_list.length > 0 && sharedState.category_id">
         <v-flex v-for="(item, n) in sharedState.category_list" :key="n" xs12 sm4 md3 lg3>
-          <div class="inline" v-bind:class="{ leaf: item.isItem }">
-            <a @click="opengear(item)">
-              {{item.name}}
-            </a>
-          </div>
+          <a @click="opengear(item)" v-bind:class="{ leaf: item.isItem }">
+            {{item.name}}
+          </a>
         </v-flex>
       </div>
-      <div class="tree" v-if="sharedState.gear_list.length > 0">
-        <v-flex v-for="(gear, g) in sharedState.gear_list" :key="g" xs12 sm6 md6 lg6>
-          <div class="sr-item">
-            <div class="title">
-              {{gear.name}}
-            </div>
+      <div class="selection-gear" v-if="sharedState.gear_list.length > 0">
+        <div class="panel" v-for="(gear, g) in sharedState.gear_list" :key="g">
+          <div class="title">
+            {{gear.name}}
+          </div>
+          <div class="panel-body">
             <template v-for="(volume, v) in gear.volumes">
               <div :key="volume+g*20+v">
                 <span class="key" v-if="v==0">Объем:</span>
@@ -64,23 +57,27 @@
               </template>
             </template>
           </div>
-        </v-flex>
+        </div>
       </div>
-    </v-flex>
-  </v-layout>
+      <div style="height: 0">&nbsp;</div>
+    </div>
+  </div>
 </template>
 
 <script>
 export default {
   data () {
     return {
-      sharedState: this.$store.state,
+      sharedState: this.$store.state
     }
   },
   created() {
-    if (this.sharedState.category_list.length == 0 && this.sharedState.gear_list.length == 0) this.opengear({ _id: 0 })
+    this.$store.dispatch('category_menu_find')
   },
   methods: {
+    ontabclick(i) {
+      this.$store.dispatch('open_gear', this.sharedState.category_menu[i])
+    },
     showproduct(id) {
       this.$store.state.visible = true
       this.$store.state.id = id
@@ -93,45 +90,29 @@ export default {
 </script>
 
 <style>
-.tree {
+.selection-container {
+  background: #efefef;
+}
+.selection-body {
+  padding: 15px;
+}
+.selection-body .v-breadcrumbs {
+  padding: 0px;
+}
+.selection-category {
+  padding-top: 15px;
   display: flex;
   flex-flow: row wrap;
   justify-content: flex-start;
   align-self: stretch;
 }
-.tree .inline a {
+.selection-category a {
   font-size: 12px;
   color: black;
   display: flex;
   flex-flow: column nowrap;
   align-items: center;
-}
-.tree .inline a>img {
-  width: 80%;
-  height: auto;
-}
-.tree .leaf {
-  background-color: #eee;
-  border: 1px solid #c5c5c5;
-}
-.sr-item {
-  background-color: #ececec;
-  width: calc(100% - 20px);
-  text-align: left;
-  /* margin-bottom: 20px; */
-  margin: 10px;
-  padding: 20px;
-  height: calc(100% - 20px);
-}
-.sr-item .title {
-  margin-bottom: 10px;
-  font-size: 24px;
-}
-.item {
-  margin: 0px;
-  /* padding: 1px; */
-}
-.inline {
+  /* inline */
   background-color: #c5c5c5;
   margin: 1px;
   padding: 6px;
@@ -140,7 +121,45 @@ export default {
   font-weight: normal;
   height: calc(100% - 2px);
 }
-.inline:hover {
-  background-color: #f6f6f6;
+.selection-category a:hover {
+  background-color: #0070C6;
+  color: white;
+}
+.selection-category .inline a>img {
+  width: 80%;
+  height: auto;
+}
+.selection-category .leaf {
+  background-color: #eee;
+  border: 1px solid #c5c5c5;
+}
+.selection-category .sr-item {
+  background-color: #ececec;
+  width: calc(100% - 20px);
+  text-align: left;
+  /* margin-bottom: 20px; */
+  margin: 10px;
+  padding: 20px;
+  height: calc(100% - 20px);
+}
+.selection-category .sr-item .title {
+  margin-bottom: 10px;
+  font-size: 24px;
+}
+.selection-gear {
+  padding: 0px 0px;
+}
+.selection-gear .panel {
+  margin-top: 20px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+.selection-gear .panel .title {
+  padding: 10px 15px;
+  border-bottom: 1px solid #ddd;
+}
+.selection-gear .panel .panel-body {
+  margin: 15px;
 }
 </style>
