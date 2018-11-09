@@ -5,20 +5,56 @@
         padding: 0;
       }
     </style>
-    <v-toolbar
-      fixed
-      app
-      dark
-      flat
-      color="#0070C6"
-      :extended="sharedState.mobile"
-      height="56px"
-    >
-      <div class="toolbar_content" :style="styleObject">
-        <v-spacer v-if="sharedState.mobile"></v-spacer>
-        <a href="/" class="logo">
-          <img src="/logo2.svg" alt="Vuetify.js">
-        </a>
+    <div ref="header" v-bind:style="{ paddingBottom: paddingHeader }">
+      <div id="topbar" ref="topbar">
+        <div class="topbar-container">
+          <div class="topbar-item">
+            <v-icon small>phone</v-icon>
+            <strong>+7 (914) 2-705-056</strong>
+            <span class="worktime">(c 09:00 до 19:00)</span>
+          </div>
+          <v-spacer></v-spacer>
+          <div class="topbar-item">
+            <a @click="inverse('showLogin')" v-if="!sharedState.auth.user">Войти</a>
+            <a @click="inverse('showRegister')" v-if="!sharedState.auth.user">Регистрация</a>
+            <!-- <div v-if="sharedState.auth.user">
+              {{sharedState.auth.user.email}}
+            </div> -->
+            <v-menu offset-y v-if="sharedState.auth.user">
+              <v-btn flat slot="activator" color="primary" dark>
+                <v-icon small>person</v-icon>
+                <div class="user-title">{{sharedState.auth.user.email}}</div>
+                <v-icon small>keyboard_arrow_down</v-icon>
+              </v-btn>
+              <v-list dense>
+                <v-list-tile @click="">
+                  <v-list-tile-title>Профиль</v-list-tile-title>
+                </v-list-tile>
+                <v-divider></v-divider>
+                <v-list-tile @click="logout">
+                  <v-list-tile-title>Выйти</v-list-tile-title>
+                  <v-icon small>exit_to_app</v-icon>
+                </v-list-tile>
+              </v-list>
+            </v-menu>
+            <!-- <a @click="logout" v-if="sharedState.auth.user">Выйти</a> -->
+          </div>
+        </div>
+      </div>
+      <v-toolbar :app="fixed" :fixed="fixed" dark flat color="rgba(0, 112, 198, 0.9)" :extended="sharedState.mobile" height="56px">
+        <v-spacer></v-spacer>
+        <div class="toolbar_content" :style="styleObject">
+          <v-spacer v-if="sharedState.mobile"></v-spacer>
+          <a href="/" class="logo">
+            <img id="logo" src="/logo3.svg" alt="Vuetify.js">
+          </a>
+          <div class="topbar-column">
+            <div>
+              <v-icon small>phone</v-icon>
+              <strong>+7 (914) 2-705-056</strong>
+            </div>
+            <div class="worktime">(c 09:00 до 19:00)</div>
+          </div>
           <div class="search" v-if="!sharedState.mobile">
             <style scoped>
               .search .v-text-field.v-text-field--solo .v-input__control {
@@ -44,61 +80,72 @@
               return-object
               clearable
             ></v-autocomplete>
-            <!-- <v-btn icon @click="searchSubmit">
-              <v-icon>search</v-icon>
-            </v-btn> -->
           </div>
-        <!-- </v-form> -->
-        <v-toolbar-title v-text="title" v-if="!sharedState.mobile"></v-toolbar-title>
-        <v-spacer v-if="sharedState.mobile"></v-spacer>
-      </div>
-      <div class="search" slot="extension" v-if="sharedState.mobile">
-        <style scoped>
-          .search .v-text-field.v-text-field--solo .v-input__control {
-            min-height: 40px;
-            padding-bottom: 20px;
-          }
-        </style>
-        <v-autocomplete
-          :loading="loading"
-          :items="results"
-          :search-input.sync="search"
-          v-model="select"
-          class="mx-3"
-          flat
-          hide-no-data
-          hide-details
-          label="Поиск и подбор"
-          solo-inverted
-          item-text="name"
-          height="20"
-          solo
-          no-filter
-          return-object
-          clearable
-        ></v-autocomplete>
-      </div>
-    </v-toolbar>
-    <v-content>
-      <div>
-        <div class="main-tabs">
-          <v-tabs v-model="model" centered color="transparent" slider-color="black">
-            <v-tab
-              v-for="(item, i) in items"
-              :key="i"
-              :to="item.to"
-              v-bind:style="{ fontSize: '18px', textTransform: 'none', fontWiehgt: 400 }"
-            >
-              {{ item.title }}
-            </v-tab>
-          </v-tabs>
+          <v-btn depressed dark color="#ef9a21" to="service" v-bind:style="{ height: '30px' }">Записаться</v-btn>
+          <div class="topbar-column right">
+            <a @click="inverse('showLogin')" v-if="!sharedState.auth.user">Войти</a>
+            <a @click="inverse('showRegister')" v-if="!sharedState.auth.user">Регистрация</a>
+            <div v-if="sharedState.auth.user">{{sharedState.auth.user.email}}</div>
+            <a @click="logout" v-if="sharedState.auth.user">Выйти</a>
+          </div>
+          <v-spacer v-if="sharedState.mobile"></v-spacer>
         </div>
-        <v-container v-bind:class="{main: true}">
-          <nuxt />
-        </v-container>
+        <v-spacer></v-spacer>
+        <div class="search" slot="extension" v-if="sharedState.mobile">
+          <style scoped>
+            .search .v-text-field.v-text-field--solo .v-input__control {
+              min-height: 40px;
+              padding-bottom: 20px;
+            }
+          </style>
+          <v-autocomplete
+            :loading="loading"
+            :items="results"
+            :search-input.sync="search"
+            v-model="select"
+            class="mx-3"
+            flat
+            hide-no-data
+            hide-details
+            label="Поиск и подбор"
+            solo-inverted
+            item-text="name"
+            height="20"
+            solo
+            no-filter
+            return-object
+            clearable
+          ></v-autocomplete>
+        </div>
+      </v-toolbar>
+    </div>
+    <!-- <v-content> -->
+    <div class="v-content" style="padding: 0 0 32px; ">
+      <div class="v-content__wrap">
+        <div>
+          <div class="main-tabs">
+            <v-tabs v-model="model" centered color="transparent" slider-color="black">
+              <v-tab
+                v-for="(item, i) in items"
+                :key="i"
+                :to="item.to"
+                v-bind:style="{ fontSize: '18px', textTransform: 'none', fontWiehgt: 400 }"
+                v-if="!item.role || (sharedState.auth.user && sharedState.auth.user.role === item.role)"
+              >
+                {{ item.title }}
+              </v-tab>
+            </v-tabs>
+          </div>
+          <v-container v-bind:class="{main: true}">
+            <nuxt />
+          </v-container>
+        </div>
+        <Product v-model="sharedState.showProduct" :id="sharedState.product_id" />
+        <Login v-model="showLogin" />
+        <Register v-model="showRegister" />
       </div>
-      <Product v-model="sharedState.visible" :id="sharedState.id"/>
-    </v-content>
+    </div>
+    <!-- </v-content> -->
     <v-footer fixed app>
       <span>&copy; {{ new Date().getFullYear() }}</span>
     </v-footer>
@@ -106,14 +153,23 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 import Product from '~/components/Product.vue'
+import Login from '~/components/Login.vue'
+import Register from '~/components/Register.vue'
+
 export default {
   components: {
-    Product
+    Product,
+    Register,
+    Login
   },
   data () {
     return {
       sharedState: this.$store.state,
+      paddingHeader: '0px',
+      showLogin: false,
+      showRegister: false,
       loading: false,
       search: null,
       select: null,
@@ -124,20 +180,20 @@ export default {
         { icon: 'bubble_chart', title: 'Продукция', to: '/products' },
         { title: 'Подбор', to: 'selection' },
         { title: 'О нас', to: '/about' },
-        { title: 'Запись', to: '/service' },
-        // { title: 'admin', to: '/admin' }
+        { title: 'admin', to: '/admin', role: 'admin' }
       ],
       title: '+7 (914) 2-705-056',
       windowWidth: 0,
-      maxWidth: 940
+      maxWidth: 940,
+      fixed: false
     }
   },
   computed: {
     styleObject() {
       const marginLeft = this.windowWidth == 0 ? 30 : (this.windowWidth <= 940 ? 0 : (this.windowWidth - this.maxWidth) / 2 - 24)
       return {
-        marginLeft: marginLeft + 'px',
-        marginRight: marginLeft + 'px',
+        // marginLeft: marginLeft + 'px',
+        // marginRight: marginLeft + 'px',
         width: this.maxWidth + 'px'
       }
     },
@@ -154,8 +210,8 @@ export default {
     select(val) {
       if (val) {
         if (val.service === 'items') {
-          this.$store.state.visible = true
-          this.$store.state.id = val._id
+          this.$store.state.showProduct = true
+          this.$store.state.product_id = val._id
         } else {
           this.$router.push({ path: 'selection' })
           this.$store.dispatch('open_gear', val)
@@ -172,11 +228,19 @@ export default {
     this.$nextTick(() => {
       window.addEventListener('resize', this.handleResize)
     });
+    window.addEventListener('scroll', this.handleScroll)
     this.handleResize();
   },
+  destroyed() {
+    window.removeEventListener('scroll', this.handleScroll)
+  },
   methods: {
-    searchSubmit() {
-      console.log('searchSubmit');
+    handleScroll(event) {
+      const fixed = (window.pageYOffset >= this.$refs.topbar.clientHeight)
+      // if (!this.fixed && fixed) height = window.pageYOffset
+      this.paddingHeader = fixed ? '56px' : '0px'
+      // console.log('handleScroll', window.pageYOffset, this.$refs.topbar.clientHeight, fixed, this.fixed);
+      this.fixed = fixed
     },
     querySelections(search) {
       if (search) {
@@ -192,11 +256,75 @@ export default {
     },
     handleResize() {
       this.windowWidth = window.innerWidth;
-    }
+    },
+    ...mapActions('auth', ['logout']),
+    ...mapActions(['inverse'])
   }
 }
 </script>
 <style scoped>
+#logo {
+	-o-transition: transform 0.5s linear;
+	-ms-transition: transform 0.5s linear;
+	-moz-transition: transform 0.5s linear;
+	-webkit-transition: transform 0.5s linear;
+	transition: transform 0.5s linear;
+}
+#logo:hover {
+	-o-transform: rotateY(180deg);
+	-ms-transform: rotateY(180deg);
+	-moz-transform: rotateY(180deg);
+	-webkit-transform: rotateY(180deg);
+	transform: rotateY(180deg);
+}
+.topbar-container {
+  max-width: 940px;
+  width: 100%;
+  margin: 0 auto;
+  height: 40px;
+  display: flex;
+  flex-flow: row nowrap;
+}
+#topbar {
+  /* display: none; */
+}
+.topbar-column {
+  display: none;
+  flex-flow: column;
+}
+.right {
+  align-items: flex-end;
+}
+.topbar-column a {
+  color: white;
+}
+.topbar-item {
+  line-height: 40px;
+  display: flex;
+  flex-flow: row nowrap;
+}
+.topbar-item .v-menu .user-title {
+  margin-left: 6.5px;
+  text-decoration: underline;
+  font-size: 13px;
+}
+.topbar-item .v-menu .v-btn {
+  text-transform: none;
+  padding: 0;
+  margin: 0;
+}
+.topbar-item .v-menu .v-icon {
+  margin: 0;
+}
+.topbar-item .v-icon {
+  margin-right: 8px;
+}
+.topbar-item a {
+  padding: 0 10px;
+}
+.worktime {
+  padding-left: 10px;
+}
 .main {
   margin: 0 auto;
   padding: 7px 20px;
@@ -208,6 +336,7 @@ export default {
   flex-flow: row nowrap;
   justify-content: space-between;
   position: relative;
+  margin: 0 auto;
 }
 .searchForm {
   display: flex;
@@ -228,6 +357,7 @@ export default {
   display: flex;
   flex-direction: row;
   flex: 1;
+  max-width: 300px;
 },
 .mx-3 .v-input__control {
   min-height: 20px;

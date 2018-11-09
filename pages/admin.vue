@@ -14,7 +14,7 @@
         <v-tab-item v-for="(item, i) in items" :key="i">
           <v-spacer></v-spacer>
           <v-card flat>
-            <v-toolbar color="cyan" dark>
+            <v-toolbar dark>
               <v-spacer></v-spacer>
               <v-toolbar-title>{{item.title}}</v-toolbar-title>
               <v-spacer></v-spacer>

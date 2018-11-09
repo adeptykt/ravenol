@@ -68,11 +68,11 @@
         </div>
       </div>
       <div class="mm-serv-btn">
-    		<input type="submit" name="iblock_submit" class="mm-serv-submit" value="Записаться" @click="order_click()">
-        <div class="fz-msg fs10 clr-000 mtop10 text-right">
-    			Нажимая на кнопку "Записаться", вы даете согласие на обработку своих <a href="/personal" target="_blank">персональных данных</a>
-    		</div>
-    	</div>
+        <input type="submit" name="iblock_submit" class="mm-serv-submit" value="Подтвердить" @click="order_click()">
+        <div class="fz-msg mtop10 text-right">
+          Нажимая на кнопку "Записаться", вы даете согласие на обработку своих <a href="/personal" target="_blank">персональных данных</a>
+        </div>
+      </div>
     </div>
     <v-dialog v-model="dialog" width="500">
       <v-card>
@@ -143,7 +143,7 @@ export default {
   },
   methods: {
     async fill_daytimes() {
-      const res = await this.$store.dispatch('orders/find', { query: { startDate: { $gt: new Date() } } })
+      const res = await this.$store.dispatch('orders/find', { query: { startDate: { $gt: new Date() }, $or: [{ status: 0 }, { status: 10 }] } })
       this.orders = res.data
 
       const days = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота']
@@ -209,6 +209,7 @@ export default {
         let services = this.services.filter(s => this.selected.includes(s.value)).map(service => { return { _id: service.value, price: 100 } })
         const query = { name: this.name, phone: this.phone, startDate, endDate, services }
         this.$store.dispatch('orders/create', query)
+        this.selected = []
         this.fill_daytimes()
       }
     },
@@ -267,71 +268,88 @@ export default {
 </script>
 
 <style>
-.required label:after {
-  color: red;
-  content: " *";
+.service-container h2 {
+  text-align: center;
+  font-size: 22px;
+  color: #667788;
+  text-transform: uppercase;
+  position: relative;
+  overflow: hidden;
+  /* margin-right: auto;
+  margin-left: auto;
+  line-height: 23px; */
+  font-family: "Exo 2", Arial, sans-serif;
+  font-weight: 300;
+  margin-top: 20px;
 }
-.service-f-b2 input[type="text"], .service-f-b2 label, .service-f-b2 .v-select__selection, .service-f-b2 textarea {
-  font-size: 14px;
-  line-height: 14px;
-  padding-bottom: 0px;
-  margin-bottom: 0px;
-}
-.service-f-b2 .v-messages {
-  height: 6px;
-  display: none;
-}
-.service-f-b2 .note {
-  font-size: 10px;
-}
-.service-form-n3 {
-  width: 25%;
-}
-.service-f-b input[type="text"] {
+.service-container h2 > span:before, .service-container h2 > span:after {
+  content: '';
+  position: absolute;
   width: 100%;
-  border: 1px solid #c6ccd2;
-  border-radius: 5px;
-  font-size: 14px;
-  line-height: 14px;
-  padding: 10px 15px 10px;
-  margin: 0 0 20px 0;
+  border-top: 1px solid #cdd5dd;
+  margin-top: .6em;
 }
-.service-f-b textarea {
+.service-container h2 > span:before {
+  margin-left: -102%;
+}
+.service-container h2 > span:after {
+  margin-left: 2%;
+}
+.service-content {
+}
+.service-form {
+  display: flex;
+  flex-flow: row wrap;
+  margin: 30px 0 0 0;
+}
+
+.service-form-n1 {
+  /* width: 28%; */
+  /* flex: 0.28; */
+  min-width: 207px;
+  flex: 1;
+}
+.service-f-t {
   width: 100%;
-  min-width: 200px;
-  border: 1px solid #c6ccd2;
-  border-radius: 5px;
-  font-size: 14px;
-  line-height: 14px;
-  padding: 10px 15px 10px;
-  min-height: 150px;
-  max-height: 450px;
+  display: flex;
 }
-.service-f-b .v-input__control .v-icon {
-  font-size: 16px;
+.service-f-t-mark {
+  width: 35px;
+  height: 35px;
+  border-radius: 20px;
+  background: #ef9a21;
+  font-size: 20px;
+  color: #fff;
+  line-height: 35px;
+  text-align: center;
+  display: inline-block;
+  margin: 0 10px 0 0;
 }
-.service-f-b div.accent--text {
-  color: #ef9a21;
+.service-f-t-ttl {
+  display: inline-block;
+  font-size: 19px;
+  line-height: 35px;
 }
-.service-f-b .v-input__control label {
-  font-size: 14px;
-  color: black;
+.service-f-b {
+  margin-top: 25px;
+  width: 100%;
 }
-.service-f-b .v-input {
-  margin-top: 0;
-  padding-top: 0;
+.service-f-b hr {
+  margin-top: 20px;
+  margin-bottom: 20px;
 }
-.service-f-b .v-input--selection-controls .v-input__slot {
-  margin-bottom: 0;
-}
-.service-f-b .v-input--selection-controls__input {
-  height: 21px;
-  margin-right: 0;
+
+.service-form-n2 {
+  /* width: 47%; */
+  /* flex: 0.47; */
+  min-width: 436px;
+  flex: 1;
 }
 .service-calendar {
   display: flex;
   flex-flow: row;
   padding-top: 10px;
+  padding-bottom: 15px;
 }
 .service-calendar li {
   background: #ef920f;
@@ -383,121 +401,40 @@ export default {
   list-style: none;
   display: inline-block;
 }
-.service-form {
-  display: flex;
-  flex-flow: row;
-  margin: 30px 0 0 0;
+
+.service-form-n3 {
+  /* width: 25%; */
+  /* flex: 0.25; */
+  min-width: 185px;
+  max-width: 436px;
+  flex: 1;
 }
-.service-container h2 {
-  text-align: center;
-  font-size: 22px;
-  color: #667788;
-  text-transform: uppercase;
-  position: relative;
-  overflow: hidden;
-  /* margin-right: auto;
-  margin-left: auto;
-  line-height: 23px; */
-  font-family: "Exo 2", Arial, sans-serif;
-  font-weight: 300;
-  margin-top: 20px;
+.service-f-b2 input[type="text"], .service-f-b2 label, .service-f-b2 .v-select__selection, .service-f-b2 textarea {
+  font-size: 14px;
+  line-height: 14px;
+  padding-bottom: 0px;
+  margin-bottom: 0px;
 }
-.service-container h2 > span:before, .service-container h2 > span:after {
-  content: '';
-  position: absolute;
-  width: 100%;
-  border-top: 1px solid #cdd5dd;
-  margin-top: .6em;
+.service-f-b2 .v-messages {
+  height: 6px;
+  display: none;
 }
-.service-container h2 > span:before {
-  margin-left: -102%;
+.required label:after {
+  color: red;
+  content: " *";
 }
-.service-container h2 > span:after {
-  margin-left: 2%;
+.service-f-b2 .note {
+  font-size: 10px;
 }
-.service-form-n1 {
-  width: 28%;
-}
-.service-f-t {
-  width: 100%;
-  display: flex;
-}
-.service-f-t-mark {
-  width: 35px;
-  height: 35px;
-  border-radius: 20px;
-  background: #ef9a21;
-  font-size: 20px;
-  color: #fff;
-  line-height: 35px;
-  text-align: center;
-  display: inline-block;
-  margin: 0 10px 0 0;
-}
-.service-f-t-ttl {
-  display: inline-block;
-  font-size: 19px;
-  line-height: 35px;
-}
-.service-f-b {
-  margin-top: 25px;
-  width: 100%;
-}
-.service-f-b hr {
-  margin-top: 20px;
-  margin-bottom: 20px;
-}
-.service-checkbox {
-  /* height: 20px; */
-}
-.service-input-slot {
-  display: flex;
-  align-items: center;
-  position: relative;
-  width: 100%;
-}
-.service-f-b-sel {
-  display: inline-flex;
-  flex: 0 0 auto;
-  width: 16px;
-  height: 16px;
-  position: relative;
-  margin-right: 8px;
-}
-.service-f-b-sel-cb {
-  /* margin: 7px; */
-  /* height: 16px;
-  width: 16px;
-  left: -8px;
-  top: calc(50% - 16px); */
-  display: inline-flex;
-  position: absolute;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-.service-f-b-checkbox {
-  opacity: 0;
-  position: absolute;
-  width: 100%;
-  height: 100%;
-}
-.service-f-b-sel-icon {
-  position: relative;
-  width: 100%;
-  height: 100%;
-}
-.service-form-n2 {
-  width: 47%;
-}
+
 .mm-serv-btn {
-  width: 100%;
-  position: relative;
-  overflow: hidden;
-  margin-right: auto;
-  margin-left: auto;
-  text-align: center;
-  margin-top: 10px;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+    margin-right: auto;
+    margin-left: auto;
+    text-align: center;
+    margin-top: 10px;
 }
 .mm-serv-submit {
   font-size: 16px;
@@ -508,25 +445,18 @@ export default {
   border-radius: 5px;
   border: none;
 }
-.fz-msg.fs10 {
-    font-size: 10px;
-}
 .fz-msg {
-    font-size: 14px;
-    font-style: italic;
+  font-size: 10px;
+  font-style: italic;
+  color: #000;
 }
 .mtop10 {
-    margin-top: 10px;
-}
-.clr-000 {
-    color: #000;
-}
-.fs10 {
-    font-size: 10px;
+  margin-top: 10px;
 }
 .text-right {
-    text-align: right;
+  text-align: right;
 }
+
 .dialog_error {
   align-items: center;
   display: flex;
@@ -537,5 +467,27 @@ export default {
 }
 .dialog_error .v-icon {
   font-size: 72px;
+}
+
+.service-f-b .v-input__control .v-icon {
+  font-size: 16px;
+}
+.service-f-b div.accent--text {
+  color: #ef9a21;
+}
+.service-f-b .v-input__control label {
+  font-size: 14px;
+  color: black;
+}
+.service-f-b .v-input {
+  margin-top: 0;
+  padding-top: 0;
+}
+.service-f-b .v-input--selection-controls .v-input__slot {
+  margin-bottom: 0;
+}
+.service-f-b .v-input--selection-controls__input {
+  height: 21px;
+  margin-right: 0;
 }
 </style>

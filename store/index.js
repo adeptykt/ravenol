@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import feathersVuex from 'feathers-vuex'
 import feathersClient from '@/api'
+import localAuth from './localAuth'
 import parseCookies from '@/utils/parse-cookies'
 
 const { service, auth, FeathersVuex } = feathersVuex(feathersClient, { idField: '_id' })
@@ -11,6 +12,7 @@ Vue.use(FeathersVuex)
 
 const store = new Vuex.Store({
   plugins: [
+    service('users'),
     service('vehicles'),
     service('items'),
     service('categories'),
@@ -19,12 +21,17 @@ const store = new Vuex.Store({
     service('gears'),
     service('search'),
     service('models'),
-    service('orders')
+    service('orders'),
+    auth({
+      userService: 'users'
+    })
   ],
   state: {
     mobile: false,
-    id: null, // product id
-    visible: false, // product visible
+    product_id: null, // product id
+    showProduct: false, // product visible
+    showRegister: false,
+    showLogin: false,
     gear_list: [],
     category_menu: [],
     category_list: [],
@@ -95,7 +102,6 @@ const store = new Vuex.Store({
       .catch(error => console.log('gears error:', error))
     },
     open_gear({ dispatch, commit, state }, category) {
-      console.log('open_gear', category);
       state.history = []
       const add_history = async (id) => {
         let cat
@@ -115,7 +121,14 @@ const store = new Vuex.Store({
       else {
         dispatch('categories_find', { parent: category._id })
       }
+    },
+    inverse({ state }, name) {
+      console.log('inverse:', name, state[name]);
+      state[name] = !state[name]
     }
+  },
+  modules: {
+    localAuth
   },
 })
 

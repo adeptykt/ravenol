@@ -20,7 +20,8 @@ import {
   VTextarea,
   VAutocomplete,
   VBreadcrumbs,
-  VCheckbox
+  VCheckbox,
+  VMenu
 } from 'vuetify'
 
 Vue.use(Vuetify, {
@@ -44,6 +45,7 @@ Vue.use(Vuetify, {
     VTextarea,
     VAutocomplete,
     VBreadcrumbs,
-    VCheckbox
+    VCheckbox,
+    VMenu
   }
 })

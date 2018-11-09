@@ -6,13 +6,13 @@
         <v-list three-line>
           <style scoped>
           .v-list--three-line .v-list__tile {
-            height: 150px;
+            min-height: 120px;
           }
           </style>
           <template v-for="(item, i) in items">
             <v-divider v-if="i > 0" :key="i"></v-divider>
             <v-list-tile :key="item.id" avatar @click="opendialog(item._id)">
-              <v-list-tile-avatar size=80>
+              <v-list-tile-avatar tile size="100%">
                 <img :src="item.image">
               </v-list-tile-avatar>
               <v-list-tile-content>
@@ -63,8 +63,8 @@
         console.log(query);
       },
       opendialog(id) {
-        this.$store.state.visible = true
-        this.$store.state.id = id
+        this.$store.state.showProduct = true
+        this.$store.state.product_id = id
       },
       getitems() {
         const skip = (this.page - 1) * this.limit
@@ -80,9 +80,12 @@
   }
 </script>
 <style scoped>
+.v-avatar {
+  margin: auto 0;
+}
 .v-avatar img {
   width: 80px;
-  height: 80px;
+  height: 100px;
   object-fit: cover;
   vertical-align: baseline;
 }
@@ -102,6 +105,6 @@
 .v-list__tile__avatar {
     display: flex;
     justify-content: center;
-    min-width: 156px;
+    min-width: 90px;
 }
 </style>
