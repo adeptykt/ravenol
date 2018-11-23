@@ -21,7 +21,11 @@ import {
   VAutocomplete,
   VBreadcrumbs,
   VCheckbox,
-  VMenu
+  VMenu,
+  VExpansionPanel,
+  VChip,
+  VTooltip,
+  VStepper
 } from 'vuetify'
 
 Vue.use(Vuetify, {
@@ -46,6 +50,10 @@ Vue.use(Vuetify, {
     VAutocomplete,
     VBreadcrumbs,
     VCheckbox,
-    VMenu
+    VMenu,
+    VExpansionPanel,
+    VChip,
+    VTooltip,
+    VStepper
   }
 })

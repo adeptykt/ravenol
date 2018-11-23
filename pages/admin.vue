@@ -271,12 +271,10 @@
         this.getviscosities()
         this.getvehicles()
         this.$store.dispatch('items/get', id).then(res => {
-          console.log('openeditdialog', res);
           this.name = res.name
           this.id = res._id
           Object.assign(this.product, res)
           this.packages = res.packages || []
-          console.log('packages', this.packages);
         })
       },
       getitems(index) {

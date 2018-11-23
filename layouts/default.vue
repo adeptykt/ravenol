@@ -4,6 +4,9 @@
       .v-toolbar__content {
         padding: 0;
       }
+      .theme--light.application {
+        background: #f6f6f6;
+      }
     </style>
     <div ref="header" v-bind:style="{ paddingBottom: paddingHeader }">
       <div id="topbar" ref="topbar">
@@ -11,7 +14,7 @@
           <div class="topbar-item">
             <v-icon small>phone</v-icon>
             <strong>+7 (914) 2-705-056</strong>
-            <span class="worktime">(c 09:00 до 19:00)</span>
+            <span class="worktime" v-if="!sharedState.mobile">(c 09:00 до 19:00)</span>
           </div>
           <v-spacer></v-spacer>
           <div class="topbar-item">
@@ -37,7 +40,6 @@
                 </v-list-tile>
               </v-list>
             </v-menu>
-            <!-- <a @click="logout" v-if="sharedState.auth.user">Выйти</a> -->
           </div>
         </div>
       </div>
@@ -46,7 +48,7 @@
         <div class="toolbar_content" :style="styleObject">
           <v-spacer v-if="sharedState.mobile"></v-spacer>
           <a href="/" class="logo">
-            <img id="logo" src="/logo3.svg" alt="Vuetify.js">
+            <img id="logo" src="/indexol_logo3.svg" alt="Vuetify.js">
           </a>
           <div class="topbar-column">
             <div>
@@ -81,13 +83,7 @@
               clearable
             ></v-autocomplete>
           </div>
-          <v-btn depressed dark color="#ef9a21" to="service" v-bind:style="{ height: '30px' }">Записаться</v-btn>
-          <div class="topbar-column right">
-            <a @click="inverse('showLogin')" v-if="!sharedState.auth.user">Войти</a>
-            <a @click="inverse('showRegister')" v-if="!sharedState.auth.user">Регистрация</a>
-            <div v-if="sharedState.auth.user">{{sharedState.auth.user.email}}</div>
-            <a @click="logout" v-if="sharedState.auth.user">Выйти</a>
-          </div>
+          <v-btn depressed dark color="#ef9a21" v-bind:style="{ height: '30px' }" @click="showService=true">Записаться</v-btn>
           <v-spacer v-if="sharedState.mobile"></v-spacer>
         </div>
         <v-spacer></v-spacer>
@@ -143,10 +139,11 @@
         <Product v-model="sharedState.showProduct" :id="sharedState.product_id" />
         <Login v-model="showLogin" />
         <Register v-model="showRegister" />
+        <Service v-model="showService" />
       </div>
     </div>
     <!-- </v-content> -->
-    <v-footer fixed app>
+    <v-footer>
       <span>&copy; {{ new Date().getFullYear() }}</span>
     </v-footer>
   </v-app>
@@ -157,12 +154,14 @@ import { mapActions } from 'vuex'
 import Product from '~/components/Product.vue'
 import Login from '~/components/Login.vue'
 import Register from '~/components/Register.vue'
+import Service from '~/components/Service.vue'
 
 export default {
   components: {
     Product,
     Register,
-    Login
+    Login,
+    Service
   },
   data () {
     return {
@@ -170,6 +169,7 @@ export default {
       paddingHeader: '0px',
       showLogin: false,
       showRegister: false,
+      showService: false,
       loading: false,
       search: null,
       select: null,
@@ -178,7 +178,7 @@ export default {
       items: [
         { icon: 'apps', title: 'Главная', to: '/' },
         { icon: 'bubble_chart', title: 'Продукция', to: '/products' },
-        { title: 'Подбор', to: 'selection' },
+        { title: 'Подбор', to: '/selection' },
         { title: 'О нас', to: '/about' },
         { title: 'admin', to: '/admin', role: 'admin' }
       ],
@@ -209,12 +209,13 @@ export default {
     },
     select(val) {
       if (val) {
-        if (val.service === 'items') {
+        console.log('select', val);
+        if (val.vendor) {
+          this.$router.push({ path: 'selection' })
+          this.$store.dispatch('get_gears', val)
+        } else {
           this.$store.state.showProduct = true
           this.$store.state.product_id = val._id
-        } else {
-          this.$router.push({ path: 'selection' })
-          this.$store.dispatch('open_gear', val)
         }
       }
       this.results = []
@@ -262,15 +263,23 @@ export default {
   }
 }
 </script>
+
+<style>
+/* .application a:hover {
+  color: red;
+  text-decoration: underline;
+} */
+</style>
+
 <style scoped>
-#logo {
+#logo1 {
 	-o-transition: transform 0.5s linear;
 	-ms-transition: transform 0.5s linear;
 	-moz-transition: transform 0.5s linear;
 	-webkit-transition: transform 0.5s linear;
 	transition: transform 0.5s linear;
 }
-#logo:hover {
+#logo1:hover {
 	-o-transform: rotateY(180deg);
 	-ms-transform: rotateY(180deg);
 	-moz-transform: rotateY(180deg);
@@ -317,7 +326,7 @@ export default {
   margin: 0;
 }
 .topbar-item .v-icon {
-  margin-right: 8px;
+  margin: auto 8px auto 0;
 }
 .topbar-item a {
   padding: 0 10px;
@@ -327,7 +336,7 @@ export default {
 }
 .main {
   margin: 0 auto;
-  padding: 7px 20px;
+  padding: 15px 20px;
   max-width: 980px;
 }
 .toolbar_content {

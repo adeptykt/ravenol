@@ -16,12 +16,16 @@ const store = new Vuex.Store({
     service('vehicles'),
     service('items'),
     service('categories'),
+    service('vendors'),
     service('viscosities'),
     service('compositions'),
     service('gears'),
     service('search'),
     service('models'),
+    service('generations'),
     service('orders'),
+    service('tempusers'),
+    service('aggregate'),
     auth({
       userService: 'users'
     })
@@ -37,8 +41,18 @@ const store = new Vuex.Store({
     category_list: [],
     category_id: 0,
     history: [],
-    vendors: [],
-    model_list: []
+    category_list: [
+      { _id: 1, name: 'Автомобили' },
+      { _id: 3, name: 'Мотоциклы' },
+      { _id: 2, name: 'Фургоны' },
+      { _id: 4, name: 'Грузовики' },
+      { _id: 5, name: 'Сельхозтехника' },
+      { _id: 6, name: 'Спецтехника' }
+    ],
+    vendor_list: [],
+    model_list: [],
+    generation_list: [],
+    product_list: []
   },
   mutations: {
     set_gear_list (state, data) {
@@ -52,33 +66,74 @@ const store = new Vuex.Store({
   },
   actions: {
     nuxtServerInit({ dispatch }, { req }) { // eslint-disable-line consistent-return
-      const accessToken = parseCookies(req)['feathers-jwt'];
+      const accessToken = parseCookies(req)['feathers-jwt']
 
       if (accessToken) {
-        return dispatch('auth/authenticate', { strategy: 'jwt', accessToken });
+        return dispatch('auth/authenticate', { strategy: 'jwt', accessToken }).catch(error => {
+          delete parseCookies(req)['feathers-jwt']
+        })
       }
     },
-    get_vendors({ dispatch, commit, state }) {
-      dispatch('categories/find', { query: { $limit: null, $sort: 'name', parent: 100 } }).then(res => {
-        state.vendors = res.data || []
+    get_vendors({ dispatch, commit, state }, category) {
+      state.vendor_list = []
+      state.selection_mode = 'vendors'
+      state.history = state.history.slice(0, 0)
+      state.history.push({ dispatch: 'get_vendors', data: category, name: category.name })
+      dispatch('vendors/find', { query: { $limit: null, $sort: 'name', categories: category._id } }).then(res => {
+        state.vendor_list = res.data || []
       })
       .catch(error => console.log('get_vendors error:', error))
     },
-    get_models({ dispatch, commit, state }, category) {
-      const find = "Автомобили " + category.name
-      dispatch('models/find', { query: { _id: category._id } }).then(res => {
-        console.log('models', res);
-        if (res.data && res.data.length)
-        state.model_list = res.data.map(model => {
-          model.name = model.fullname.replace(find, '')
-          return model
-        }).sort((a, b) => {
-          if (a.name > b.name) return 1
-          if (a.name < b.name) return -1
-          return 0
-        })
+    get_models({ dispatch, commit, state }, { vendor, category_id }) {
+      state.model_list = []
+      state.selection_mode = 'models'
+      state.history = state.history.slice(0, 1)
+      state.history.push({ dispatch: 'get_models', data: { vendor, category_id }, name: vendor.name })
+      dispatch('models/find', { query: { $limit: null, $sort: 'name', vendor: vendor, category: category_id } }).then(res => {
+        if (res.data && res.data.length) state.model_list = res.data
       })
       .catch(error => console.log('get_models error:', error))
+    },
+    get_generations({ dispatch, commit, state }, model) {
+      state.generation_list = []
+      state.selection_mode = 'generations'
+      state.history = state.history.slice(0, 2)
+      state.history.push({ dispatch: 'get_generations', data: model, name: model.name })
+      dispatch('generations/find', { query: { $limit: null, $sort: 'name', model } }).then(res => {
+        state.generation_list = res.data || []
+      })
+      .catch(error => console.log('generation_list error:', error))
+    },
+    async get_gears({ dispatch, commit, state }, generation) {
+      console.log('get_gears', generation);
+
+      let res, model, vendor, category
+      state.history = []
+      state.history.push({ dispatch: 'get_gears', data: generation, name: generation.name })
+      if (generation.model._id) model = generation.model
+      else model = await dispatch('models/get', generation.model)
+      const category_id = model.category
+      state.history.unshift({ dispatch: 'get_generations', data: model, name: model.name })
+      vendor = await dispatch('vendors/get', model.vendor)
+      state.history.unshift({ dispatch: 'get_models', data: { vendor, category_id }, name: vendor.name })
+      category = state.category_list.find(cat => cat._id === category_id)
+      if (category) state.history.unshift({ dispatch: 'get_vendors', data: category, name: category.name })
+
+      state.selection_mode = 'gears'
+      state.gear_list = generation.gears
+      // state.history = state.history.slice(0, 3)
+      // state.history.push({ dispatch: 'get_gears', data: generation, name: generation.name })
+      // заполняем информацию по продуктам
+      state.product_list = []
+      let articles = []
+      generation.gears.forEach(gear => {
+        gear.products && gear.products.forEach(product => {
+          if (articles.indexOf(product) == -1) articles.push(product)
+        })
+      })
+      if (articles.length) {
+        dispatch('items/find', { query: { $limit: null, article: { $in: articles } } }).then(res => { state.product_list = res.data }).catch(error => console.log('get_gears error:', error))
+      }
     },
     category_menu_find({ dispatch, commit, state }) {
       dispatch('categories/find', { query: { $limit: null, $sort: 'name', parent: 0 } }).then(res => {
@@ -123,7 +178,6 @@ const store = new Vuex.Store({
       }
     },
     inverse({ state }, name) {
-      console.log('inverse:', name, state[name]);
       state[name] = !state[name]
     }
   },

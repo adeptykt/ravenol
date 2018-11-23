@@ -14,7 +14,7 @@
           </div>
           <div class="service-f-b">
             <template v-for="(service, i) in services">
-              <v-checkbox hide-details v-model="selected" :label="service.name" :value="service.value" :key="i"></v-checkbox>
+              <Checkbox v-model="selected" :label="service.name" :value="service.value" :key="i" color='#ef9a20'></Checkbox>
             </template>
             <hr style="margin-right: 10px;">
             <p>
@@ -60,8 +60,38 @@
               <v-text-field v-model="name" label="Ваше имя" required></v-text-field>
               <v-text-field v-model="phone" label="Ваш номер телефона" required mask="(###) ###-##-##"></v-text-field>
             </div>
-            <v-select v-model="vendor" :items="this.sharedState.vendors" label="Марка" item-text="name" return-object></v-select>
-            <v-select v-model="model" :items="this.sharedState.model_list" label="Модель" item-text="name" return-object></v-select>
+            <!-- <v-select v-model="vendor" :items="this.sharedState.vendor_list" label="Марка" item-text="name" return-object></v-select> -->
+            <v-autocomplete
+              :items="this.sharedState.vendor_list"
+              v-model="vendor"
+              flat
+              hide-no-data
+              hide-details
+              label="Марка"
+              item-text="name"
+              return-object
+            ></v-autocomplete>
+            <!-- <v-select v-model="model" :items="this.sharedState.model_list" label="Модель" item-text="name" return-object></v-select> -->
+            <v-autocomplete
+              :items="this.sharedState.model_list"
+              v-model="model"
+              flat
+              hide-no-data
+              hide-details
+              label="Модель"
+              item-text="name"
+              return-object
+            ></v-autocomplete>
+            <v-autocomplete
+              :items="this.sharedState.generation_list"
+              v-model="generation"
+              flat
+              hide-no-data
+              hide-details
+              label="Поколение"
+              item-text="name"
+              return-object
+            ></v-autocomplete>
             <v-textarea v-model="comment" label="Комментарий" rows=4></v-textarea>
             <div class="note">Поля, помеченные звездочкой (<span style="color: red">*</span>), обязательны к заполнению</div>
           </div>
@@ -96,7 +126,12 @@
 </template>
 
 <script>
+import Checkbox from '~/components/Checkbox.vue'
+
 export default {
+  components: {
+    Checkbox
+  },
   data () {
     return {
       sharedState: this.$store.state,
@@ -107,6 +142,7 @@ export default {
       comment: "",
       vendor: "",
       model: "",
+      generation: "",
       selected: [],
       total_time: 0,
       daytimes: [],
@@ -134,12 +170,15 @@ export default {
       this.clear_calendar()
     },
     vendor(val) {
-      this.$store.dispatch('get_models', val)
+      this.$store.dispatch('get_models', { vendor: val, category_id: 1 })
+    },
+    model(val) {
+      this.$store.dispatch('get_generations', val)
     }
   },
   created() {
     this.fill_daytimes()
-    this.$store.dispatch('get_vendors')
+    this.$store.dispatch('get_vendors', this.sharedState.category_list[0])
   },
   methods: {
     async fill_daytimes() {
