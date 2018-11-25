@@ -27,6 +27,7 @@ const store = new Vuex.Store({
     service('orders'),
     service('tempusers'),
     service('aggregate'),
+    service('check-email'),
     auth({
       userService: 'users'
     })

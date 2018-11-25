@@ -24,6 +24,7 @@
           <div class="topbar-item">
             <a @click="inverse('showLogin')" v-if="!sharedState.auth.user">Войти</a>
             <a @click="inverse('showRegister')" v-if="!sharedState.auth.user">Регистрация</a>
+            <!-- <a @click="showRegister0=true" v-if="!sharedState.auth.user">Регистрация</a> -->
             <v-menu offset-y v-if="sharedState.auth.user">
               <v-btn flat slot="activator" color="primary" dark>
                 <v-icon small>person</v-icon>
@@ -138,8 +139,8 @@
         </div>
         <Product v-model="sharedState.showProduct" :id="sharedState.product_id" />
         <Login v-model="showLogin" />
-        <Register v-model="showRegister" />
-        <Service v-model="showService" />
+        <Register v-model="sharedState.showRegister" />
+        <!-- <Service v-model="showService" /> -->
         <Profile />
       </div>
     </div>
@@ -172,6 +173,7 @@ export default {
       paddingHeader: '0px',
       showLogin: false,
       showRegister: false,
+      showRegister0: false,
       showService: false,
       loading: false,
       search: null,
