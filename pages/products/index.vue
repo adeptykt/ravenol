@@ -257,27 +257,27 @@ export default {
   -webkit-border-bottom-right-radius: 4px;
   border-bottom-right-radius: 4px;
 }
-.list-tile-image {
+.products-list .list-tile-image {
   min-width: 90px;
   margin: 0 auto;
 }
-.list-tile-image img {
+.products-list .list-tile-image img {
   /* width: 80px; */
   height: 90px;
   object-fit: cover;
   vertical-align: baseline;
   cursor: pointer;
 }
-.list-tile-content {
+.products-list .list-tile-content {
   width: 100%;
 }
-.list-tile-title {
+.products-list .list-tile-title {
   font-size: 18px;
   line-height: 22px;
   font-weight: 800;
   cursor: pointer;
 }
-.list-tile-subtitle {
+.products-list .list-tile-subtitle {
   font-weight: 800;
   color: gray;
 }

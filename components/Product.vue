@@ -4,26 +4,20 @@
       <div class="overlay" id="imagelarge">
         <div class="overlay_container">
           <a href="#close">
-            <img :src="currentpack.image"/>
+            <img :src="currentpack.image" v-if="currentpack.image" />
           </a>
         </div>
       </div>
     </div>
     <v-dialog v-model="dialog" max-width="940px">
-      <style scoped>
-      .v-dialog {
-        border-radius: 6px;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, .5)
-      }
-      </style>
       <div class="product">
         <v-toolbar light flat color="#FFFFFF" height="46" extension-height="36">
           <v-spacer></v-spacer>
           <v-toolbar-title :style="{ marginLeft: '20px' }">{{product.name}}</v-toolbar-title>
           <v-spacer></v-spacer>
           <v-tabs centered color="transparent" slider-color="black" v-model="model" height="30px" slot="extension">
-            <v-tab v-for="(tab, i) in tabs" :key="i" :href="`#ptab-${i}`">
-              {{ tab }}
+            <v-tab v-for="(tab, i) in tabs" :key="i" :href="`#ptab-${i}`" v-if="!tab.condition || (product[tab.condition] && (!Array.isArray(product[tab.condition]) || product[tab.condition].length))">
+              {{ tab.name }}
             </v-tab>
           </v-tabs>
           <v-btn icon @click="dialog=false">
@@ -35,7 +29,7 @@
             <v-card flat>
               <v-card-text>
                 <v-container :style="{padding: '10px 0 0 0'}">
-                  <div v-if="tabs[i]=='Информация'" class="product-info">
+                  <div v-if="tab.name=='Информация'" class="product-info">
                     <!-- <h1>{{product.name}}</h1> -->
                     <h2>{{product.type}}</h2>
                     <p>{{product.description}}</p>
@@ -43,11 +37,12 @@
                     <p v-if="product.sae && product.sae.length"><b>SAE:</b> {{product.sae.join(', ')}}</p>
                     <p v-if="product.acea && product.acea.length"><b>ACEA:</b> {{product.acea.join(', ')}}</p>
                     <p v-if="product.api && product.api.length"><b>API:</b> {{product.api.join(', ')}}</p>
+                    <p v-if="product.oem && product.oem.length"><b>OEM:</b> {{product.oem.join(', ')}}</p>
                     <p v-if="product.tags && product.tags.length"><b>Теги:</b> {{product.tags.join(', ')}}</p>
                     <p v-if="product.approved && product.approved.length"><b>Одобрено производителями техники:</b> {{product.approved.join(', ')}}</p>
                     <p v-if="product.requests && product.requests.length"><b>Соответствие требованиям:</b> {{product.requests.join(', ')}}</p>
                   </div>
-                  <v-flex class="packages" v-if="tabs[i]=='Фасовка'">
+                  <v-flex class="packages" v-if="tab.name=='Фасовка'">
                     <v-flex xs12 sm6 md6 lg6>
                       <div class="product-table">
                         <div id="head">
@@ -67,13 +62,13 @@
                     <v-flex xs12 sm6 md6 lg6>
                       <div class="blokimg">
                         <a href="#imagelarge">
-                          <img :src="currentpack.image" class="product-image">
+                          <img :src="'/images/fullscreen/' + currentpack.article + '.jpg'" class="product-image">
                         </a>
                       </div>
                     </v-flex>
                   </v-flex>
-                  <div v-html="product.text" class="product-desc" v-if="tabs[i]=='Описание'"></div>
-                  <div class="product-txt" v-if="tabs[i]=='Применение'">
+                  <div v-html="product.text" class="product-desc" v-if="tab.name=='Описание'"></div>
+                  <div class="product-txt" v-if="tab.name=='Применение'">
                     <h2>Применение {{product.name}} обеспечивает:</h2>
                     <ul>
                       <template v-for="(usage, i) in product.usage">
@@ -81,7 +76,7 @@
                       </template>
                     </ul>
                   </div>
-                  <div class="product-table" v-if="tabs[i]=='Параметры'">
+                  <div class="product-table" v-if="tab.name=='Параметры'">
                     <div id="head">
                       <span>Параметр</span>
                       <span>Ед. измерения</span>
@@ -119,13 +114,15 @@
         model: 'ptab-0',
         dialog: false,
         product: {},
-        tabs: ['Информация', 'Описание', 'Фасовка', 'Применение', 'Параметры'],
+        tabs: [
+          { name: 'Информация' },
+          { name: 'Описание', condition: 'text' },
+          { name: 'Фасовка', condition: 'packages' },
+          { name: 'Применение', condition: 'usage' },
+          { name: 'Параметры', condition: 'characteristics' }
+        ],
         name: '',
         text: '',
-        price: '',
-        vehicle: '',
-        composition: '',
-        viscosity: 0,
         current: 0,
         currentpack: {}
       }
@@ -143,7 +140,7 @@
             this.product = res
             this.current = 0
             this.text = res.text
-            this.currentpack = res.packages && res.packages.length ? res.packages[0] : { article: res.article, price: res.price, image: res.image }
+            this.currentpack = (res.packages && res.packages.length) ? res.packages[0] : { article: res.article, price: res.price, image: res.image }
           })
       }
     },

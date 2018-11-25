@@ -1,11 +1,6 @@
+<!-- :rules="[emailMatch]" -->
 <template>
   <v-dialog v-model="sharedState.showRegister" max-width="470px">
-    <style scoped>
-    .v-dialog {
-      border-radius: 6px;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, .5)
-    }
-    </style>
     <div class="dialog-reg">
       <div class="dialog-action">
         <v-btn icon @click="inverse('showRegister')">
@@ -21,10 +16,25 @@
           {{error.message}}
         </div>
         <form @submit.prevent="onSubmit" class="dialog-form">
-          <v-text-field label="Адрес электронной почты (e-mail)" type="text" v-model="user.email" />
-          <v-text-field label="Пароль" type="password" v-model="user.password" />
+          <v-text-field
+            label="Адрес электронной почты (e-mail)"
+            type="text"
+            v-model="user.email"
+            outline
+            :error-messages="errors"
+          />
+          <v-text-field
+            label="Пароль"
+            type="password"
+            v-model="user.password"
+            :append-icon="showpassword ? 'visibility_off' : 'visibility'"
+            :type="showpassword ? 'text' : 'password'"
+            @click:append="showpassword = !showpassword"
+            :rules="[rules.min]"
+            outline
+          />
           <div style="paddingBottom: 10px">
-            <Checkbox v-model="agree" color='#ef9a21'>
+            <Checkbox v-model="agree" medium color='#ef9a20'>
               Настоящим подтверждаю, что я ознакомлен и согласен с условиями политики конфиденциальности. <a @click="show_police=true">Узнать больше</a>
             </Checkbox>
           </div>
@@ -42,6 +52,7 @@
 
 <script>
 import { mapActions } from 'vuex'
+import axios from 'axios'
 import Checkbox from '~/components/Checkbox.vue'
 import Police from '~/components/Police.vue'
 
@@ -62,12 +73,44 @@ export default {
         email: '',
         password: '',
       },
+      showpassword: false,
+      errors: [],
+      rules: {
+        required: value => !!value || 'Required.',
+        min: v => v.length >= 6 || 'Должно быть минимум 6 символов',
+        emailMatch: value => {
+          const reg = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
+          if (reg.test(value) == false) return 'Некорректный e-mail'
+          const res = this.checkEmail(value)
+          // const res = this.$store.dispatch('check-email/get', value)
+          // .then(res => {
+          //   if (res) return 'Введенный почтовый ящик уже зарегистрирован'
+          //   return true
+          // })
+          console.log('q', res);
+          return true
+          // // if (res) return 'Введенный почтовый ящик уже зарегистрирован'
+          // return true
+        }
+      },
       error: undefined,
       agree: false,
       show_police: false
     }
   },
   watch: {
+    async 'user.email'(value) {
+      this.errors = []
+      const reg = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
+      if (reg.test(value) == false) {
+        this.errors = ['Некорректный e-mail']
+        return
+      }
+      const { data } = await axios.get(`${process.env.apiUrl}/check-email/${value}`)
+      // const res = await this.$store.dispatch('check-email/get', value)
+      console.log('checkEmail', data);
+      this.errors = data ? ['Введенный почтовый ящик уже зарегистрирован'] : []
+    },
     dialog (val) {
       this.$emit("input", val)
     },
@@ -76,10 +119,28 @@ export default {
     }
   },
   methods: {
-    onSubmit() {
-      this.$store.dispatch('users/create', this.user)
+    async emailMatch(value) {
+      const reg = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
+      if (reg.test(value) == false) return 'Некорректный e-mail'
+      // const res = this.checkEmail(value)
+      var done = false
+      var message
+      this.$store.dispatch('check-email/get', value)
         .then(res => {
-          console.log('users/create', res)
+          // if (res) return 'Введенный почтовый ящик уже зарегистрирован'
+          // return true
+          message = 'Введенный почтовый ящик уже зарегистрирован'
+          done = true
+        })
+      if (message) return message
+      return true
+      // // if (res) return 'Введенный почтовый ящик уже зарегистрирован'
+      // return true
+    },
+    onSubmit() {
+      this.$store.dispatch('tempusers/create', this.user)
+        .then(res => {
+          console.log('tempusers/create', res)
           this.inverse('showRegister')
         })
         .catch(error => {

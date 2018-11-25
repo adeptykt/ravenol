@@ -8,6 +8,6 @@ const socket = io(process.env.apiUrl, { transports: ['websocket'] })
 
 const feathersClient = feathers()
   .configure(socketio(socket))
-  .configure(auth({ storage: feathersStorage }))
+  .configure(auth({ storage: feathersStorage, aud: 'web' }))
 
 export default feathersClient

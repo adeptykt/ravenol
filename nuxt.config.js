@@ -5,11 +5,14 @@ export default {
   server: {
     port: 3000, // default: 3000
   },
-  /*
+  modules: [
+    'nuxt-client-init-module'
+  ],
+   /*
   ** Headers of the page
   */
   head: {
-    title: 'ravenol',
+    title: 'indexol',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
@@ -23,10 +26,9 @@ export default {
   plugins: [
     '~/plugins/vuetify.js',
     { src: '~plugins/nuxt-quill-plugin.js', ssr: false },
-    // '~plugins/QuillEditor.js'
   ],
   css: [
-    '~/assets/style/app.styl',
+    '~/assets/style/main.styl',
     'quill/dist/quill.snow.css',
     'quill/dist/quill.bubble.css',
     'quill/dist/quill.core.css'
@@ -55,7 +57,8 @@ export default {
       '@feathersjs/feathers',
       '@feathersjs/socketio-client',
       '@feathersjs/authentication-client',
-      'socket.io-client'
+      'socket.io-client',
+      'axios'
     ],
     extractCSS: true,
     /*

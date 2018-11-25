@@ -1,11 +1,5 @@
 <template>
   <v-dialog v-model="dialog" max-width="550px">
-    <style scoped>
-    .v-dialog {
-      border-radius: 6px;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, .5)
-    }
-    </style>
     <div class="dialog-police">
       <div class="dialog-action">
         <v-btn icon @click="dialog=false">

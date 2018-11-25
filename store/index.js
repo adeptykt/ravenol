@@ -4,6 +4,7 @@ import feathersVuex from 'feathers-vuex'
 import feathersClient from '@/api'
 import localAuth from './localAuth'
 import parseCookies from '@/utils/parse-cookies'
+import cookie from 'js-cookie';
 
 const { service, auth, FeathersVuex } = feathersVuex(feathersClient, { idField: '_id' })
 
@@ -12,7 +13,7 @@ Vue.use(FeathersVuex)
 
 const store = new Vuex.Store({
   plugins: [
-    service('users'),
+    service('users', { debug: true }),
     service('vehicles'),
     service('items'),
     service('categories'),
@@ -36,6 +37,7 @@ const store = new Vuex.Store({
     showProduct: false, // product visible
     showRegister: false,
     showLogin: false,
+    showProfile: false,
     gear_list: [],
     category_menu: [],
     category_list: [],
@@ -65,16 +67,34 @@ const store = new Vuex.Store({
     }
   },
   actions: {
-    nuxtServerInit({ dispatch }, { req }) { // eslint-disable-line consistent-return
+    nuxtClientInit({ commit, state }, context) {
+      // const accessToken = parseCookies(req)['feathers-jwt']
+      console.log('nuxtClientInit', state.accessToken);
+      // cookie.set('feathers-jwt', state.accessToken)
+    },
+    nuxtServerInit({ dispatch, commit, state }, { req }) { // eslint-disable-line consistent-return
       const accessToken = parseCookies(req)['feathers-jwt']
+      // console.log('nuxtServerInit', accessToken);
 
       if (accessToken) {
-        return dispatch('auth/authenticate', { strategy: 'jwt', accessToken }).catch(error => {
+        return dispatch('auth/authenticate', { strategy: 'jwt', accessToken })
+        .then(res => {
+          // store.commit('auth/setAccessToken', res.accessToken);
+          console.log('accessToken', res.accessToken);
+          // console.log('accessToken2', state.auth.accessToken);
+          // console.log('isAuthenticatePending', state.auth.isAuthenticatePending);
+          // console.log('errorOnAuthenticate', state.auth.errorOnAuthenticate);
+          // console.log('payload', state.auth.payload, state.auth.user);
+          // cookie.set('feathers-jwt', res.accessToken)
+          // console.log('accessToken2', parseCookies(req)['feathers-jwt']);
+        })
+        .catch(error => {
           delete parseCookies(req)['feathers-jwt']
         })
       }
     },
     get_vendors({ dispatch, commit, state }, category) {
+      console.log('get_vendors');
       state.vendor_list = []
       state.selection_mode = 'vendors'
       state.history = state.history.slice(0, 0)

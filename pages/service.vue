@@ -292,7 +292,6 @@ export default {
     local_date(date) {
       const two = (s) => { return ("0" + s).slice(-2) }
       var d = new Date(date)
-      //d.setMinutes(d.getMinutes() - d.getTimezoneOffset())
       return two(d.getDate()) + "." + two(d.getMonth() + 1) + "." + two(d.getFullYear())// + " " + two(d.getHours()) + ":" + two(d.getMinutes()) + ":" + two(d.getSeconds())
     },
     local_time(date) {

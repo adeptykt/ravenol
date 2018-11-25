@@ -1,11 +1,5 @@
 <template>
   <v-dialog v-model="sharedState.showLogin" max-width="450px">
-    <style scoped>
-    .v-dialog {
-      border-radius: 6px;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, .5)
-    }
-    </style>
     <div class="dialog-login">
       <div class="dialog-action">
         <v-btn icon @click="inverse('showLogin')">
@@ -83,7 +77,11 @@ export default {
   methods: {
     onSubmit() {
       this.authenticate({ strategy: 'local', ...this.user })
-        .then(() => this.inverse('showLogin'))
+        .then((res) => {
+          console.log('onSubmit', res.accessToken);
+          console.log('payload', this.$store.state.auth.payload);
+          this.inverse('showLogin')
+        })
         .catch(error => {
           let type = error.className
           error = Object.assign({}, error)

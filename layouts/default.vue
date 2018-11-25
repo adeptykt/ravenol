@@ -1,6 +1,10 @@
 <template>
   <v-app>
     <style scoped>
+      .v-dialog {
+        border-radius: 6px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, .5)
+      }
       .v-toolbar__content {
         padding: 0;
       }
@@ -20,9 +24,6 @@
           <div class="topbar-item">
             <a @click="inverse('showLogin')" v-if="!sharedState.auth.user">Войти</a>
             <a @click="inverse('showRegister')" v-if="!sharedState.auth.user">Регистрация</a>
-            <!-- <div v-if="sharedState.auth.user">
-              {{sharedState.auth.user.email}}
-            </div> -->
             <v-menu offset-y v-if="sharedState.auth.user">
               <v-btn flat slot="activator" color="primary" dark>
                 <v-icon small>person</v-icon>
@@ -30,7 +31,7 @@
                 <v-icon small>keyboard_arrow_down</v-icon>
               </v-btn>
               <v-list dense>
-                <v-list-tile @click="">
+                <v-list-tile @click="inverse('showProfile')">
                   <v-list-tile-title>Профиль</v-list-tile-title>
                 </v-list-tile>
                 <v-divider></v-divider>
@@ -115,7 +116,6 @@
         </div>
       </v-toolbar>
     </div>
-    <!-- <v-content> -->
     <div class="v-content" style="padding: 0 0 32px; ">
       <div class="v-content__wrap">
         <div>
@@ -140,9 +140,9 @@
         <Login v-model="showLogin" />
         <Register v-model="showRegister" />
         <Service v-model="showService" />
+        <Profile />
       </div>
     </div>
-    <!-- </v-content> -->
     <v-footer>
       <span>&copy; {{ new Date().getFullYear() }}</span>
     </v-footer>
@@ -155,13 +155,16 @@ import Product from '~/components/Product.vue'
 import Login from '~/components/Login.vue'
 import Register from '~/components/Register.vue'
 import Service from '~/components/Service.vue'
+import Profile from '~/components/Profile.vue'
 
 export default {
+  middleware: 'auth',
   components: {
     Product,
     Register,
     Login,
-    Service
+    Service,
+    Profile
   },
   data () {
     return {
@@ -264,13 +267,6 @@ export default {
 }
 </script>
 
-<style>
-/* .application a:hover {
-  color: red;
-  text-decoration: underline;
-} */
-</style>
-
 <style scoped>
 #logo1 {
 	-o-transition: transform 0.5s linear;
@@ -293,9 +289,6 @@ export default {
   height: 40px;
   display: flex;
   flex-flow: row nowrap;
-}
-#topbar {
-  /* display: none; */
 }
 .topbar-column {
   display: none;
@@ -367,7 +360,7 @@ export default {
   flex-direction: row;
   flex: 1;
   max-width: 300px;
-},
+}
 .mx-3 .v-input__control {
   min-height: 20px;
   padding: 0;

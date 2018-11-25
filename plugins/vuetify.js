@@ -25,7 +25,8 @@ import {
   VExpansionPanel,
   VChip,
   VTooltip,
-  VStepper
+  VStepper,
+  VdatePicker
 } from 'vuetify'
 
 Vue.use(Vuetify, {
@@ -54,6 +55,7 @@ Vue.use(Vuetify, {
     VExpansionPanel,
     VChip,
     VTooltip,
-    VStepper
+    VStepper,
+    VdatePicker
   }
 })
