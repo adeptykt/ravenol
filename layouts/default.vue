@@ -1,252 +1,393 @@
 <template>
-  <v-app>
-    <style scoped>
-      .v-dialog {
-        border-radius: 6px;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, .5)
-      }
-      .v-toolbar__content {
-        padding: 0;
-      }
-      .theme--light.application {
-        background: #f6f6f6;
-      }
-    </style>
-    <div ref="header" v-bind:style="{ paddingBottom: paddingHeader }">
-      <div id="topbar" ref="topbar">
-        <div class="topbar-container">
-          <div class="topbar-item">
-            <v-icon small>phone</v-icon>
-            <strong>+7 (914) 2-705-056</strong>
-            <span class="worktime" v-if="!sharedState.mobile">(c 09:00 до 19:00)</span>
-          </div>
-          <v-spacer></v-spacer>
-          <div class="topbar-item">
-            <a @click="inverse('showLogin')" v-if="!sharedState.auth.user">Войти</a>
-            <a @click="inverse('showRegister')" v-if="!sharedState.auth.user">Регистрация</a>
-            <!-- <a @click="showRegister0=true" v-if="!sharedState.auth.user">Регистрация</a> -->
-            <v-menu offset-y v-if="sharedState.auth.user">
-              <v-btn flat slot="activator" color="primary" dark>
-                <v-icon small>person</v-icon>
-                <div class="user-title">{{sharedState.auth.user.email}}</div>
-                <v-icon small>keyboard_arrow_down</v-icon>
-              </v-btn>
-              <v-list dense>
-                <v-list-tile @click="inverse('showProfile')">
-                  <v-list-tile-title>Профиль</v-list-tile-title>
-                </v-list-tile>
-                <v-divider></v-divider>
-                <v-list-tile @click="logout">
-                  <v-list-tile-title>Выйти</v-list-tile-title>
-                  <v-icon small>exit_to_app</v-icon>
-                </v-list-tile>
-              </v-list>
-            </v-menu>
-          </div>
-        </div>
-      </div>
-      <v-toolbar :app="fixed" :fixed="fixed" dark flat color="rgba(0, 112, 198, 0.9)" :extended="sharedState.mobile" height="56px">
-        <v-spacer></v-spacer>
-        <div class="toolbar_content" :style="styleObject">
-          <v-spacer v-if="sharedState.mobile"></v-spacer>
-          <a href="/" class="logo">
-            <img id="logo" src="/indexol_logo3.svg" alt="Vuetify.js">
-          </a>
-          <div class="topbar-column">
-            <div>
-              <v-icon small>phone</v-icon>
-              <strong>+7 (914) 2-705-056</strong>
+  <div class="wrapper" v-bind:class="{ wrapper_order, 'wrapper_no-footer': no_footer }">
+    <div class="search" v-bind:class="{ search_opened: search_opened }">
+      <div class="search__top">
+        <div class="search__box">
+          <div class="b-search b-search_sm b-search_popup">
+            <div class="b-search__base">
+              <input type="text" placeholder="Быстрый поиск" class="b-search__input" v-model="sharedState.global_search">
             </div>
-            <div class="worktime">(c 09:00 до 19:00)</div>
           </div>
-          <div class="search" v-if="!sharedState.mobile">
-            <style scoped>
-              .search .v-text-field.v-text-field--solo .v-input__control {
-                min-height: 30px;
-                padding: 0;
-              }
-            </style>
-            <v-autocomplete
-              :loading="loading"
-              :items="results"
-              :search-input.sync="search"
-              v-model="select"
-              class="mx-3"
-              flat
-              hide-no-data
-              hide-details
-              label="Поиск и подбор"
-              solo-inverted
-              item-text="name"
-              height="20"
-              solo
-              no-filter
-              return-object
-              clearable
-            ></v-autocomplete>
+        </div>
+        <a href="#" class="search__close" @click="onCloseSearch">
+          <span class="icon icon_close_big">
+            <svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#close_big"></use></svg>
+          </span>
+        </a>
+      </div>
+      <div class="search__container">
+        <div class="box">
+          <div class="search__items items items_search">
+            <template v-for="(item, i) in results">
+              <div class="items__row">
+                <div class="items__title">{{item.name}}</div>
+              </div>
+            </template>
           </div>
-          <v-btn depressed dark color="#ef9a21" v-bind:style="{ height: '30px' }" @click="showService=true">Записаться</v-btn>
-          <v-spacer v-if="sharedState.mobile"></v-spacer>
         </div>
-        <v-spacer></v-spacer>
-        <div class="search" slot="extension" v-if="sharedState.mobile">
-          <style scoped>
-            .search .v-text-field.v-text-field--solo .v-input__control {
-              min-height: 40px;
-              padding-bottom: 20px;
-            }
-          </style>
-          <v-autocomplete
-            :loading="loading"
-            :items="results"
-            :search-input.sync="search"
-            v-model="select"
-            class="mx-3"
-            flat
-            hide-no-data
-            hide-details
-            label="Поиск и подбор"
-            solo-inverted
-            item-text="name"
-            height="20"
-            solo
-            no-filter
-            return-object
-            clearable
-          ></v-autocomplete>
-        </div>
-      </v-toolbar>
-    </div>
-    <div class="v-content" style="padding: 0 0 32px; ">
-      <div class="v-content__wrap">
-        <div>
-          <div class="main-tabs">
-            <v-tabs v-model="model" centered color="transparent" slider-color="black">
-              <v-tab
-                v-for="(item, i) in items"
-                :key="i"
-                :to="item.to"
-                v-bind:style="{ fontSize: '18px', textTransform: 'none', fontWiehgt: 400 }"
-                v-if="!item.role || (sharedState.auth.user && sharedState.auth.user.role === item.role)"
-              >
-                {{ item.title }}
-              </v-tab>
-            </v-tabs>
-          </div>
-          <v-container v-bind:class="{main: true}">
-            <nuxt />
-          </v-container>
-        </div>
-        <Product v-model="sharedState.showProduct" :id="sharedState.product_id" />
-        <Login v-model="showLogin" />
-        <Register v-model="sharedState.showRegister" />
-        <!-- <Service v-model="showService" /> -->
-        <Profile />
       </div>
     </div>
-    <v-footer>
-      <span>&copy; {{ new Date().getFullYear() }}</span>
-    </v-footer>
-  </v-app>
+    <div class="wrapper__inner">
+      <div>
+        <header v-bind:style="{ paddingBottom: paddingHeader }" class="header header_inner" v-bind:class="{ header_opened: menu }">
+          <div class="header__mob">
+            <div class="header__side">
+              <nuxt-link to="/" class="logo logo_mob">
+                <img src="/indexol_logo4.svg" alt="Indexol">
+              </nuxt-link>
+            </div>
+            <div class="header__base">
+              <div class="header__actions header__actions_mob">
+                <a href="#" class="header__button button button_search" @click.prevent="search_opened=true">
+                  <span class="button__icon icon icon_search-white"><svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#search"></use></svg></span>
+                </a>
+                <nuxt-link to="/cart" class="header__button button button_cart">
+                  <span class="button__icon icon icon_cart"><svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#cart"></use></svg></span>
+                  <span class="button__text">Корзина</span>
+                  <client-only>
+                    <span class="button__counter" v-if="cart_total">{{cart_total}}</span>
+                  </client-only>
+                </nuxt-link>
+              </div>
+              <a to="#" class="nav-btn" @click.prevent="menu = !menu"><span class="nav-btn__item"></span></a>
+            </div>
+          </div>
+          <div class="header__container">
+            <div ref="topbar" class="header__top">
+              <div class="header__box header__box_top">
+                <div class="header__logo" id="logo">
+                  <nuxt-link to="/" class="logo logo_icon content_logo">
+                    <img src="/indexol_logo4.svg" alt="Indexol">
+                  </nuxt-link>
+                </div>
+                <div class="header__phone">
+                  <div class="phones" v-bind:class="{ phones_opened: phones_opened }" @mouseover="phoneOpened(true)" @mouseout="phoneOpened(false)">
+                    <a href="#" class="phones__header" @click="phones_opened=!phones_opened">
+                      <span class="phones__btn">+7-914-288-09-99</span>
+                    </a>
+                    <div class="phones__dropdown">
+                      <div class="dropdown">
+                        <div class="dropdown__container">
+                          <div class="phones__item">
+                            <div class="phones__title">Магазин</div>
+                            <div class="phones__row"><a href="tel:+79142880999" class="phones__link">+7-914-288-09-99</a></div>
+                          </div>
+                          <div class="phones__item">
+                            <div class="phones__title">Администрация</div>
+                            <div class="phones__row"><a href="tel:+79142705056" class="phones__link">+7-914-2-705-056</a></div>
+                          </div>
+                          <div class="phones__item phones__item_time">
+                            <div class="phones__work">
+                              <span class="phones__icon icon icon_clock">
+                                <svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#clock"></use>
+                                </svg>
+                              </span>
+                              <div class="phones__text">
+                                Ежедневно
+                                <br> с 10:00 до 18:00
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="header__wheel hidden-print"></div>
+                <div class="hidden-print header__search" v-if="!no_footer">
+                  <form action="" class="b-search b-search_header">
+                    <div class="b-search__base">
+                      <input type="text" placeholder="Быстрый поиск, например «HG3421», «Очиститель форсунок»" class="b-search__input" v-model="sharedState.global_search">
+                      <span class="b-search__button">
+                        <span class="icon icon_search-light">
+                          <svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#search"></use></svg>
+                        </span>
+                      </span>
+                    </div>
+                    <a href="#" class="b-search__link"></a>
+                  </form>
+                </div>
+                <div class="header__auth">
+                  <div>
+                    <div class="auth auth_logged" v-bind:class="{ auth_opened: auth_opened }" @mouseover="auth_opened=true" @mouseout="auth_opened=false" v-if="sharedState.auth.user">
+                      <nuxt-link to="/account/" @click.prevent="onAuthClick" class="auth__header">
+                        <div class="auth__item">
+                          <div class="auth__icon">
+                            <span class="icon icon_user-light">
+                              <svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#user"></use></svg>
+                            </span>
+                          </div>
+                          <div class="auth__text">
+                            <span class="auth__name">{{sharedState.auth.user.email}}</span>
+                          </div>
+                        </div>
+                      </nuxt-link>
+                      <div class="auth__dropdown">
+                        <div class="dropdown dropdown_auth">
+                          <ul class="dropdown__list">
+                            <li class="dropdown__item" v-for="item in menu_items">
+                              <nuxt-link :to="item.to" class="dropdown__link">{{item.name}}</nuxt-link>
+                            </li>
+                            <!-- <li class="dropdown__item">
+                              <nuxt-link to="/account/history" class="dropdown__link">История заказов</nuxt-link>
+                            </li>
+                            <li class="dropdown__item"><a href="#" class="dropdown__link" @click.prevent="logout">Выход</a></li> -->
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="auth auth_enter" v-else>
+                      <nuxt-link to="/auth" class="auth__header">
+                        <div class="auth__item">
+                          <div class="auth__icon">
+                            <span class="icon icon_user-light">
+                              <svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#user"></use></svg>
+                            </span>
+                          </div>
+                          <div class="auth__text">
+                            <span class="auth__name" v-if="sharedState.auth.user">{{sharedState.auth.user.email}}</span>
+                            <span class="auth__name" v-else>Вход</span>
+                          </div>
+                        </div>
+                      </nuxt-link>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="header__bottom hidden-print" v-bind:class="{ header__bottom__fixed: sharedState.menu_fixed }" v-if="!no_footer">
+              <div class="header__box header__box_bottom">
+                <div class="header__nav">
+                  <nav class="nav nav_inner">
+                    <ul class="nav__list">
+                      <template v-for="(item, i) in items">
+                        <li class="nav__item nav__item_sub" :key="i" v-bind:class="{ nav__item_opened: item.opened }" @mouseover="menuItemOver(item)" @mouseout="menuItemOut(item)">
+                          <a :href="item.to" class="nav__link" @click.prevent="menuItemClick(item)">
+                            <span class="nav__text" v-if="item.items">{{ item.title }}</span>
+                            <template v-if="!item.items">{{ item.title }}</template>
+                          </a>
+                          <div class="nav__dropdown" v-if="item.items">
+                            <div class="dropdown dropdown_nav">
+                              <ul class="dropdown__list">
+                                <template v-for="(subitem, j) in item.items">
+                                  <li class="dropdown__item" @click="menu = false" :key="i*1000+j">
+                                    <nuxt-link :to="subitem.to" class="dropdown__link nuxt-link-exact-active nuxt-link-active">{{ subitem.title }}</nuxt-link>
+                                  </li>
+                                </template>
+                              </ul>
+                            </div>
+                          </div>
+                        </li>
+                      </template>
+                    </ul>
+                  </nav>
+                </div>
+                <div class="header__actions header__actions_desktop">
+                  <nuxt-link to="/cart" class="header__button button button_cart">
+                    <span class="button__icon icon icon_cart"><svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#cart"></use></svg></span>
+                    <span class="button__text">Корзина</span>
+                    <client-only>
+                      <span class="button__counter" v-if="cart_total">{{cart_total}}</span>
+                    </client-only>
+                  </nuxt-link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </header>
+      </div>
+      <div class="alert alert_attention alert_show" v-if="alert">
+        <div class="alert__box box">
+          Осталось заполнить поля в разделах
+          <a href="/account/requisites" class="alert__link">реквизиты</a>,
+          <a href="/account/delivery" class="alert__link">пункты разгрузки</a>,
+          <a href="/account/additionally" class="alert__link">дополнительно</a>
+        </div>
+      </div>
+      <div class="container" id="container" v-bind:class="{ container_main: container_main }">
+        <nuxt />
+      </div>
+    </div>
+    <footer class="footer" v-if="!no_footer" ref="footer">
+      <Service v-model="showService" />
+      <Profile v-model="sharedState.showProfile" />
+      <Authorization v-model="sharedState.showAuthorization" />
+      <AuthReset v-model="sharedState.showReset" />
+      <div class="box">
+        <div class="footer__bottom">
+          <div class="footer__base footer__base_bottom">
+            <div class="footer__copyright">&copy; {{ new Date().getFullYear() }} indexol.ru<br> Все права защищены.</div>
+            <div class="footer__info">
+    					ООО «Равенол Якутия» ИНН 1435334875,<br>
+              г. Якутск, Дежнева, 78
+				    </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
 </template>
 
 <script>
-import { mapActions } from 'vuex'
-import Product from '~/components/Product.vue'
-import Login from '~/components/Login.vue'
-import Register from '~/components/Register.vue'
+import { mapActions, mapMutations } from 'vuex'
 import Service from '~/components/Service.vue'
 import Profile from '~/components/Profile.vue'
+import Authorization from '~/components/Authorization.vue'
+import AuthReset from '~/components/AuthReset.vue'
+import ClientOnly from 'vue-client-only'
 
 export default {
   middleware: 'auth',
   components: {
-    Product,
-    Register,
-    Login,
     Service,
-    Profile
+    Profile,
+    Authorization,
+    ClientOnly,
+    AuthReset
+  },
+  head () {
+    return {
+      bodyAttrs: {
+        class: this.search_opened ? 'overlayed' : ''
+      }
+    }
   },
   data () {
     return {
+      alert: false,
       sharedState: this.$store.state,
+      animate_logo: false,
       paddingHeader: '0px',
-      showLogin: false,
-      showRegister: false,
-      showRegister0: false,
+      phones_opened: false,
+      auth_opened: false,
+      search_opened: false,
       showService: false,
       loading: false,
-      search: null,
       select: null,
       results: [],
-      model: 'tab-0',
       items: [
-        { icon: 'apps', title: 'Главная', to: '/' },
-        { icon: 'bubble_chart', title: 'Продукция', to: '/products' },
-        { title: 'Подбор', to: '/selection' },
-        { title: 'О нас', to: '/about' },
-        { title: 'admin', to: '/admin', role: 'admin' }
+        { title: 'Каталог', to: '/categories' },
+        // { title: 'Подбор', to: '/selection' },
+        // { title: 'Бренды', to: '/brands' },
+        // { title: 'Блог', to: '/blog' },
+        // { title: 'Вопросы', to: '/questions' },
+        { title: 'Сотрудничество', to: '/cooperation' },
+        {
+          title: 'О нас',
+          to: '/about',
+          // opened: false,
+          // items: [ { title: 'О компании', to: '/about' }, { title: 'Сотрудничество', to: '/cooperation' }, { title: 'Контакты', to: '/contacts' }, { title: 'Обратная связь', to: '/feedback' } ]
+        }
       ],
-      title: '+7 (914) 2-705-056',
       windowWidth: 0,
       maxWidth: 940,
-      fixed: false
+      menu: false,
+      facebook: false,
+      vk: false,
+      cart_count: 0
     }
   },
   computed: {
-    styleObject() {
-      const marginLeft = this.windowWidth == 0 ? 30 : (this.windowWidth <= 940 ? 0 : (this.windowWidth - this.maxWidth) / 2 - 24)
-      return {
-        // marginLeft: marginLeft + 'px',
-        // marginRight: marginLeft + 'px',
-        width: this.maxWidth + 'px'
-      }
+    menu_items() {
+      return this.$store.state.menu_items
     },
-    toolbar_style() {
-      return {
-        height: this.windowWidth < 940 ? 'auto' : '56px'
-      }
+    isAdmin() {
+      return this.$store.state.auth.user && (this.$store.state.auth.user.role === 'admin')
+    },
+    cart_total() {
+      if (this.$store.state.cart.status) return this.$store.state.cart.list.reduce((s, i) => { return s + i.count }, 0)
+      return 0
+    },
+    search() {
+      return this.sharedState.global_search
+    },
+    container_main() {
+      return (this.$route.path === "/" || this.$route.path === "")
+    },
+    wrapper_order() {
+      return /^\/cart\/order\//.test(this.$route.path)
+    },
+    no_footer() {
+      return /^\/cart\/order\//.test(this.$route.path)
     }
   },
   watch: {
     search(val) {
-      val && val !== this.select && val.length > 2 && this.querySelections(val)
+      if (val) {
+        this.search_opened = true
+        val !== this.select && val.length > 2 && this.querySelections(val)
+      }
     },
     select(val) {
       if (val) {
-        console.log('select', val);
         if (val.vendor) {
           this.$router.push({ path: 'selection' })
           this.$store.dispatch('get_gears', val)
         } else {
-          this.$store.state.showProduct = true
-          this.$store.state.product_id = val._id
+          this.set_showProduct(true)
+          this.set_product_id(val._id)
         }
       }
       this.results = []
     },
     windowWidth(width) {
       this.maxWidth = this.windowWidth <= 940 ? this.windowWidth  : 940
-      this.$store.state.mobile = this.windowWidth < 640 ? true : false
+      this.set_mobile(this.windowWidth < 640)
     }
   },
   mounted() {
-    this.$nextTick(() => {
-      window.addEventListener('resize', this.handleResize)
-    });
+    this.$store.dispatch('auth/authenticate').then(() => this.$store.dispatch('get_menu_items'))
+    this.$nextTick(() => window.addEventListener('resize', this.handleResize))
     window.addEventListener('scroll', this.handleScroll)
-    this.handleResize();
+    this.handleResize()
+
+    // this.animate_logo = true
+    // setTimeout(this.endAnimation, 6000)
+
+    this.set_search('')
   },
   destroyed() {
     window.removeEventListener('scroll', this.handleScroll)
+    window.removeEventListener('resize', this.handleResize)
   },
   methods: {
+    endAnimation() {
+      this.animate_logo = false
+    },
+    onCloseSearch() {
+      this.set_search('')
+      this.search_opened = false
+    },
+    phoneOpened(val) {
+      if (window.innerWidth >= 960) this.phones_opened = val
+    },
+    menuItemOver(item) {
+      if (window.innerWidth >= 960) item.opened = true
+    },
+    menuItemOut(item) {
+      if (window.innerWidth >= 960) item.opened = false
+    },
+    menuItemClick(item) {
+      if (item.items && window.innerWidth < 960) {
+        item.opened = !item.opened
+      } else {
+        this.$router.push({ path: item.to })
+        this.menu = false
+      }
+    },
+    onAuthClick() {
+      if (!this.sharedState.auth.user) {
+        this.inverse('showAuthorization')
+        this.menu = false
+      }
+    },
     handleScroll(event) {
-      const fixed = (window.pageYOffset >= this.$refs.topbar.clientHeight)
-      // if (!this.fixed && fixed) height = window.pageYOffset
+      // const fixed = (window.pageYOffset >= this.$refs.topbar.clientHeight)
+      const fixed = false
+      const quick_search = this.$refs.footer ? (window.pageYOffset >= this.$refs.topbar.clientHeight) && (window.pageYOffset + window.innerHeight <= this.$refs.footer.offsetTop - 50) : false
       this.paddingHeader = fixed ? '56px' : '0px'
-      // console.log('handleScroll', window.pageYOffset, this.$refs.topbar.clientHeight, fixed, this.fixed);
-      this.fixed = fixed
+      this.menu_fix(fixed)
+      this.quick_search(quick_search)
     },
     querySelections(search) {
       if (search) {
@@ -264,115 +405,10 @@ export default {
       this.windowWidth = window.innerWidth;
     },
     ...mapActions('auth', ['logout']),
-    ...mapActions(['inverse'])
-  }
+    ...mapMutations({ inverse: 'inverse', menu_fix: 'menu_fix', quick_search: 'quick_search', set_search: 'set_search', set_mobile: 'set_mobile', set_product_id: 'set_product_id', set_showProduct: 'set_showProduct' })
+  },
 }
 </script>
 
-<style scoped>
-#logo1 {
-	-o-transition: transform 0.5s linear;
-	-ms-transition: transform 0.5s linear;
-	-moz-transition: transform 0.5s linear;
-	-webkit-transition: transform 0.5s linear;
-	transition: transform 0.5s linear;
-}
-#logo1:hover {
-	-o-transform: rotateY(180deg);
-	-ms-transform: rotateY(180deg);
-	-moz-transform: rotateY(180deg);
-	-webkit-transform: rotateY(180deg);
-	transform: rotateY(180deg);
-}
-.topbar-container {
-  max-width: 940px;
-  width: 100%;
-  margin: 0 auto;
-  height: 40px;
-  display: flex;
-  flex-flow: row nowrap;
-}
-.topbar-column {
-  display: none;
-  flex-flow: column;
-}
-.right {
-  align-items: flex-end;
-}
-.topbar-column a {
-  color: white;
-}
-.topbar-item {
-  line-height: 40px;
-  display: flex;
-  flex-flow: row nowrap;
-}
-.topbar-item .v-menu .user-title {
-  margin-left: 6.5px;
-  text-decoration: underline;
-  font-size: 13px;
-}
-.topbar-item .v-menu .v-btn {
-  text-transform: none;
-  padding: 0;
-  margin: 0;
-}
-.topbar-item .v-menu .v-icon {
-  margin: 0;
-}
-.topbar-item .v-icon {
-  margin: auto 8px auto 0;
-}
-.topbar-item a {
-  padding: 0 10px;
-}
-.worktime {
-  padding-left: 10px;
-}
-.main {
-  margin: 0 auto;
-  padding: 15px 20px;
-  max-width: 980px;
-}
-.toolbar_content {
-  display: flex;
-  align-items: center;
-  flex-flow: row nowrap;
-  justify-content: space-between;
-  position: relative;
-  margin: 0 auto;
-}
-.searchForm {
-  display: flex;
-  justify-content: space-around;
-  width: 40%;
-  height: 30px;
-}
-.searchForm .v-icon {
-  font-size: 30px;
-  margin-left: -5px;
-  margin-top: -5px;
-  padding-left: 25px;
-}
-.searchForm .v-icon:hover {
-  font-size: 35px;
-}
-.search {
-  display: flex;
-  flex-direction: row;
-  flex: 1;
-  max-width: 300px;
-}
-.mx-3 .v-input__control {
-  min-height: 20px;
-  padding: 0;
-}
-.v-toolbar__content .logo {
-  display: block;
-  line-height: 0;
-}
-.v-toolbar__content .logo img {
-  width: 170px;
-  height: auto;
-}
+<style lang="scss" src="./app.scss">
 </style>

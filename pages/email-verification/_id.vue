@@ -1,29 +1,34 @@
 <template>
-  <v-layout>
+  <div class="box">
     <div class="verification">
       <div class="p" v-bind:class="largescreen">
         <div class="spinner" v-if="loading"><Socket size="60px" /></div>
-        <div class="swal2-icon" v-if="!loading"><v-icon size=80 :color=color>{{icon}}</v-icon></div>
+        <!-- <div class="swal2-icon" v-if="!loading"><v-icon size=80 :color=color>{{icon}}</v-icon></div> -->
         <h2 v-if="!loading">{{message}}</h2>
       </div>
     </div>
-  </v-layout>
+  </div>
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 import axios from 'axios'
 import Socket from '~/components/Socket.vue'
 
 export default {
+  head () {
+    return {
+      title: 'Активация логина',
+    }
+  },
   components: {
     Socket
   },
   validate ({ params }) {
     return /^[0-9a-z]{24}$/.test(params.id)
   },
-  async asyncData({ params }) {
-    const { data } = await axios.get(`${process.env.apiUrl}/email-verification/${params.id}`)
-    return { success: data.success ? true : false, loading: false }
+  asyncData({ params }) {
+    return { id: params.id }
   },
   data() {
     return {
@@ -31,6 +36,20 @@ export default {
       loading: true,
       success: false
     }
+  },
+  mounted() {
+    const params = this.$route.params
+    this.$store.dispatch('registers/get', this.id).then(res => {
+    // this.checkUser(this.id).then(res => {
+      this.loading = false
+      this.success = true
+      console.log('auth created', res);
+    }).catch(error => {
+      this.loading = false
+      console.log('error', error)
+    })
+    // const { data } = await axios.get(`${process.env.apiUrl}/email-verification/${params.id}`)
+    // this.success = data.success
   },
   computed: {
     icon() {
@@ -47,6 +66,9 @@ export default {
         largescreen: !this.$store.state.mobile
       }
     },
+  },
+  methods: {
+    ...mapActions('registers', { checkUser: 'get' }),
   }
 }
 </script>

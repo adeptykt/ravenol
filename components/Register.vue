@@ -1,9 +1,6 @@
 <template>
-  <DialogForm v-model="dialog" maxWidth="470px" title="Регистрация" buttonText="Зарегистрироваться" :buttonDisabled="!agree" v-on:onSubmit="onSubmit" linkText="Войти" v-on:linkClick="dialog=false; inverse('showLogin')">
-    <div class="error-message" v-if="error">
-      {{error.message}}
-    </div>
-    <div class="dialog-form">
+  <dialog-form v-model="dialog" max-width="450px" title="Регистрация" buttonText="Зарегистрироваться" :buttonDisabled="!agree" v-on:onSubmit="onSubmit" linkText="Войти" v-on:linkClick="dialog=false; inverse('showLogin')" :error="error">
+    <div>
       <v-text-field
         label="E-mail"
         type="text"
@@ -41,12 +38,12 @@
       </div>
     </div>
     <Police v-model="show_police"/>
-  </DialogForm>
+  </dialog-form>
 </template>
 
 <script>
-import DialogForm from '~/components/DialogForm.vue'
 import { mapActions } from 'vuex'
+import DialogForm from '~/components/DialogForm.vue'
 import Checkbox from '~/components/Checkbox.vue'
 import Police from '~/components/Police.vue'
 
@@ -61,9 +58,7 @@ export default {
   },
   data () {
     return {
-      sharedState: this.$store.state,
       dialog: false,
-      valid: true,
       user: {
         email: '',
         password: ''
@@ -74,7 +69,7 @@ export default {
       rules: {
         required: value => !!value || 'Required.',
         min: v => v.length >= 6 || 'Должно быть минимум 6 символов',
-        compare: v => v === this.user.password || 'Пароль не совпадает',
+        compare: v => v === this.user.password || 'Пароли не совпадают',
       },
       error: undefined,
       agree: false,
@@ -82,7 +77,13 @@ export default {
     }
   },
   watch: {
-    async 'user.email'(value) {
+    dialog (val) {
+      this.$emit("input", val)
+    },
+    value (val) {
+      this.dialog = val
+    },
+    async 'user.email' (value) {
       this.error = undefined
       this.errors = []
       const reg = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
@@ -93,14 +94,8 @@ export default {
       const data = await this.$store.dispatch('check-email/get', value)
       this.errors = data && data.exists ? ['Введенный почтовый ящик уже зарегистрирован'] : []
     },
-    'user.password'(val) {
+    'user.password' (val) {
       this.error = undefined
-    },
-    dialog (val) {
-      this.$emit("input", val)
-    },
-    value (val) {
-      this.dialog = val
     }
   },
   methods: {
@@ -113,18 +108,3 @@ export default {
   }
 }
 </script>
-
-<style>
-.dialog-form {
-  text-align: center;
-}
-.error-message {
-  background-color: #eee;
-  border-radius: 4px;
-  /* margin: 15px 0; */
-  margin-bottom: 15px;
-  color: #ed1c24;
-  text-align: center;
-  padding: 15px;
-}
-</style>

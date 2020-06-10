@@ -1,38 +1,73 @@
+// import TerserPlugin from 'terser-webpack-plugin'
+var webpack = require('webpack')
+var path = require('path')
+require('dotenv').config()
+
 export default {
   env: {
-    apiUrl: process.env.API_URI || 'http://localhost:3030'
+    // apiUrl: process.env.API_URI || 'http://localhost:3030'
+    API_URL: 'https://indexol.ru/',
+    youtube_key: 'AIzaSyAyQ36PQvHfsjTC0-S5M3XI0Y4ICYva3x0',
+    IMAGE_PREFIX: process.env.IMAGE_PREFIX
   },
   server: {
-    port: 3000, // default: 3000
+    port: process.env.PORT
   },
-  modules: [
-    'nuxt-client-init-module'
-  ],
    /*
   ** Headers of the page
   */
   head: {
     title: 'indexol',
+    titleTemplate: '%s - indexol.ru',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: 'Nuxt.js + Vuetify.js project' }
+      { hid: 'description', name: 'description', content: 'Оптовая и розничная продажа автомасел и автохимии' },
+      { name: 'yandex-verification', content: '66b3d90705a4443e' },
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
-      { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons' }
+      // { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons' }
     ]
   },
   plugins: [
-    '~/plugins/vuetify.js',
-    { src: '~plugins/nuxt-quill-plugin.js', ssr: false },
+    { src: '~plugins/feathers-vuex' },
+    { src: '~plugins/feathers' },
+    { src: '~plugins/prototypes.js' },
+    { src: '~plugins/vue-notifications', mode: 'client' },
+    { src: '~plugins/youtube', mode: 'client' },
   ],
-  css: [
-    '~/assets/style/main.styl',
-    'quill/dist/quill.snow.css',
-    'quill/dist/quill.bubble.css',
-    'quill/dist/quill.core.css'
+  middleware: [
+    'middleware/feathers.js'
   ],
+  modules: [
+    'nuxt-client-init-module',
+    ['nuxt-vuex-localstorage', { localStorage: ['cart', 'settings', 'viewed'] }],
+    '@nuxtjs/font-awesome',
+    ['@nuxtjs/svg-sprite', { input: process.env.SVG_PATH }],
+    'nuxt-webfontloader',
+    [
+      '@naumstory/nuxtjs-yandex-metrika',
+      {
+        id: '64477855',
+        webvisor: true,
+        // clickmap:true,
+        // useCDN:false,
+        // trackLinks:true,
+        // accurateTrackBounce:true,
+      }
+    ]
+  ],
+  buildModules: [
+    ['@nuxtjs/google-analytics', {
+      id: 'UA-57404986-5'
+    }],
+  ],
+  webfontloader: {
+    google: {
+      families: ['Roboto:300,400,500,700|Material+Icons']
+    }
+  },
   /*
   ** Customize the progress bar color
   */
@@ -42,15 +77,17 @@ export default {
   */
   // '~plugins/htmlEditor',
   build: {
-    transpile: [/^vuetify/],
+    // analyze: true,
+    plugins: [
+      new webpack.ProvidePlugin({
+        '$': 'jquery',
+        jQuery: 'jquery'
+      })
+    ],
+    transpile: ['nuxt-vuex-localstorage', 'feathers-vuex'],
     babel: {
       plugins: [
-        ['transform-imports', {
-          'vuetify': {
-            'transform': 'vuetify/es5/components/${member}',
-            'preventFullImport': true
-          }
-        }]
+        ['transform-imports']
       ]
     },
     vendor: [
@@ -58,12 +95,23 @@ export default {
       '@feathersjs/socketio-client',
       '@feathersjs/authentication-client',
       'socket.io-client',
-      'axios'
+      'axios',
+      'vue-notifications'
     ],
     extractCSS: true,
     /*
     ** Run ESLint on save
     */
+    // extend (config, {isDev}) {
+    //   if (isDev && process.client) {
+    //     config.module.rules.push({
+    //       enforce: 'pre',
+    //       test: /\.(js|vue)$/,
+    //       loader: 'eslint-loader',
+    //       exclude: /(node_modules)/
+    //     })
+    //   }
+    // },
     extend (config, {isDev}) {
       if (isDev && process.client) {
         config.module.rules.push({
@@ -73,13 +121,20 @@ export default {
           exclude: /(node_modules)/
         })
       }
-      if (process.server) {
-        config.externals = [
-          nodeExternals({
-            whitelist: [/^vuetify/]
-          })
-        ]
+    },
+    postcss: {
+      plugins: {
+        'autoprefixer': {},
       }
-    }
+    },
+    // optimization: {
+    //   minimize: true,
+    //   minimizer: [
+    //     new TerserPlugin({
+    //       cache: true,
+    //       parallel: false
+    //     })
+    //   ]
+    // }
   }
 }

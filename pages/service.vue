@@ -178,7 +178,7 @@ export default {
   },
   created() {
     this.fill_daytimes()
-    this.$store.dispatch('get_vendors', this.sharedState.category_list[0])
+    // this.$store.dispatch('get_vendors', this.sharedState.category_list[0])
   },
   methods: {
     async fill_daytimes() {

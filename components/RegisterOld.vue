@@ -138,15 +138,15 @@ export default {
       // return true
     },
     onSubmit() {
-      this.$store.dispatch('tempusers/create', this.user)
-        .then(res => {
-          console.log('tempusers/create', res)
-          this.inverse('showRegister')
-        })
-        .catch(error => {
-          console.log('error', error)
-          this.error = error
-        })
+      // this.$store.dispatch('tempusers/create', this.user)
+      //   .then(res => {
+      //     console.log('tempusers/create', res)
+      //     this.inverse('showRegister')
+      //   })
+      //   .catch(error => {
+      //     console.log('error', error)
+      //     this.error = error
+      //   })
     },
     ...mapActions(['inverse'])
   }

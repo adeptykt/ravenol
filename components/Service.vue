@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialog" max-width="540px">
+  <Dialog v-model="dialog" max-width="540px">
     <div class="service">
       <div class="dialog-action">
         <v-btn icon @click="dialog=false">
@@ -92,14 +92,16 @@
         </v-stepper>
       </div>
     </div>
-  </v-dialog>
+  </Dialog>
 </template>
 
 <script>
+import Dialog from '~/components/Dialog.vue'
 import Checkbox from '~/components/Checkbox.vue'
 
 export default {
   components: {
+    Dialog,
     Checkbox
   },
   props: {
@@ -161,7 +163,7 @@ export default {
     }
   },
   created() {
-    this.$store.dispatch('get_vendors', this.sharedState.category_list[0])
+    // this.$store.dispatch('get_vendors', this.sharedState.category_list[0])
     this.mindate = this.picker_date(new Date)
     this.fillTimes()
   },
