@@ -5,7 +5,7 @@
         <div class="search__box">
           <div class="b-search b-search_sm b-search_popup">
             <div class="b-search__base">
-              <input type="text" placeholder="Быстрый поиск" class="b-search__input" v-model="sharedState.global_search">
+              <input type="text" placeholder="Быстрый поиск" class="b-search__input" v-model="global_search">
             </div>
           </div>
         </div>
@@ -211,7 +211,6 @@
     <footer class="footer" v-if="!no_footer" ref="footer">
       <Service v-model="showService" />
       <Profile v-model="sharedState.showProfile" />
-      <Authorization v-model="sharedState.showAuthorization" />
       <AuthReset v-model="sharedState.showReset" />
       <div class="box">
         <div class="footer__bottom">
@@ -232,7 +231,6 @@
 import { mapActions, mapMutations } from 'vuex'
 import Service from '~/components/Service.vue'
 import Profile from '~/components/Profile.vue'
-import Authorization from '~/components/Authorization.vue'
 import AuthReset from '~/components/AuthReset.vue'
 import ClientOnly from 'vue-client-only'
 
@@ -241,7 +239,6 @@ export default {
   components: {
     Service,
     Profile,
-    Authorization,
     ClientOnly,
     AuthReset
   },
@@ -298,8 +295,9 @@ export default {
       if (this.$store.state.cart.status) return this.$store.state.cart.list.reduce((s, i) => { return s + i.count }, 0)
       return 0
     },
-    search() {
-      return this.sharedState.global_search
+    global_search: {
+      get: function () { return this.$store.state.global_search },
+      set: function (val) { this.set_search(val) }
     },
     container_main() {
       return (this.$route.path === "/" || this.$route.path === "")
@@ -312,7 +310,7 @@ export default {
     }
   },
   watch: {
-    search(val) {
+    global_search(val) {
       if (val) {
         this.search_opened = true
         val !== this.select && val.length > 2 && this.querySelections(val)
