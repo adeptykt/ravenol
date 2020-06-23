@@ -138,7 +138,7 @@ import Order from '~/components/Order.vue'
 export default {
   head () {
     return {
-      title: 'Оформление заказа - Indexol',
+      title: 'Оформление заказа',
     }
   },
   components: { Order },
@@ -206,8 +206,7 @@ export default {
         this.form__error = true
         return false
       }
-      this.$store.state.order.payment_type = this.payment_type
-      this.$store.state.order.comment = this.comment
+      this.$store.commit('set_order', { payment_type: this.payment_type, comment: this.comment })
       this.$store.dispatch('order_save').then(res => {
         this.$router.push({ path: '/cart/success' })
       })

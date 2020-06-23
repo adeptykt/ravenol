@@ -56,7 +56,6 @@
           <div class="form__row" v-bind:class="{ form__error: error_phone }">
             <label class="form__label">Телефон</label>
             <div class="form__control">
-              <!-- placeholder="+7 (__) ___-__-__" -->
               <masked-input
                 type="tel"
                 class="form__input"
