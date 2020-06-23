@@ -5,13 +5,13 @@
         <span class="history__arrow icon icon_dropdown">
           <svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#dropdown"></use></svg>
         </span>
-        <div class="history__number">№ {{order && order._id}}</div>
-        <time datetime="2019-04-19 04:31:26" class="history__date">{{order.date.toLocalLong()}}</time>
+        <div class="history__number">№ {{order && order.number}}</div>
+        <time class="history__date">{{order.date.toLocalLong()}}</time>
       </div>
       <div class="history__cell history__cell_summ">
         <div class="history__price">
           {{items_count}} {{declOfNum(items_count, ["товар", "товара", "товаров"])}}
-          <br> на сумму {{order.total}} р.
+          <br> на сумму {{order.total.rub()}} р.
         </div>
       </div>
       <div class="history__cell history__cell_state">
@@ -42,8 +42,8 @@
             </div>
           </div>
           <div class="board__buttons">
-            <div class="board__btn"><a href="#" class="btn btn_type_flat btn_size_min">Повторить заказ</a></div>
-            <div class="board__btn"><a href="https://drops.by/api/user/orders/308/pdf?api_token=W6AHljVloQW7mMEmvY5iZsmrGj4f1Mjy" class="btn btn_type_grey btn_size_min">Скачать счет</a></div>
+            <!-- <div class="board__btn"><a href="#" class="btn btn_type_flat btn_size_min">Повторить заказ</a></div> -->
+            <!-- <div class="board__btn"><a href="https://drops.by/api/user/orders/308/pdf?api_token=W6AHljVloQW7mMEmvY5iZsmrGj4f1Mjy" class="btn btn_type_grey btn_size_min">Скачать счет</a></div> -->
           </div>
         </div>
       </div>
@@ -65,7 +65,7 @@
           </div>
           <div class="r-items__row" v-for="(row, i) in order.items">
             <nuxt-link :to="'/products/' + row._id" class="r-items__product">
-              <div class="r-items__pic"><img :src="image_prefix + row.image" class="r-items__img"></div>
+              <div class="r-items__pic"><img :src="image(row)" class="r-items__img"></div>
               <div class="r-items__base">
                 <div class="r-items__title">
                   {{row.item.name}}
@@ -127,6 +127,10 @@ export default {
     console.log(this.order);
   },
   methods: {
+    image(row) {
+      if (row.item && row.item.image && row.item.image.length > 0) return process.env.IMAGE_PREFIX + row.item.image
+      return process.env.IMAGE_PREFIX + "noimage.jpg"
+    },
     declOfNum(n, titles) {
       return titles[(n%10===1 && n%100!==11) ? 0 : (n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)]
     },
