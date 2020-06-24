@@ -6,7 +6,7 @@
           <div class="form__grid form__grid_2">
             <div class="form__cell">
               <div class="form__control">
-                <input type="text" placeholder="Номер заказа" class="form__input form__input_search">
+                <input type="number" placeholder="Номер заказа" class="form__input form__input_search" v-model.number="number">
                 <span class="form__submit">
                   <span class="icon icon_search">
                     <svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#search"></use></svg>
@@ -50,19 +50,24 @@ import HistoryItem from '~/components/HistoryItem.vue'
 export default {
   head () {
     return {
-      title: 'История заказов - Indexol',
+      title: 'История заказов',
     }
   },
   components: { Account, HistoryItem },
   data () {
     return {
+      number: 0
     }
   },
   computed: {
     ...mapGetters('orders', { findOrdersInStore: 'find' }),
     orders() {
+      const query = { $limit: 20, $sort: { date: -1 } }
       const user = this.$store.state.auth.user
-      return user ? this.findOrdersInStore({ query: { $limit: 20, userId: user._id } }).data : []
+      if (user) query.userId = user._id
+      if (this.number > 0) query.number = this.number
+      console.log('query', query);
+      return user ? this.findOrdersInStore({ query }).data : []
     },
   },
   created() {

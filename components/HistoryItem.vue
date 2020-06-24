@@ -11,7 +11,7 @@
       <div class="history__cell history__cell_summ">
         <div class="history__price">
           {{items_count}} {{declOfNum(items_count, ["товар", "товара", "товаров"])}}
-          <br> на сумму {{order.total.rub()}} р.
+          <br> на сумму {{order.total.rub()}}
         </div>
       </div>
       <div class="history__cell history__cell_state">
@@ -79,14 +79,14 @@
             <div class="r-items__actions">
               <div class="r-items__cell r-items__cell_price">
                 <div class="r-items__price">
-                  {{row.price}}&nbsp;&#8381;
+                  {{row.price.rub()}}
                 </div>
               </div>
               <div class="r-items__cell r-items__cell_number">
                 <span class="r-items__number">{{row.count}}</span>
               </div>
               <div class="r-items__cell r-items__cell_summ">
-                {{row.price * row.count}}&nbsp;&#8381;
+                {{(row.price * row.count).rub()}}
               </div>
             </div>
           </div>
@@ -124,7 +124,6 @@ export default {
     }
   },
   mounted() {
-    console.log(this.order);
   },
   methods: {
     image(row) {
