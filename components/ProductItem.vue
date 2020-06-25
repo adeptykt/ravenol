@@ -118,6 +118,9 @@ export default {
       this.count = this.cart || 1
     }
   },
+  mounted() {
+    console.log(this.item);
+  },
   methods: {
     getCartItemCount(index) {
       const cart_item = this.$store.state.cart.list.find(e => e.id === this._id)

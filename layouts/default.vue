@@ -97,7 +97,7 @@
                 <div class="hidden-print header__search" v-if="!no_footer">
                   <form action="" class="b-search b-search_header">
                     <div class="b-search__base">
-                      <input type="text" placeholder="Быстрый поиск, например «HG3421», «Очиститель форсунок»" class="b-search__input" v-model="sharedState.global_search">
+                      <input type="text" placeholder="Быстрый поиск, например «ИП 109», «Очиститель тормозов»" class="b-search__input" v-model="sharedState.global_search">
                       <span class="b-search__button">
                         <span class="icon icon_search-light">
                           <svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#search"></use></svg>

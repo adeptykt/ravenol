@@ -40,11 +40,11 @@
         </div>
         <hr class="hr hr_mid">
         <form class="form form_direct_row form_media_order" @submit="onSubmit">
-          <ul class="form__tabs switch" style="justify-content: left">
+          <ul class="form__tabs switch" style="justify-content: left" v-if="!loggedin">
             <li class="switch__item" v-bind:class="{ switch__item_active: (tab == 0) }"><a href="#" class="switch__link link" @click.prevent="tab=0">Покупаю впервые</a></li>
             <li class="switch__item" v-bind:class="{ switch__item_active: (tab == 1) }"><a href="#" class="switch__link link" @click.prevent="tab=1">Я уже покупал</a></li>
           </ul>
-          <div class="form__row">
+          <div class="form__row" v-if="loggedin || tab === 0">
             <!---->
             <label class="form__label">Имя</label>
             <div class="form__control form__control_center">
@@ -56,7 +56,16 @@
               </div>
             </div>
           </div>
-          <div class="form__row" v-bind:class="{ form__error: error_phone }">
+          <div class="form__row" v-bind:class="{ form__error: error_email }">
+            <label class="form__label">Email</label>
+            <div class="form__control">
+              <input type="email" class="form__input" v-model="email">
+              <div>
+                <div class="form__error-message">{{ error_email }}</div>
+              </div>
+            </div>
+          </div>
+          <div class="form__row" v-bind:class="{ form__error: error_phone }" v-if="!loggedin && tab === 0 || loggedin">
             <label class="form__label">Телефон</label>
             <div class="form__control">
               <masked-input
@@ -69,16 +78,25 @@
                 :mask="['+', '7', ' ', '(', /[1-9]/, /\d/, /\d/, ')', ' ', /\d/, /\d/, /\d/, '-', /\d/, /\d/, '-', /\d/, /\d/]">
               </masked-input>
               <div>
-                <div class="form__error-message">Пожалуйста, введите телефон</div>
+                <div class="form__error-message">{{ error_phone }}</div>
               </div>
             </div>
           </div>
-          <div class="form__row" v-bind:class="{ form__error: error_email }">
-            <label class="form__label">Email</label>
+          <div class="form__row" v-bind:class="{ form__error: error_password }" v-if="!loggedin">
+            <label class="form__label">Пароль</label>
             <div class="form__control">
-              <input type="email" class="form__input" v-model="email">
+              <input :type="passwordType" class="form__input" v-model="password"><div></div>
+              <i class="fa show-password" :class="[passwordIcon]" @click="hidePassword = !hidePassword"></i>
               <div>
-                <div class="form__error-message">Пожалуйста, введите email</div>
+                <div class="form__error-message">{{ error_password }}</div>
+              </div>
+            </div>
+          </div>
+          <div class="form__row" v-if="!loggedin && tab === 0">
+            <div class="form__control form__control_checkboxes form__control_wide">
+              <div class="checkbox checkbox_light">
+                <input type="checkbox" id="checkbox-11" class="checkbox__input" v-model="subscribe">
+                <label for="checkbox-11" class="checkbox__label">Хочу узнавать первым о новинках и акциях компании</label>
               </div>
             </div>
           </div>
@@ -113,12 +131,25 @@ export default {
   data () {
     return {
       tab: 0,
+      loggedin: false,
       format_phone: '',
       name: '',
       phone: '',
       email: '',
-      error_phone: false,
-      error_email: false
+      password: '',
+      subscribe: true,
+      error_phone: '',
+      error_email: '',
+      error_password: '',
+      hidePassword: true
+    }
+  },
+  computed: {
+    passwordType() {
+      return this.hidePassword ? 'password' : 'text'
+    },
+    passwordIcon() {
+      return this.hidePassword ? 'fa-eye' : 'fa-eye-slash'
     }
   },
   created() {
@@ -128,6 +159,7 @@ export default {
     fillUser() {
       const user = this.$store.state.auth.user
       if (user) {
+        this.loggedin = true
         this.name = user.firstName
         this.email = user.email
         this.phone = user.phone
@@ -141,18 +173,51 @@ export default {
     },
     onSubmit(e) {
       e.preventDefault();
-      this.error_phone = false
-      this.error_email = false
-      if (!this.phone) {
-        this.error_phone = true
-        return false
+      this.isLoading = true
+      this.error_phone = ''
+      this.error_email = ''
+      this.error_password = ''
+
+      if (this.phone.length < 10 && (!this.loggedin && this.tab === 0 || this.loggedin)) {
+        this.error_phone = 'Поле телефон неверно'
+      }
+      if (!this.phone && (!this.loggedin && this.tab === 0 || this.loggedin)) {
+        this.error_phone = 'Поле телефон обязательно для заполнения.'
+      }
+      if (!this.password && !this.loggedin) {
+        this.error_password = 'Поле пароль обязательно для заполнения.'
       }
       if (!this.email) {
-        this.error_email = true
+        this.error_email = 'Поле email обязательно для заполнения.'
+      }
+      if (this.error_email || this.error_phone || this.error_password) {
+        this.isLoading = false
         return false
       }
-      this.$store.commit('set_order', { name: this.name, phone: this.phone, email: this.email })
-      this.$router.push({ path: '/cart/order/delivery' })
+      if (this.loggedin) {
+        this.$store.commit('set_order', { name: this.name, phone: this.phone, email: this.email })
+        this.$router.push({ path: '/cart/order/delivery' })
+      } else {
+        if (this.tab == 0) {
+          this.$store.dispatch('users/create', { firstName: this.name, phone: this.phone, mail: this.email, password: this.password, subscribe: this.subscribe }).then(res => {
+            this.$store.dispatch('auth/authenticate', { strategy: 'local', email: this.email, password: this.password }).then(res => {
+              this.isLoading = false
+              this.fillUser()
+              this.onSubmit(e)
+            })
+          })
+        } else {
+          this.$store.dispatch('auth/authenticate', { strategy: 'local', email: this.email, password: this.password }).then(res => {
+              this.isLoading = false
+              this.fillUser()
+              this.onSubmit(e)
+            })
+            .catch(error => {
+              this.isLoading = false
+              this.error_password = 'Неправильный пароль'
+            })
+        }
+      }
     }
   }
 }

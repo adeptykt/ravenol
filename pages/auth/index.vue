@@ -186,7 +186,7 @@ export default {
         })
     },
     ...mapActions('auth', ['authenticate']),
-    ...mapActions('registers', { addUser: 'create' }),
+    ...mapActions('users', { addUser: 'create' }),
   }
 }
 </script>
