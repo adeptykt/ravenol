@@ -40,7 +40,10 @@
         </div>
         <hr class="hr hr_mid">
         <form class="form form_direct_row form_media_order" @submit="onSubmit">
-          <!---->
+          <ul class="form__tabs switch" style="justify-content: left">
+            <li class="switch__item" v-bind:class="{ switch__item_active: (tab == 0) }"><a href="#" class="switch__link link" @click.prevent="tab=0">Покупаю впервые</a></li>
+            <li class="switch__item" v-bind:class="{ switch__item_active: (tab == 1) }"><a href="#" class="switch__link link" @click.prevent="tab=1">Я уже покупал</a></li>
+          </ul>
           <div class="form__row">
             <!---->
             <label class="form__label">Имя</label>
@@ -109,6 +112,7 @@ export default {
   components: { Order, MaskedInput },
   data () {
     return {
+      tab: 0,
       format_phone: '',
       name: '',
       phone: '',
@@ -117,15 +121,19 @@ export default {
       error_email: false
     }
   },
-  mounted() {
-    const user = this.$store.state.auth.user
-    if (user) {
-      this.email = user.email
-      this.phone = user.phone
-      this.format_phone = this.phone
-    }
+  created() {
+    this.fillUser()
   },
   methods: {
+    fillUser() {
+      const user = this.$store.state.auth.user
+      if (user) {
+        this.name = user.firstName
+        this.email = user.email
+        this.phone = user.phone
+        this.format_phone = this.phone
+      }
+    },
     onChange(e) {
       const result = /^\+7 \((\d{3})\) (\d{3})-(\d{2})-(\d{2})$/.exec(e)
       if (result) this.phone = result[1] + result[2] + result[3] + result[4]

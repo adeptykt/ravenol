@@ -7,13 +7,13 @@
             <div class="user"><span class="user__icon icon icon_user-ava"><svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#user"></use></svg></span></div>
           </div>
           <div class="empl__base">
-            <input type="text" placeholder="Введите ФИО" class="empl__textarea form__textarea form__textarea_no-border">
+            <input type="text" placeholder="Введите ФИО" class="empl__textarea form__textarea form__textarea_no-border" v-model="user.firstName" @change="onChangeUser">
             <div class="empl__position"></div>
           </div>
         </div>
         <div class="rec">
           <div class="rec__item rec__item_editable">
-            <input type="tel" placeholder="Введите телефон" class="rec__input form__input form__input_no-border">
+            <input type="tel" placeholder="Введите телефон" class="rec__input form__input form__input_no-border" v-model="user.phone" @change="onChangeUser">
           </div>
           <div class="rec__item rec__item_editable">
             <input placeholder="Введите email" class="rec__input form__input form__input_no-border" v-model="user.email">
@@ -71,17 +71,23 @@ export default {
   data () {
     return {
       expand_opened: false,
-      user: {}
+      user: {},
     }
   },
   watch: {
     '$store.state.auth.user'(val) {
-      this.user = val
+      console.log('user', val);
+      Object.assign(this.user, val)
     }
   },
   created() {
     console.log('user', this.$store.state.auth.user);
-    this.user = this.$store.state.auth.user || { email: '' }
+    Object.assign(this.user, { email: '', firstName: '', phone: '' }, this.$store.state.auth.user)
+  },
+  methods: {
+    onChangeUser() {
+      this.$store.dispatch('users/patch', [ this.user._id, this.user ]).then(console.log)
+    }
   }
 }
 </script>
