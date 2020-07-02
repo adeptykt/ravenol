@@ -1464,6 +1464,21 @@ a {
 .auth_opened.auth_logged .auth__dropdown {
   display: block;
 }
+@media (min-width: 1280px) {
+  .auth_opened.auth_logged .auth__dropdown {
+      -webkit-transform: scale(1);
+      transform: scale(1);
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      -webkit-user-select: auto;
+      -moz-user-select: auto;
+      -ms-user-select: auto;
+      user-select: auto;
+      -webkit-transition: opacity .25s ease;
+      transition: opacity .25s ease;
+  }
+}
 @media (min-width: 960px) {
   .auth_opened.auth_logged .auth__dropdown {
     transform: scale(1);

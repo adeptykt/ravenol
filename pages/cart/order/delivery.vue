@@ -46,14 +46,14 @@
           </ul>
           <div v-if="tab===0">
             <div class="form__note">
-              Мы доставим товар с 15:00 до 20:00
+              Мы доставим товар с 19:00 до 22:00. Доставка осуществляется в пределах городских границ Якутска в день заказа.
             </div>
             <div class="form__row">
               <label class="form__label">Адрес</label>
               <div class="form__control form__control_wide">
                 <div class="person">
                   <div class="person__base">
-                    <input type="text" class="form__input" v-model="address">
+                    <input type="text" class="form__input" placeholder="Введите улицу, дом и подъезд" v-model="address">
                   </div>
                 </div>
               </div>
