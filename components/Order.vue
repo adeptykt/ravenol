@@ -93,14 +93,17 @@ export default {
     let query = { $skip: 0, $limit: null, _id: { $in: id_list } }
     const items = await this.$store.dispatch('items/find', { query }).then(res => res.data )
     this.rows = this.$store.state.cart.list.reduce((rows, cart_item) => {
-      const item = items.find(item => item._id === cart_item.id)
-      const row = { _id: cart_item.id, title: '<Товар не найден>', count: cart_item.count, price: 0 }
-      if (item) {
-        Object.assign(row, { title: item.name, price: item.price, article: item.article, image: item.image })
-        order.items.push({ _id: item._id, sku: row.sku, count: row.count, price: row.price })
-        order.total += row.price * row.count
+      try {
+        const item = items.find(item => item._id === cart_item.id)
+        const row = { _id: cart_item.id, title: '<Товар не найден>', count: cart_item.count, price: 0 }
+        if (item) {
+          Object.assign(row, { title: item.name, price: item.price, article: item.article, image: item.image })
+          order.items.push({ _id: item._id, sku: row.sku, count: row.count, price: row.price })
+          order.total += row.price * row.count
+        }
+        rows.push({ ...row, total: row.price * row.count })
+      } catch {
       }
-      rows.push({ ...row, total: row.price * row.count })
       return rows
     }, [])
   },

@@ -8,7 +8,10 @@ export default {
     // apiUrl: process.env.API_URI || 'http://localhost:3030'
     API_URL: 'https://indexol.ru/',
     youtube_key: 'AIzaSyAyQ36PQvHfsjTC0-S5M3XI0Y4ICYva3x0',
-    IMAGE_PREFIX: process.env.IMAGE_PREFIX
+    IMAGE_PREFIX: process.env.IMAGE_PREFIX,
+    RK_ID: process.env.RK_ID,
+    RK_PASSWORD: process.env.RK_TESTPASSWORD,
+    IS_TEST: true
   },
   server: {
     port: process.env.PORT
