@@ -134,6 +134,7 @@
 
 <script>
 import Order from '~/components/Order.vue'
+import crypto from 'crypto'
 
 export default {
   head () {
@@ -199,6 +200,7 @@ export default {
     },
     onSubmit(e) {
       e.preventDefault();
+
       this.error_message = ""
       this.form__error = false
       if (!this.payment_type) {
@@ -206,9 +208,23 @@ export default {
         this.form__error = true
         return false
       }
+
+      const password = process.env.rk_password
+      const rk_id = process.env.rk_id
+      const isTest = true
+      let url = `https://auth.robokassa.ru/Merchant/Index.aspx?MerchantLogin=${rk_id}&Culture=ru&Encoding=utf-8` + (isTest ? '&IsTest=1' : '')
+      this.order.isTest = isTest
+
       this.$store.commit('set_order', { payment_type: this.payment_type, comment: this.comment })
       this.$store.dispatch('order_save').then(res => {
-        this.$router.push({ path: '/cart/success' })
+        this.$store.commit('cart/clear')
+        if (this.order.payment_type === 'bank_card') {
+          const crc = crypto.createHash('md5').update(`${rk_id}:${order.total}:${order.number}:${password}`).digest("hex");
+          url += `&InvId=${order.number}&OutSum=${order.total}&SignatureValue=${crc}`
+          if (process.client) window.location.href = url
+        } else {
+          this.$router.push({ path: '/cart/success' })
+        }
       })
     }
   }
