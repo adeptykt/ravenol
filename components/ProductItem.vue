@@ -119,7 +119,6 @@ export default {
     }
   },
   mounted() {
-    console.log(this.item);
   },
   methods: {
     getCartItemCount(index) {

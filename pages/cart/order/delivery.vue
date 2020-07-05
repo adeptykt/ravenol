@@ -209,18 +209,18 @@ export default {
         return false
       }
 
-      const password = process.env.rk_password
-      const rk_id = process.env.rk_id
+      const password = process.env.RK_PASSWORD
+      const rk_id = process.env.RK_ID
       const isTest = true
-      let url = `https://auth.robokassa.ru/Merchant/Index.aspx?MerchantLogin=${rk_id}&Culture=ru&Encoding=utf-8` + (isTest ? '&IsTest=1' : '')
-      this.order.isTest = isTest
+      const test = (isTest ? '&IsTest=1' : '')
 
-      this.$store.commit('set_order', { payment_type: this.payment_type, comment: this.comment })
-      this.$store.dispatch('order_save').then(res => {
+      this.$store.commit('set_order', { payment_type: this.payment_type, comment: this.comment, isTest })
+      this.$store.dispatch('order_save').then(order => {
+        console.log(`${rk_id}:${order.total}:${order.number}:${password}`);
         this.$store.commit('cart/clear')
-        if (this.order.payment_type === 'bank_card') {
+        if (this.payment_type === 'bank_card') {
           const crc = crypto.createHash('md5').update(`${rk_id}:${order.total}:${order.number}:${password}`).digest("hex");
-          url += `&InvId=${order.number}&OutSum=${order.total}&SignatureValue=${crc}`
+          const url = `https://auth.robokassa.ru/Merchant/Index.aspx?MerchantLogin=${rk_id}&Culture=ru&Encoding=utf-8&InvId=${order.number}&OutSum=${order.total}&SignatureValue=${crc}${test}`
           if (process.client) window.location.href = url
         } else {
           this.$router.push({ path: '/cart/success' })
