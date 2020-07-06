@@ -41,10 +41,10 @@
                   <div class="goods__counter">
                     <div class="counter counter_big">
                       <div class="counter__btn counter__btn_minus" @click="decrease">-</div>
-                      <input type="tel" class="counter__number" v-model="count">
+                      <input type="tel" class="counter__number" v-model="quantity">
                       <div class="counter__btn counter__btn_plus" @click="increase">+</div>
                     </div>
-                  </div><a href="#" class="btn goods__btn btn_size_big btn_type_flat" v-bind:class="{ btn_type_grey: (count === cart) }" @click.prevent="addcart">{{getname()}}</a></div>
+                  </div><a href="#" class="btn goods__btn btn_size_big btn_type_flat" v-bind:class="{ btn_type_grey: (quantity === cart) }" @click.prevent="addcart">{{getname()}}</a></div>
               </div>
               <div class="goods__message">
                 <div class="goods__icon">%</div>
@@ -92,10 +92,10 @@
                 <div class="fix-goods__counter">
                   <div class="counter">
                     <div class="counter__btn counter__btn_minus" @click="decrease">-</div>
-                    <input type="tel" class="counter__number" v-model="count">
+                    <input type="tel" class="counter__number" v-model="quantity">
                     <div class="counter__btn counter__btn_plus" @click="increase">+</div>
                   </div>
-                </div><a href="#" class="btn fix-goods__btn btn_size_min btn_type_flat" v-bind:class="{ btn_type_grey: (count === cart) }" @click.prevent="addcart">{{getname()}}</a></div>
+                </div><a href="#" class="btn fix-goods__btn btn_size_min btn_type_flat" v-bind:class="{ btn_type_grey: (quantity === cart) }" @click.prevent="addcart">{{getname()}}</a></div>
             </div>
           </div>
         </div>
@@ -195,7 +195,7 @@ export default {
       product: {},
       text: '',
       tab: 0,
-      count: 1,
+      quantity: 1,
       fix_goods_show: false,
       show_image: false
     }
@@ -211,7 +211,7 @@ export default {
         this.$store.commit('viewed/add', res._id)
         this.title = res.name
         this.product = res
-        this.count = this.getCartItemCount(0)
+        this.quantity = this.getCartItemCount(0)
         console.log('product', res);
       })
       .catch(error => {
@@ -223,7 +223,7 @@ export default {
   },
   watch: {
     index(val) {
-      this.count = this.cart || 1
+      this.quantity = this.cart || 1
     }
   },
   computed: {
@@ -250,7 +250,7 @@ export default {
     },
     getCartItemCount(index) {
       const cart_item = this.$store.state.cart.list.find(e => e.id === this.id)
-      return cart_item ? cart_item.count : 0
+      return cart_item ? cart_item.quantity : 0
     },
     skuPrev() {
       // if (this.skus.length > 0 && this.index > 0) this.index --
@@ -259,17 +259,17 @@ export default {
       // if (this.skus.length > 0 && this.skus.length > this.index + 1) this.index ++
     },
     increase() {
-      this.count++
+      this.quantity++
     },
     decrease() {
-      if (this.count > 1) this.count--
+      if (this.quantity > 1) this.quantity--
     },
     addcart() {
-      this.$store.commit('cart/add', { _id: this.product._id, count: this.count })
+      this.$store.commit('cart/add', { _id: this.product._id, quantity: this.quantity })
       this.showCartMessage()
     },
     getname() {
-      return this.cart ? (this.cart === this.count ? "В корзине" : "Изменить") : "В корзину"
+      return this.cart ? (this.cart === this.quantity ? "В корзине" : "Изменить") : "В корзину"
     },
     handleScroll(event) {
       this.fix_goods_show = (window.pageYOffset >= this.$refs.goods__border.offsetTop + this.$refs.goods__border.clientHeight)

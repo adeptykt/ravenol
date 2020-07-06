@@ -64,7 +64,7 @@
             <div class="items__cell items__cell_number">
               <div class="items__counter counter">
                 <div class="counter__btn counter__btn_minus hidden-print" @click="decrease(row)">-</div>
-                <input type="tel" v-model="row.count" class="counter__number" :ref="'cartinput'+row._id" @input="oninput(row)">
+                <input type="tel" v-model="row.quantity" class="counter__number" :ref="'cartinput'+row._id" @input="oninput(row)">
                 <div class="counter__btn counter__btn_plus hidden-print" @click="increase(row)">+</div>
               </div>
             </div>
@@ -127,18 +127,18 @@ export default {
     const items = await this.$store.dispatch('items/find', { query }, { paginate: false }).then(res => res.data )
     this.rows = this.$store.state.cart.list.reduce((rows, cart_item) => {
       const item = items.find(item => item._id === cart_item.id)
-      const row = { _id: cart_item.id, title: '<Товар не найден>', count: cart_item.count, price: 0 }
+      const row = { _id: cart_item.id, title: '<Товар не найден>', quantity: cart_item.quantity, price: 0 }
       if (item) {
         Object.assign(row, { title: item.name, price: item.price, article: item.article, image: item.image })
       }
-      rows.push({ ...row, total: row.price * row.count })
+      rows.push({ ...row, total: row.price * row.quantity })
       return rows
     }, [])
   },
   methods: {
     updateitem(item) {
-      item.total = item.count * item.price
-      this.$refs['cartinput' + item._id][0].value = item.count
+      item.total = item.quantity * item.price
+      this.$refs['cartinput' + item._id][0].value = item.quantity
       this.$store.commit('cart/add', item)
       this.rows.splice(this.rows.indexOf(item), 1, item)
     },
@@ -147,16 +147,16 @@ export default {
       this.rows.splice(this.rows.indexOf(item), 1)
     },
     oninput(item) {
-      item.count = parseInt(item.count)
+      item.quantity = parseInt(item.quantity)
       this.updateitem(item)
     },
     increase(item, a) {
-      item.count++
+      item.quantity++
       this.updateitem(item)
     },
     decrease(item) {
-      if (item.count > 1) {
-        item.count--
+      if (item.quantity > 1) {
+        item.quantity--
         this.updateitem(item)
       }
     },

@@ -43,7 +43,7 @@
               </div>
             </div>
             <div class="r-items__cell r-items__cell_number">
-              <span class="r-items__number">{{row.count}}</span>
+              <span class="r-items__number">{{row.quantity}}</span>
             </div>
             <div class="r-items__cell r-items__cell_summ">
               {{row.total.rub()}}
@@ -95,13 +95,13 @@ export default {
     this.rows = this.$store.state.cart.list.reduce((rows, cart_item) => {
       try {
         const item = items.find(item => item._id === cart_item.id)
-        const row = { _id: cart_item.id, title: '<Товар не найден>', count: cart_item.count, price: 0 }
+        const row = { _id: cart_item.id, title: '<Товар не найден>', quantity: cart_item.quantity, price: 0 }
         if (item) {
           Object.assign(row, { title: item.name, price: item.price, article: item.article, image: item.image })
-          order.items.push({ _id: item._id, sku: row.sku, count: row.count, price: row.price })
-          order.total += row.price * row.count
+          order.items.push({ _id: item._id, sku: row.sku, quantity: row.quantity, price: row.price })
+          order.total += row.price * row.quantity
         }
-        rows.push({ ...row, total: row.price * row.count })
+        rows.push({ ...row, total: row.price * row.quantity })
       } catch {
       }
       return rows

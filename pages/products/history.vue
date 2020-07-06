@@ -13,7 +13,7 @@
     <div class="mb mb_big"><a href="#" class="btn btn_type_grey btn_size_mid" @click.prevent="viewedClear">Очистить историю</a></div>
     <div class="catalog catalog_view_table catalog_size_5">
       <div v-for="(item, i) in items" :key="item.id" class="catalog__cell">
-        <ProductItem v-model="item.count" :name="item.name" :_id="item._id" :skus="item.skus" />
+        <ProductItem v-model="item.quantity" :name="item.name" :_id="item._id" :skus="item.skus" />
       </div>
     </div>
     <div class="pag-wrap">

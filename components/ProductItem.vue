@@ -42,12 +42,12 @@
           <div class="product__counter">
             <div class="counter">
               <div class="counter__btn counter__btn_minus" @click="decrease()">-</div>
-              <input type="tel" class="counter__number" v-model="count" :ref="'input'+_id">
+              <input type="tel" class="counter__number" v-model="quantity" :ref="'input'+_id">
               <div class="counter__btn counter__btn_plus" @click="increase()">+</div>
             </div>
           </div>
           <div class="product__btn">
-            <a class="btn product__btn-item btn_wide btn_type_flat" v-bind:class="{ btn_type_grey: (cart === count) }" @click="addcart()"><!---->
+            <a class="btn product__btn-item btn_wide btn_type_flat" v-bind:class="{ btn_type_grey: (cart === quantity) }" @click="addcart()"><!---->
               <span class="product__btn-text">{{cartname}}</span>
               <span class="product__btn-icon icon icon_plus_small"><svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#plus_small"></use></svg></span>
             </a>
@@ -103,19 +103,19 @@ export default {
       return this.getCartItemCount(this.index)
     },
     cartname() {
-      return this.cart ? (this.cart === this.count ? "В корзине" : "Изменить") : "В корзину"
+      return this.cart ? (this.cart === this.quantity ? "В корзине" : "Изменить") : "В корзину"
     }
   },
   data () {
-    const count = this.getCartItemCount(0) || 1
+    const quantity = this.getCartItemCount(0) || 1
     return {
       index: 0,
-      count
+      quantity
     }
   },
   watch: {
     index(val) {
-      this.count = this.cart || 1
+      this.quantity = this.cart || 1
     }
   },
   mounted() {
@@ -123,7 +123,7 @@ export default {
   methods: {
     getCartItemCount(index) {
       const cart_item = this.$store.state.cart.list.find(e => e.id === this._id)
-      return cart_item ? cart_item.count : 0
+      return cart_item ? cart_item.quantity : 0
     },
     skuPrev() {
       // if (this.skus.length > 0) {
@@ -136,13 +136,13 @@ export default {
       // }
     },
     increase() {
-      this.count++
+      this.quantity++
     },
     decrease() {
-      if (this.count > 1) this.count--
+      if (this.quantity > 1) this.quantity--
     },
     addcart() {
-      this.$store.commit('cart/add', { _id: this._id, count: this.count, sku: this.sku })
+      this.$store.commit('cart/add', { _id: this._id, quantity: this.quantity })
       this.showCartMessage()
     },
   },

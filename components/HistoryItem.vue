@@ -83,10 +83,10 @@
                 </div>
               </div>
               <div class="r-items__cell r-items__cell_number">
-                <span class="r-items__number">{{row.count}}</span>
+                <span class="r-items__number">{{row.quantity}}</span>
               </div>
               <div class="r-items__cell r-items__cell_summ">
-                {{(row.price * row.count).rub()}}
+                {{(row.price * row.quantity).rub()}}
               </div>
             </div>
           </div>
@@ -116,7 +116,7 @@ export default {
       return process.env.IMAGE_PREFIX
     },
     items_count() {
-      return this.order.items.reduce((s, i) => { return s + i.count }, 0)
+      return this.order.items.reduce((s, i) => { return s + i.quantity }, 0)
     },
     phone() {
       const phone = this.order.phone

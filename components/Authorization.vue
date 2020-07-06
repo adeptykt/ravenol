@@ -149,10 +149,6 @@ export default {
       }
     }
   },
-  // mounted() {
-  //   // this.set_cart({ id: 3339, count: 1 })
-  //   this.$store.commit('localStorage/set_cart', { id: 3339, count: 1 })
-  // },
   methods: {
     onTabClick(value) {
       this.tab = value

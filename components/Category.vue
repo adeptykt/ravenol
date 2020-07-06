@@ -83,7 +83,7 @@
         </div>
         <div class="catalog catalog_size_4" v-bind:class="{ catalog_view_table: view==0, catalog_view_row: view==1 }">
           <div v-for="(item, i) in items" :key="item.id" class="catalog__cell">
-            <ProductItem v-model="item.count" :name="item.name" :_id="item._id" :skus="item.skus" :item="item" :packages="item.packages" :price="item.price" />
+            <ProductItem v-model="item.quantity" :name="item.name" :_id="item._id" :skus="item.skus" :item="item" :packages="item.packages" :price="item.price" />
           </div>
         </div>
         <div class="pag-wrap">
@@ -285,8 +285,8 @@ export default {
         .then(response => {
           this.items = response.data.reduce((items, item) => {
             const cart_item = cart.find(e => e.id === item._id)
-            const product = Object.assign({ count: 1, cart: 0, volume: '', price: 0, current_package: 0 }, item)
-            if (cart_item !== undefined) Object.assign(product, { count: cart_item.count, cart: cart_item.count })
+            const product = Object.assign({ quantity: 1, cart: 0, volume: '', price: 0, current_package: 0 }, item)
+            if (cart_item !== undefined) Object.assign(product, { quantity: cart_item.quantity, cart: cart_item.quantity })
             items.push(product)
             return items
           }, [])
@@ -306,25 +306,25 @@ export default {
       this.getitems()
     },
     updateitem(item) {
-      this.$refs['input' + item._id][0].value = item.count
+      this.$refs['input' + item._id][0].value = item.quantity
       this.items.splice(this.items.indexOf(item), 1, item)
     },
     increase(item) {
-      item.count++
+      item.quantity++
       this.updateitem(item)
     },
     decrease(item) {
-      if (item.count > 1) item.count--
+      if (item.quantity > 1) item.quantity--
       this.updateitem(item)
     },
     addcart(item) {
       // this.$store.commit('cart/add', item)
-      // item.cart = item.count
+      // item.cart = item.quantity
       // this.items.splice(this.items.indexOf(item), 1, item)
       // this.showCartMessage()
     },
     getname(item) {
-      return item.cart ? (item.cart === item.count ? "В корзине" : "Изменить") : "В корзину"
+      return item.cart ? (item.cart === item.quantity ? "В корзине" : "Изменить") : "В корзину"
     },
     hasIncluded(node) {
       const stack = [node]
