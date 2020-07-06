@@ -109,7 +109,7 @@
           <div class="form__row">
             <label class="form__label">Комментарий</label>
             <div class="form__control form__control_wide">
-              <textarea rows="7" class="form__textarea" v-model="comment"></textarea>
+              <textarea rows="7" class="form__textarea" v-model="note"></textarea>
               <div></div>
             </div>
           </div>
@@ -146,7 +146,7 @@ export default {
   props: {
     phone: String,
     email: String,
-    comment: String
+    note: String
   },
   data () {
     return {
@@ -214,7 +214,7 @@ export default {
       const isTest = true
       const test = (isTest ? '&IsTest=1' : '')
 
-      this.$store.commit('set_order', { payment_type: this.payment_type, comment: this.comment, isTest })
+      this.$store.commit('set_order', { payment_type: this.payment_type, note: this.note, isTest })
       this.$store.dispatch('order_save').then(order => {
         console.log(`${rk_id}:${order.total}:${order.number}:${password}`);
         this.$store.commit('cart/clear')
