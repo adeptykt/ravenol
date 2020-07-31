@@ -142,8 +142,11 @@ export default {
       if (this.quantity > 1) this.quantity--
     },
     addcart() {
-      this.$store.commit('cart/add', { _id: this._id, quantity: this.quantity })
-      this.showCartMessage()
+      if (this.cart === this.quantity)  this.$router.push({ path: '/cart' })
+      else {
+        this.$store.commit('cart/add', { _id: this._id, quantity: this.quantity })
+        this.showCartMessage()
+      }
     },
   },
   notifications: {

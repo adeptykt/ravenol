@@ -101,7 +101,7 @@ export default {
       valid: true,
       type: 0,
       user: {
-        type: '1',
+        type: '0',
         company: '',
         email: '',
         password: '',
@@ -177,7 +177,8 @@ export default {
       this.addUser(this.user)
         .then(res => {
           this.isLoading = false
-          this.emailsent = true
+          // this.emailsent = true
+          this.login()
         })
         .catch(error => {
           this.isLoading = false

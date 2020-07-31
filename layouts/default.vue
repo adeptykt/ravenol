@@ -54,13 +54,15 @@
           </div>
           <div class="header__container">
             <div ref="topbar" class="header__top">
+              <div class="header__background">
+              </div>
               <div class="header__box header__box_top">
                 <div class="header__logo" id="logo">
                   <nuxt-link to="/" class="logo logo_icon content_logo">
-                    <img src="/indexol_logo4.svg" alt="Indexol">
+                    <img src="/header_logo.svg" alt="Indexol">
                   </nuxt-link>
                 </div>
-                <div class="header__phone">
+                <!-- <div class="header__phone">
                   <div class="phones" v-bind:class="{ phones_opened: phones_opened }" @mouseover="phoneOpened(true)" @mouseout="phoneOpened(false)">
                     <a href="#" class="phones__header" @click="phones_opened=!phones_opened">
                       <span class="phones__btn">+7-914-288-09-99</span>
@@ -92,12 +94,12 @@
                       </div>
                     </div>
                   </div>
-                </div>
+                </div> -->
                 <div class="header__wheel hidden-print"></div>
                 <div class="hidden-print header__search" v-if="!no_footer">
                   <form action="" class="b-search b-search_header">
                     <div class="b-search__base">
-                      <input type="text" placeholder="Быстрый поиск, например «ИП 109», «Очиститель тормозов»" class="b-search__input" v-model="sharedState.global_search">
+                      <input type="text" placeholder="Быстрый поиск, например «BG 109», «Очиститель тормозов»" class="b-search__input" v-model="global_search">
                       <span class="b-search__button">
                         <span class="icon icon_search-light">
                           <svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#search"></use></svg>
@@ -292,7 +294,7 @@ export default {
       return this.$store.state.auth.user && (this.$store.state.auth.user.role === 'admin')
     },
     cart_total() {
-      if (this.$store.state.cart.status) return this.$store.state.cart.list.reduce((s, i) => { return s + i.count }, 0)
+      if (this.$store.state.cart.status) return this.$store.state.cart.list.reduce((s, i) => { return s + i.quantity }, 0)
       return 0
     },
     global_search: {
@@ -353,7 +355,7 @@ export default {
       this.animate_logo = false
     },
     onCloseSearch() {
-      this.set_search('')
+      this.global_search = ''
       this.search_opened = false
     },
     phoneOpened(val) {

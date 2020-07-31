@@ -4,6 +4,7 @@ const state = () => ({
 
 const mutations = {
   add(state, item) {
+    if (item.quantity <= 0) return
     const element = state.list.find(x => x.id === item._id)
     if (element == undefined) state.list.push({ id: item._id, quantity: item.quantity })
     else element.quantity = item.quantity

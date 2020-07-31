@@ -191,7 +191,6 @@ export default {
     return {
       title: '',
       id: String,
-      index: 0,
       product: {},
       text: '',
       tab: 0,
@@ -204,15 +203,13 @@ export default {
     this.findViewed({ query: { $limit: 20, _id: { $in: this.viewed_ids } } })
   },
   mounted() {
-    console.log('mounted:', this.viewed_ids);
     window.addEventListener('scroll', this.handleScroll)
     this.id && this.$store.dispatch('items/get', this.id)
       .then(res => {
         this.$store.commit('viewed/add', res._id)
         this.title = res.name
         this.product = res
-        this.quantity = this.getCartItemCount(0)
-        console.log('product', res);
+        this.quantity = this.getCartItemCount(0) || 1
       })
       .catch(error => {
         console.log('error', error);
@@ -220,11 +217,6 @@ export default {
   },
   destroyed() {
     window.removeEventListener('scroll', this.handleScroll)
-  },
-  watch: {
-    index(val) {
-      this.quantity = this.cart || 1
-    }
   },
   computed: {
     cart() {
@@ -265,8 +257,11 @@ export default {
       if (this.quantity > 1) this.quantity--
     },
     addcart() {
-      this.$store.commit('cart/add', { _id: this.product._id, quantity: this.quantity })
-      this.showCartMessage()
+      if (this.cart === this.quantity)  this.$router.push({ path: '/cart' })
+      else {
+        this.$store.commit('cart/add', { _id: this.product._id, quantity: this.quantity })
+        this.showCartMessage()
+      }
     },
     getname() {
       return this.cart ? (this.cart === this.quantity ? "В корзине" : "Изменить") : "В корзину"
