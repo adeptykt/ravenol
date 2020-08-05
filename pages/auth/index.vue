@@ -44,6 +44,12 @@
                 <input type="text" class="form__input" v-model="user.company">
               </div>
             </div>
+            <div class="form__row" v-if="user.type==='1'">
+              <label class="form__label">ИНН компании</label>
+              <div class="form__control">
+                <input type="text" class="form__input" v-model="user.inn">
+              </div>
+            </div>
             <div class="form__row" v-bind:class="{ form__error: email_error }">
               <label class="form__label">Email</label>
               <div class="form__control">
@@ -103,6 +109,7 @@ export default {
       user: {
         type: '0',
         company: '',
+        inn: '',
         email: '',
         password: '',
         subscribe: true
