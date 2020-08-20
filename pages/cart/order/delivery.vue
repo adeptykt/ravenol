@@ -211,12 +211,12 @@ export default {
 
       const password = process.env.RK_PASSWORD
       const rk_id = process.env.RK_ID
-      const isTest = true
+      const isTest = false
       const test = (isTest ? '&IsTest=1' : '')
 
       this.$store.commit('set_order', { payment_type: this.payment_type, note: this.note, isTest })
       this.$store.dispatch('order_save').then(order => {
-        console.log(`${rk_id}:${order.total}:${order.number}:${password}`);
+        // console.log(`${rk_id}:${order.total}:${order.number}:${password}`);
         this.$store.commit('cart/clear')
         if (this.payment_type === 'bank_card') {
           const crc = crypto.createHash('md5').update(`${rk_id}:${order.total}:${order.number}:${password}`).digest("hex");

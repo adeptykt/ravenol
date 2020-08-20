@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="screen__nav">
+    <!-- <div class="screen__nav">
       <div class="swiper swiper_brands">
         <div class="swiper-container swiper-container-horizontal">
           <div class="swiper-wrapper" style="transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;">
@@ -11,16 +11,9 @@
             <nuxt-link to="#" class="swiper-slide" style="width: 108.556px; margin-right: 34px;"><img src="/brand/main/small/amsoil-logo.svg" class="swiper-img"></nuxt-link>
             <nuxt-link to="#" class="swiper-slide" style="width: 108.556px; margin-right: 34px;"><img src="/brand/main/small/jtc2.png" class="swiper-img"></nuxt-link>
           </div>
-          <!-- <span class="swiper-notification" aria-live="assertive" aria-atomic="true"></span> -->
         </div>
-        <!-- <div class="swiper-button-prev swiper-button-disabled" tabindex="0" role="button" aria-label="Previous slide" aria-disabled="true">
-          <span class="icon icon_arrow_left"><svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#arrow_left"></use></svg></span>
-        </div>
-        <div class="swiper-button-next" tabindex="0" role="button" aria-label="Next slide" aria-disabled="false">
-          <span class="icon icon_arrow_right"><svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#arrow_right"></use></svg></span>
-        </div> -->
       </div>
-    </div>
+    </div> -->
     <Category />
     <!-- <div class="box">
       <div class="cover cover_main mb mb_large" ref="youtube">

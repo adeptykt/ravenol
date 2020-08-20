@@ -47,9 +47,12 @@
                   </div><a href="#" class="btn goods__btn btn_size_big btn_type_flat" v-bind:class="{ btn_type_grey: (quantity === cart) }" @click.prevent="addcart">{{getname()}}</a></div>
               </div>
               <div class="goods__message">
-                <div class="goods__icon">%</div>
-                <div class="goods__text">
+                <!-- <div class="goods__icon">%</div> -->
+                <!-- <div class="goods__text">
                   Специальные условия сотрудничества для юридических лиц
+                </div> -->
+                <div class="goods__text">
+                  {{product.article}}
                 </div>
               </div>
             </div>
@@ -117,12 +120,15 @@
           <li class="tabs__item" v-bind:class="{ tabs__item_active: tab === 3 }" v-if="product.specs && product.specs.length">
             <a href="#" class="tabs__link" @click.prevent="tab=3"><span class="tabs__text">Характеристики</span></a>
           </li>
+          <li class="tabs__item" v-bind:class="{ tabs__item_active: tab === 5 }" v-if="product.info && product.info.params">
+            <a href="#" class="tabs__link" @click.prevent="tab=5"><span class="tabs__text">Параметры</span></a>
+          </li>
           <!---->
         </ul>
         <div class="description">
-          <div class="content content_sm" v-if="tab===0" v-html="product.description"></div>
+          <div class="content content_sm content_desc" v-if="tab===0" v-html="product.description"></div>
           <div class="content content_sm" v-if="tab===1" v-html="product.usage"></div>
-          <div class="content content_sm" v-if="tab===4" v-html="product.info"></div>
+          <!-- <div class="content content_sm" v-if="tab===4" v-html="product.info"></div> -->
           <div class="content content_sm" v-if="tab===2">
             <p v-if="product.requests && product.requests.length"><b>Соответствие требованиям:</b> {{product.requests.join(', ')}}</p>
           </div>
@@ -139,6 +145,36 @@
                       </tr>
                     </tbody>
                   </table>
+                </div>
+              </div>
+              <!---->
+            </div>
+          </div>
+          <div class="content content_sm" v-if="tab===5">
+            <div class="desc" v-if="product.info && product.info.params && product.info.params.length">
+              <div class="desc__char">
+                <h2 class="desc__title">Параметры продукта</h2>
+                <div class="content content_sm">
+                  <div class="table-box">
+                    <table>
+                      <thead>
+                        <tr>
+                          <td>Параметр</td>
+                          <td>Ед. изм.</td>
+                          <td>Значение</td>
+                          <td>Тестирование</td>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr v-for="(row, i) in product.info.params" :key="i">
+                          <td>{{row.param}}</td>
+                          <td>{{row.unit}}</td>
+                          <td>{{row.value}}</td>
+                          <td>{{row.test}}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
               <!---->
@@ -210,6 +246,7 @@ export default {
         this.title = res.name
         this.product = res
         this.quantity = this.getCartItemCount(0) || 1
+        console.log('item', res);
       })
       .catch(error => {
         console.log('error', error);
@@ -280,7 +317,7 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
 .editor .fr-wrapper {
   height: 500px;
 }
@@ -767,5 +804,28 @@ export default {
   position: absolute;
   top: 50%;
   margin-top: -12px;
+}
+.table-box {
+  font-size: 14px;
+  // max-width: 1024px;
+  @media (max-width: 640px) {
+    overflow-x: scroll;
+  }
+  table {
+    td {
+      font-size: 14px;
+    }
+    thead {
+      font-weight: bold;
+      background-color: rgb(227, 227, 227);
+    }
+  }
+}
+
+.content_desc {
+  font-size: 14px;
+  h2 {
+    font-size: 18px;
+  }
 }
 </style>

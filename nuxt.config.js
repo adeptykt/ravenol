@@ -10,8 +10,8 @@ export default {
     youtube_key: 'AIzaSyAyQ36PQvHfsjTC0-S5M3XI0Y4ICYva3x0',
     IMAGE_PREFIX: process.env.IMAGE_PREFIX,
     RK_ID: process.env.RK_ID,
-    RK_PASSWORD: process.env.RK_TESTPASSWORD,
-    IS_TEST: true
+    RK_PASSWORD: process.env.RK_PASSWORD,
+    IS_TEST: false
   },
   server: {
     port: process.env.PORT

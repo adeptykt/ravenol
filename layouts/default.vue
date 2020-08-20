@@ -29,11 +29,12 @@
     </div>
     <div class="wrapper__inner">
       <div>
-        <header v-bind:style="{ paddingBottom: paddingHeader }" class="header header_inner" v-bind:class="{ header_opened: menu }">
+        <header v-bind:style="{ paddingBottom: paddingHeader }" class="header" v-bind:class="{ header_opened: menu }">
           <div class="header__mob">
             <div class="header__side">
               <nuxt-link to="/" class="logo logo_mob">
-                <img src="/indexol_logo4.svg" alt="Indexol">
+                <img src="/header_logo_mob.svg" alt="Indexol" v-if="windowWidth<551">
+                <img src="/header_logo.svg" alt="Indexol" v-else>
               </nuxt-link>
             </div>
             <div class="header__base">
@@ -211,27 +212,40 @@
       </div>
     </div>
     <footer class="footer" v-if="!no_footer" ref="footer">
-      <Service v-model="showService" />
-      <Profile v-model="sharedState.showProfile" />
-      <AuthReset v-model="sharedState.showReset" />
       <div class="box">
+        <div class="footer__top">
+          <div class="footer__base">
+            <ul class="f-nav">
+              <li class="f-nav__item"><a href="/" class="f-nav__link nuxt-link-active">Главная</a></li>
+              <li class="f-nav__item"><a href="/about" class="f-nav__link">О компании</a></li>
+              <li class="f-nav__item"><a href="/cooperation" class="f-nav__link">Сотрудничество</a></li>
+              <li class="f-nav__item"><a href="/delivery" class="f-nav__link">Доставка</a></li>
+              <li class="f-nav__item"><a href="/payment" class="f-nav__link">Оплата</a></li>
+              <li class="f-nav__item"><a href="/privacy" class="f-nav__link">Политика конфиденциальности</a></li>
+              <li class="f-nav__item"><a href="/police" class="f-nav__link">Политика по обработке персональных данных</a></li>
+              <li class="f-nav__item"><a href="/oferta" class="f-nav__link">Договор оферты</a></li>
+            </ul>
+          </div>
+        </div>
         <div class="footer__bottom">
           <div class="footer__base footer__base_bottom">
             <div class="footer__copyright">&copy; {{ new Date().getFullYear() }} indexol.ru<br> Все права защищены.</div>
             <div class="footer__info">
     					ООО «Равенол Якутия» ИНН 1435334875,<br>
-              г. Якутск, Дежнева, 78
+              г. Якутск, Дежнева, 78, +7-914-288-09-99<br>
+              ravenol.yakutia@gmail.com
 				    </div>
           </div>
         </div>
       </div>
     </footer>
+    <Profile v-model="sharedState.showProfile" />
+    <AuthReset v-model="sharedState.showReset" />
   </div>
 </template>
 
 <script>
 import { mapActions, mapMutations } from 'vuex'
-import Service from '~/components/Service.vue'
 import Profile from '~/components/Profile.vue'
 import AuthReset from '~/components/AuthReset.vue'
 import ClientOnly from 'vue-client-only'
@@ -239,7 +253,6 @@ import ClientOnly from 'vue-client-only'
 export default {
   middleware: 'auth',
   components: {
-    Service,
     Profile,
     ClientOnly,
     AuthReset
@@ -270,6 +283,8 @@ export default {
         // { title: 'Бренды', to: '/brands' },
         // { title: 'Блог', to: '/blog' },
         // { title: 'Вопросы', to: '/questions' },
+        { title: 'Доставка', to: '/delivery' },
+        { title: 'Оплата', to: '/payment' },
         { title: 'Сотрудничество', to: '/cooperation' },
         {
           title: 'О нас',

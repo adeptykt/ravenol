@@ -16,6 +16,7 @@ const auth = makeAuthPlugin({
       'categories-id',
       'contacts',
       'delivery',
+      'oferta',
       'privacy',
       'police',
       'products-id',

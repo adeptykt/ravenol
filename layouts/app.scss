@@ -356,7 +356,7 @@ a {
   padding: 0 30px;
 }
 .header {
-  background-color: #242417;
+  background-color: #003263;
 }
 .header__actions, .header__box_top {
   display: flex;
@@ -398,11 +398,11 @@ a {
 .logo_mob {
   display: flex;
   align-items: center;
-  padding-left: 19px;
+  // padding-left: 19px;
   padding-right: 19px;
 }
 .logo_mob img {
-  width: 140px;
+  // width: 140px;
   height: auto;
 }
 .phones {
@@ -556,6 +556,7 @@ a {
 }
 .header__button {
   margin-right: 21px;
+  color: black;
 }
 .header__button:last-child {
   margin-right: 0;
@@ -618,7 +619,10 @@ a {
   fill: #858580;
 }
 .icon_cart .icon__item {
-  fill: #fff;
+  // fill: #fff;
+}
+.header__bottom {
+  background-color: white;
 }
 .header__bottom__fixed {
   top: 0;
@@ -654,6 +658,7 @@ a {
   align-items: center;
   padding-top: 39px;
   padding-bottom: 43px;
+  border-top: 1px solid #c4c4c8;
 }
 .footer__bottom, .footer__top {
   display: flex;
@@ -673,8 +678,8 @@ a {
 }
 .f-nav__link {
   text-decoration: none;
-  color: #000;
-  font-size: 16px;
+  color: #333;
+  font-size: 14px;
   line-height: 20px;
   border-bottom: 1px solid transparent;
   transition: color .25s ease,border-color .25s ease;
@@ -1098,8 +1103,8 @@ a {
     top: 50px;
     left: 0;
     right: 0;
-    padding-bottom: 23px;
-    background-color: #242417;
+    // padding-bottom: 23px;
+    background-color: #003263;
   }
   .header__base, .header__mob, .header__side {
     display: flex;
@@ -1114,7 +1119,13 @@ a {
     flex-direction: column-reverse;
   }
   .header__wheel {
-    display: block;
+    // display: block;
+  }
+  .header__bottom {
+    background-color: inherit;
+  }
+  .icon_cart .icon__item {
+    fill: #fff;
   }
   .phones__btn {
     display: inline-block;
@@ -1314,7 +1325,7 @@ a {
     position: absolute;
     top: 100%;
     right: 0;
-    z-index: 10;
+    z-index: 50;
     padding-top: 7px;
   }
   .header_inner {
@@ -1411,7 +1422,8 @@ a {
     line-height: 17px;
     padding-left: 15px;
     padding-right: 15px;
-    color: #aaaaa7;
+    // color: #aaaaa7;
+    color: black;
   }
   .nav__link {
     display: inline-block;
@@ -1419,7 +1431,8 @@ a {
     padding-top: 15px;
   }
   .nav_inner .nav__link:hover {
-    color: #fff;
+    // color: #fff;
+    color: #b2b2b2;
   }
   .nav_inner {
     margin-left: -15px;
@@ -2341,7 +2354,7 @@ a {
     padding-top: 56px;
   }
   .filter {
-    z-index: 40;
+    z-index: 11;
   }
   .filter__box {
     display: flex;

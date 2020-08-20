@@ -87,7 +87,8 @@
           </div>
         </div>
         <div class="pag-wrap">
-          <Paginator :page.sync="page_" :limit.sync="limit" :total="total" />
+          <!-- <Paginator :page.sync="page_" :limit.sync="limit" :total="total" pages=:/> -->
+          <Paginator v-model="page_" :pages="pages" :max="6" />
         </div>
       </div>
     </div>
@@ -132,6 +133,7 @@ export default {
       categories: [],
       items: [],
       limit: 24,
+      pages: 1,
       total: 0,
       types: [],
       typeOfProduct: [],
@@ -269,7 +271,7 @@ export default {
     getitems() {
       const $skip = (this.page_ - 1) * this.limit
       const cart = this.$store.state.cart.list
-      let query = { $skip, $limit: this.limit }
+      let query = { $skip, $limit: this.limit, price: { $gt: 0 } }
       if (this.brand.length) Object.assign(query, { brand: { $in: this.brand } })
       if (this.vehicle.length) Object.assign(query, { vehicle: { $in: this.vehicle } })
       if (this.composition.length) Object.assign(query, { compositions: { $in: this.composition } })
@@ -291,6 +293,7 @@ export default {
             return items
           }, [])
           this.total = response.total
+          this.pages = Math.ceil(this.total / this.limit)
         })
     },
     typeOfProductSelect(value) {
