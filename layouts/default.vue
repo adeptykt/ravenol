@@ -1,32 +1,6 @@
 <template>
   <div class="wrapper" v-bind:class="{ wrapper_order, 'wrapper_no-footer': no_footer }">
-    <div class="search" v-bind:class="{ search_opened: search_opened }">
-      <div class="search__top">
-        <div class="search__box">
-          <div class="b-search b-search_sm b-search_popup">
-            <div class="b-search__base">
-              <input type="text" placeholder="Быстрый поиск" class="b-search__input" v-model="global_search">
-            </div>
-          </div>
-        </div>
-        <a href="#" class="search__close" @click="onCloseSearch">
-          <span class="icon icon_close_big">
-            <svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#close_big"></use></svg>
-          </span>
-        </a>
-      </div>
-      <div class="search__container">
-        <div class="box">
-          <div class="search__items items items_search">
-            <template v-for="(item, i) in results">
-              <div class="items__row">
-                <div class="items__title">{{item.name}}</div>
-              </div>
-            </template>
-          </div>
-        </div>
-      </div>
-    </div>
+    <Search :search_opened="search_opened"></Search>
     <div class="wrapper__inner">
       <div>
         <header v-bind:style="{ paddingBottom: paddingHeader }" class="header" v-bind:class="{ header_opened: menu }">
@@ -98,7 +72,7 @@
                 </div> -->
                 <div class="header__wheel hidden-print"></div>
                 <div class="hidden-print header__search" v-if="!no_footer">
-                  <form action="" class="b-search b-search_header">
+                  <form class="b-search b-search_header">
                     <div class="b-search__base">
                       <input type="text" placeholder="Быстрый поиск, например «BG 109», «Очиститель тормозов»" class="b-search__input" v-model="global_search">
                       <span class="b-search__button">
@@ -248,6 +222,7 @@
 import { mapActions, mapMutations } from 'vuex'
 import Profile from '~/components/Profile.vue'
 import AuthReset from '~/components/AuthReset.vue'
+import Search from '~/components/Search.vue'
 import ClientOnly from 'vue-client-only'
 
 export default {
@@ -255,7 +230,8 @@ export default {
   components: {
     Profile,
     ClientOnly,
-    AuthReset
+    AuthReset,
+    Search
   },
   head () {
     return {
@@ -327,12 +303,13 @@ export default {
     }
   },
   watch: {
-    global_search(val) {
-      if (val) {
-        this.search_opened = true
-        val !== this.select && val.length > 2 && this.querySelections(val)
-      }
-    },
+    // global_search(val) {
+    //   if (val) {
+    //     this.search_opened = true
+    //     this.$refs.top_search_input.focus()
+    //     val !== this.select && val.length > 2 && this.querySelections(val)
+    //   }
+    // },
     select(val) {
       if (val) {
         if (val.vendor) {
@@ -366,13 +343,17 @@ export default {
     window.removeEventListener('resize', this.handleResize)
   },
   methods: {
+    // image(item) {
+    //   if (item.image && item.image.length > 0) return process.env.IMAGE_PREFIX + item.image
+    //   return process.env.IMAGE_PREFIX + "noimage.jpg"
+    // },
     endAnimation() {
       this.animate_logo = false
     },
-    onCloseSearch() {
-      this.global_search = ''
-      this.search_opened = false
-    },
+    // onCloseSearch() {
+    //   this.global_search = ''
+    //   this.search_opened = false
+    // },
     phoneOpened(val) {
       if (window.innerWidth >= 960) this.phones_opened = val
     },
@@ -404,18 +385,26 @@ export default {
       this.menu_fix(fixed)
       this.quick_search(quick_search)
     },
-    querySelections(search) {
-      if (search) {
-        this.loading = true
-        this.$store.dispatch('search/find', { query: { search } })
-          .then(res => {
-            this.results = res.data || []
-            this.loading = false
-          })
-      } else {
-        this.results = []
-      }
-    },
+    // querySelections(search) {
+    //   if (search) {
+    //     this.loading = true
+    //     const query = { $skip: 0, $limit: 10, price: { $gt: 0 }, $search: search }
+    //     this.$store.dispatch('search/find', { query })
+    //       .then(res => {
+    //         console.log('results', res.data);
+    //         this.results = res.data || []
+    //         this.loading = false
+    //       })
+    //   } else {
+    //     this.results = []
+    //   }
+    // },
+    // onchange_search(e) {
+    //   console.log('onchange_search', this.global_search);
+    //   this.search_opened = false
+    //   this.$router.push({ path: 'search', query: { find: this.global_search } })
+    //   e.preventDefault()
+    // },
     handleResize() {
       this.windowWidth = window.innerWidth;
     },

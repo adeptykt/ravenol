@@ -10,7 +10,7 @@
     </div>
     <div class="paginator__list">
       <!-- <nuxt-link :to="{ path: $route.path, query: { page: item.page } }" @click="onClick(item.page)" class="paginator__link" v-bind:class="{ paginator__link_active: (page === item.page) }" v-for="item in items" :key="item.page"> -->
-      <nuxt-link :to="{ path: $route.path, query: { page: item.page } }" class="paginator__link" v-bind:class="{ paginator__link_active: (page === item.page) }" v-for="item in items" :key="item.page">
+      <nuxt-link :to="{ path: $route.path, query: getquery(item.page) }" class="paginator__link" v-bind:class="{ paginator__link_active: (page === item.page) }" v-for="item in items" :key="item.page">
         <div class="paginator__text">{{item.value}}</div>
       </nuxt-link>
     </div>
@@ -31,6 +31,10 @@ export default {
   props: {
     value: Number,
     pages: Number,
+    query: {
+      type: Object,
+      default: {}
+    },
     max: {
       type: Number,
       required: true,
@@ -74,6 +78,9 @@ export default {
     this.createPagination(this.pages, this.page)
   },
   methods: {
+    getquery(page) {
+      return Object.assign({}, this.query, { page })
+    },
     onClick(page) {
       this.page = page
       this.createPagination(this.pages, page)

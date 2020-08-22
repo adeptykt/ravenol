@@ -88,7 +88,7 @@
         </div>
         <div class="pag-wrap">
           <!-- <Paginator :page.sync="page_" :limit.sync="limit" :total="total" pages=:/> -->
-          <Paginator v-model="page_" :pages="pages" :max="6" />
+          <Paginator v-model="page_" :pages="pages" :max="6" :query="{ find }" />
         </div>
       </div>
     </div>
@@ -114,6 +114,7 @@ import ProductItem from '~/components/ProductItem.vue'
 export default {
   props: {
     id: String,
+    find: String,
     page: {
       type: Number,
       default: 1
@@ -129,6 +130,7 @@ export default {
     return {
       sharedState: this.$store.state,
       page_: vm.page,
+      find_: vm.find,
       tree: [],
       categories: [],
       items: [],
@@ -181,6 +183,10 @@ export default {
     },
   },
   watch: {
+    find: function(val) {
+      console.log('watch find', val);
+      this.getitems()
+    },
     page_(val) {
       this.getitems()
     },
@@ -271,30 +277,39 @@ export default {
     getitems() {
       const $skip = (this.page_ - 1) * this.limit
       const cart = this.$store.state.cart.list
-      let query = { $skip, $limit: this.limit, price: { $gt: 0 } }
-      if (this.brand.length) Object.assign(query, { brand: { $in: this.brand } })
-      if (this.vehicle.length) Object.assign(query, { vehicle: { $in: this.vehicle } })
-      if (this.composition.length) Object.assign(query, { compositions: { $in: this.composition } })
-      if (this.viscosity.length) Object.assign(query, { sae: { $in: this.viscosity } })
-      if (this.request.length) Object.assign(query, { requests: { $in: this.request } })
-      const find = this.categories.find(e => e.id === this.id)
-      if (find) {
-        const ids = []
-        this.getIds(find, ids)
-        Object.assign(query, { category: { $in: ids } })
+      const query = { $skip, $limit: this.limit, price: { $gt: 0 } }
+
+      const loaditems = response => {
+        console.log('response', response);
+        this.items = response.data.reduce((items, item) => {
+          const cart_item = cart.find(e => e.id === item._id)
+          const product = Object.assign({ quantity: 1, cart: 0, volume: '', price: 0 }, item)
+          if (cart_item !== undefined) Object.assign(product, { quantity: cart_item.quantity, cart: cart_item.quantity })
+          items.push(product)
+          return items
+        }, [])
+        this.total = response.total
+        this.pages = Math.ceil(this.total / this.limit)
       }
-      this.$store.dispatch('items/find', { query })
-        .then(response => {
-          this.items = response.data.reduce((items, item) => {
-            const cart_item = cart.find(e => e.id === item._id)
-            const product = Object.assign({ quantity: 1, cart: 0, volume: '', price: 0, current_package: 0 }, item)
-            if (cart_item !== undefined) Object.assign(product, { quantity: cart_item.quantity, cart: cart_item.quantity })
-            items.push(product)
-            return items
-          }, [])
-          this.total = response.total
-          this.pages = Math.ceil(this.total / this.limit)
-        })
+
+      if (this.find) {
+        console.log('search', this.find);
+        query.$search = this.find
+        this.$store.dispatch('search/find', { query }).then(loaditems)
+      } else {
+        if (this.brand.length) Object.assign(query, { brand: { $in: this.brand } })
+        if (this.vehicle.length) Object.assign(query, { vehicle: { $in: this.vehicle } })
+        if (this.composition.length) Object.assign(query, { compositions: { $in: this.composition } })
+        if (this.viscosity.length) Object.assign(query, { sae: { $in: this.viscosity } })
+        if (this.request.length) Object.assign(query, { requests: { $in: this.request } })
+        const find = this.categories.find(e => e.id === this.id)
+        if (find) {
+          const ids = []
+          this.getIds(find, ids)
+          Object.assign(query, { category: { $in: ids } })
+        }
+        this.$store.dispatch('items/find', { query }).then(loaditems)
+      }
     },
     typeOfProductSelect(value) {
       // const index = this.typeOfProduct.indexOf(value)
