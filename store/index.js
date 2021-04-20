@@ -60,7 +60,6 @@ export const state = () => ({
   showReset: false,
   gear_list: [],
   category_menu: [],
-  category_list: [],
   category_id: 0,
   history: [],
   category_list: [
@@ -77,8 +76,23 @@ export const state = () => ({
   product_list: [],
   global_search: '',
   order: {},
-  menu_items: []
+  menu_items: [],
+  storeId: '',
+  price_type: '',
+  categories_: [],
+  tree: []
 })
+
+export const getters = {
+  price_type(state) {
+    if (state.auth.user && state.auth.user.price_type) return state.auth.user.price_type
+    return state.price_type
+  },
+  store(state) {
+    if (state.auth.user && state.auth.user.storeId) return state.auth.user.storeId
+    return state.storeId
+  }
+}
 
 export const mutations = {
   set_mobile(state, val) {
@@ -133,13 +147,67 @@ export const mutations = {
   },
   set_menu_items(state, val) {
     state.menu_items = val
+  },
+  set_storeId(state, val) {
+    state.storeId = val
+  },
+  set_price_type(state, val) {
+    state.price_type = val
+  },
+  set_categories(state, val) {
+    state.categories = val
+  },
+  set_state(state, { name, val }) {
+    state[name] = val
   }
+}
+
+async function loadConstants(dispatch, commit, state) {
+  const response = await dispatch('constants/find', {})
+  if (response && Array.isArray(response) && response.length > 0) {
+    const settings = response[0]
+    commit('set_storeId', settings.store)
+    commit('set_price_type', settings.price_type)
+  }
+}
+
+function loadCategories(dispatch, commit) {
+  return dispatch('categories/find', { paginate: false } ).then(response => {
+    // const nest = (items, id = null, link = 'parent_id') => items.filter(item => item[link] === id).map(item => ({ ...item, children: nest(items, item.id) }))
+    const categories = []
+    const tree = []
+    const root = { id: 0, children: tree }
+    const stack = [...response]
+    while (stack.length > 0) {
+      const item = stack.shift()
+      const child = { id: item._id, name: item.name, children: [] }
+      if (item.parent && item.parent !== "00000000-0000-0000-0000-000000000000") {
+        const find = categories.find(e => e.id === item.parent)
+        if (!find) stack.push(item)
+        else child.parent = find
+      } else {
+        child.parent = root
+      }
+      if (child.parent) {
+        child.parent.children.push(child)
+        categories.push(child)
+      }
+    }
+    commit('set_state', { name: 'categories_', val: categories })
+    commit('set_state', { name: 'tree', val: tree })
+  })
+}
+
+function init(dispatch, commit, state) {
+  loadConstants(dispatch, commit, state)
+  loadCategories(dispatch, commit)
 }
 
 export const actions = {
   nuxtServerInit({ dispatch, commit }, { req }) { // eslint-disable-line consistent-return
     // const accessToken = parseCookies(req)['feathers-jwt']
     // console.log('nuxtServerInit', accessToken);
+    init(dispatch, commit, state)
     return initAuth({
       commit,
       dispatch,
@@ -151,6 +219,7 @@ export const actions = {
   nuxtClientInit ({ state, dispatch, commit }, context) {
     // Run the authentication with the access token hydrated from the server store
     hydrateApi({ api: models.api })
+    init(dispatch, commit, state)
 
     if (state.auth.accessToken) {
       return dispatch('auth/onInitAuth', state.auth.payload)
@@ -282,5 +351,8 @@ export const actions = {
     else {
       dispatch('categories_find', { parent: category._id })
     }
+  },
+  getCategories({ dispatch, commit }) {
+    return loadCategories(dispatch, commit)
   }
 }

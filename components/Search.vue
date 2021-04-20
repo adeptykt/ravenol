@@ -1,5 +1,5 @@
 <template>
-  <div class="search" v-bind:class="{ search_opened: search_opened_ }">
+  <div class="search" v-bind:class="{ search_opened: search_opened }" v-on:keyup.esc="onCloseSearch" tabindex="0">
     <div class="search__top">
       <div class="search__box">
         <div class="b-search b-search_sm b-search_popup">
@@ -20,7 +20,8 @@
           <template v-for="(item, i) in results">
             <div class="items__row">
               <div class="items__wrap">
-                <n-link :to="'/products/' + item._id" class="items__product">
+                <n-link :to="link(item)" class="items__product" @click.native="onClickItemInSearch(item._id)">
+                <!-- <n-link to="#" class="items__product" @click.native="onClickItemInSearch(item._id)"> -->
                   <div class="items__pic">
                     <img :src="image(item)" class="items__img">
                   </div>
@@ -47,12 +48,19 @@ import { mapMutations } from 'vuex'
 export default {
   name: 'search',
 
+  head () {
+    return {
+      bodyAttrs: {
+        class: this.search_opened ? 'overlayed' : ''
+      }
+    }
+  },
   props: {
-    search_opened: Boolean
+    value: Boolean
   },
   data () {
     return {
-      search_opened_: this.search_opened,
+      search_opened: this.value,
       results: []
     }
   },
@@ -63,12 +71,15 @@ export default {
     },
   },
   watch: {
+    value(val) {
+      this.search_opened = val;
+    },
     search_opened(val) {
-      this.search_opened_ = val;
+      this.$emit('input', val)
     },
     global_search(val) {
       if (val) {
-        this.search_opened_ = true
+        this.search_opened = true
         this.$refs.top_search_input.focus()
         val !== this.select && val.length > 2 && this.querySelections(val)
       }
@@ -79,17 +90,25 @@ export default {
       if (item.image && item.image.length > 0) return process.env.IMAGE_PREFIX + item.image
       return process.env.IMAGE_PREFIX + "noimage.jpg"
     },
+    link(item) {
+      return `/products/${item._id}`
+    },
+    onClickItemInSearch(id) {
+      this.set_search('')
+      this.search_opened = false
+      this.$router.push({ path: `/products/${id}` })
+    },
     onCloseSearch() {
       this.global_search = ''
-      this.search_opened_ = false
+      this.search_opened = false
     },
     querySelections(search) {
       if (search) {
         this.loading = true
-        const query = { $skip: 0, $limit: 10, price: { $gt: 0 }, $search: search }
+        const query = { $skip: 0, $limit: 10, price: { $gt: 0 }, $search: search, $sort: { name: -1 } }
+        console.log('querySelections', query);
         this.$store.dispatch('search/find', { query })
           .then(res => {
-            console.log('results', res.data);
             this.results = res.data || []
             this.loading = false
           })
@@ -98,10 +117,11 @@ export default {
       }
     },
     onchange_search(e) {
-      console.log('onchange_search', this.global_search);
-      this.search_opened_ = false
-      this.$router.push({ path: 'search', query: { find: this.global_search } })
-      e.preventDefault()
+      if (this.search_opened) {
+        this.search_opened = false
+        this.$router.push({ path: '/search', query: { find: this.global_search } })
+        e.preventDefault()
+      }
     },
     ...mapMutations({ set_search: 'set_search' })
   }

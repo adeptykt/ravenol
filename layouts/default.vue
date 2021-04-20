@@ -1,6 +1,6 @@
 <template>
-  <div class="wrapper" v-bind:class="{ wrapper_order, 'wrapper_no-footer': no_footer }">
-    <Search :search_opened="search_opened"></Search>
+  <div class="wrapper" v-bind:class="{ wrapper_order: no_footer, 'wrapper_no-footer': no_footer }">
+    <Search v-model="search_opened"></Search>
     <div class="wrapper__inner">
       <div>
         <header v-bind:style="{ paddingBottom: paddingHeader }" class="header" v-bind:class="{ header_opened: menu }">
@@ -213,14 +213,12 @@
         </div>
       </div>
     </footer>
-    <Profile v-model="sharedState.showProfile" />
     <AuthReset v-model="sharedState.showReset" />
   </div>
 </template>
 
 <script>
 import { mapActions, mapMutations } from 'vuex'
-import Profile from '~/components/Profile.vue'
 import AuthReset from '~/components/AuthReset.vue'
 import Search from '~/components/Search.vue'
 import ClientOnly from 'vue-client-only'
@@ -228,23 +226,14 @@ import ClientOnly from 'vue-client-only'
 export default {
   middleware: 'auth',
   components: {
-    Profile,
     ClientOnly,
     AuthReset,
     Search
-  },
-  head () {
-    return {
-      bodyAttrs: {
-        class: this.search_opened ? 'overlayed' : ''
-      }
-    }
   },
   data () {
     return {
       alert: false,
       sharedState: this.$store.state,
-      animate_logo: false,
       paddingHeader: '0px',
       phones_opened: false,
       auth_opened: false,
@@ -272,12 +261,14 @@ export default {
       windowWidth: 0,
       maxWidth: 940,
       menu: false,
-      facebook: false,
-      vk: false,
       cart_count: 0
     }
   },
   computed: {
+    global_search: {
+      get: function () { return this.$store.state.global_search },
+      set: function (val) { this.set_search(val) }
+    },
     menu_items() {
       return this.$store.state.menu_items
     },
@@ -288,28 +279,14 @@ export default {
       if (this.$store.state.cart.status) return this.$store.state.cart.list.reduce((s, i) => { return s + i.quantity }, 0)
       return 0
     },
-    global_search: {
-      get: function () { return this.$store.state.global_search },
-      set: function (val) { this.set_search(val) }
-    },
     container_main() {
       return (this.$route.path === "/" || this.$route.path === "")
-    },
-    wrapper_order() {
-      return /^\/cart\/order\//.test(this.$route.path)
     },
     no_footer() {
       return /^\/cart\/order\//.test(this.$route.path)
     }
   },
   watch: {
-    // global_search(val) {
-    //   if (val) {
-    //     this.search_opened = true
-    //     this.$refs.top_search_input.focus()
-    //     val !== this.select && val.length > 2 && this.querySelections(val)
-    //   }
-    // },
     select(val) {
       if (val) {
         if (val.vendor) {
@@ -333,9 +310,6 @@ export default {
     window.addEventListener('scroll', this.handleScroll)
     this.handleResize()
 
-    // this.animate_logo = true
-    // setTimeout(this.endAnimation, 6000)
-
     this.set_search('')
   },
   destroyed() {
@@ -343,17 +317,6 @@ export default {
     window.removeEventListener('resize', this.handleResize)
   },
   methods: {
-    // image(item) {
-    //   if (item.image && item.image.length > 0) return process.env.IMAGE_PREFIX + item.image
-    //   return process.env.IMAGE_PREFIX + "noimage.jpg"
-    // },
-    endAnimation() {
-      this.animate_logo = false
-    },
-    // onCloseSearch() {
-    //   this.global_search = ''
-    //   this.search_opened = false
-    // },
     phoneOpened(val) {
       if (window.innerWidth >= 960) this.phones_opened = val
     },
@@ -385,26 +348,6 @@ export default {
       this.menu_fix(fixed)
       this.quick_search(quick_search)
     },
-    // querySelections(search) {
-    //   if (search) {
-    //     this.loading = true
-    //     const query = { $skip: 0, $limit: 10, price: { $gt: 0 }, $search: search }
-    //     this.$store.dispatch('search/find', { query })
-    //       .then(res => {
-    //         console.log('results', res.data);
-    //         this.results = res.data || []
-    //         this.loading = false
-    //       })
-    //   } else {
-    //     this.results = []
-    //   }
-    // },
-    // onchange_search(e) {
-    //   console.log('onchange_search', this.global_search);
-    //   this.search_opened = false
-    //   this.$router.push({ path: 'search', query: { find: this.global_search } })
-    //   e.preventDefault()
-    // },
     handleResize() {
       this.windowWidth = window.innerWidth;
     },

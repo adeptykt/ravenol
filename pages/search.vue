@@ -3,6 +3,7 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex'
 import Category from '~/components/Category.vue'
 
 export default {
@@ -20,6 +21,12 @@ export default {
       find: query.find
     }
   },
-  watchQuery: true
+  watchQuery: true,
+  mounted() {
+    this.set_search(this.find)
+  },
+  methods: {
+    ...mapMutations({ set_search: 'set_search' })
+  }
 }
 </script>

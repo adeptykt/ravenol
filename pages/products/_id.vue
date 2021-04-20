@@ -1,5 +1,6 @@
 <template>
   <div class="box">
+    <Breadcrumbs :items="breadcrumbs" />
     <div class="sep sep_product sep_goods">
       <div class="sep__base">
         <div class="goods">
@@ -9,7 +10,6 @@
             <!-- <div class="goods__type">SYNTHETIC BLEND MOTOR OIL SL/CF 10W40</div> -->
             <div class="goods__short">{{product.short}}</div>
             <div class="goods__info">
-              <div class="goods__fabric"><strong>{{product.brand}}</strong></div>
               <div class="goods__spec_arrows">
                 <!-- <a class="btn arrow__btn-item_left btn_type_small" @click="skuPrev()" v-if="this.skus.length > 1" v-bind:class="{btn_disable: index === 0}">
                   <span class="arrow__btn-icon icon icon_plus_small"><svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#arrow_left"></use></svg></span>
@@ -22,14 +22,6 @@
                   <span class="arrow__btn-icon icon icon_plus_small"><svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#arrow_right"></use></svg></span>
                 </a> -->
               </div>
-              <!-- <div class="goods__exist">
-                <div class="exist exist_2">
-                  <div class="exist__icon">
-                    <div class="exist__level"><span class="exist__value" style="width: 40%;"></span></div>
-                  </div>
-                  <div class="exist__base">Мало</div>
-                </div>
-              </div> -->
             </div>
             <div class="goods__border" ref="goods__border">
               <div class="goods__box">
@@ -37,7 +29,7 @@
                   <!----><span class="goods__price">{{product.price}}&nbsp;&#8381;</span>
                   <!---->
                 </div>
-                <div class="goods__actions">
+                <div class="goods__actions" v-if="product.haveRest">
                   <div class="goods__counter">
                     <div class="counter counter_big">
                       <div class="counter__btn counter__btn_minus" @click="decrease">-</div>
@@ -51,8 +43,17 @@
                 <!-- <div class="goods__text">
                   Специальные условия сотрудничества для юридических лиц
                 </div> -->
+                <div class="goods__fabric"><strong>{{product.brand}}</strong></div>
                 <div class="goods__text">
                   {{product.article}}
+                </div>
+                <div class="goods__exist">
+                  <div :class="`exist exist_${balance_level}`">
+                    <!-- <div class="exist__icon">
+                      <div class="exist__level"><span class="exist__value" :style="`width:${(balance_level*20)}%;`"></span></div>
+                    </div> -->
+                    <div class="exist__base">{{balance_name}}</div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -123,7 +124,6 @@
           <li class="tabs__item" v-bind:class="{ tabs__item_active: tab === 5 }" v-if="product.info && product.info.params">
             <a href="#" class="tabs__link" @click.prevent="tab=5"><span class="tabs__text">Параметры</span></a>
           </li>
-          <!---->
         </ul>
         <div class="description">
           <div class="content content_sm content_desc" v-if="tab===0" v-html="product.description"></div>
@@ -206,6 +206,9 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import ImageViewer from '~/components/ImageViewer.vue'
+import Breadcrumbs from '~/components/Breadcrumbs.vue'
+
+const balances = ['Под заказ', 'Количество: <4', 'Количество: <12', 'Количество: много', 'Достаточно', 'Много']
 
 export default {
   head () {
@@ -214,6 +217,7 @@ export default {
     }
   },
   components: {
+    Breadcrumbs,
     ImageViewer
   },
   validate ({ params }) {
@@ -232,7 +236,8 @@ export default {
       tab: 0,
       quantity: 1,
       fix_goods_show: false,
-      show_image: false
+      show_image: false,
+      breadcrumbs: []
     }
   },
   created() {
@@ -242,11 +247,16 @@ export default {
     window.addEventListener('scroll', this.handleScroll)
     this.id && this.$store.dispatch('items/get', this.id)
       .then(res => {
+        console.log(res);
         this.$store.commit('viewed/add', res._id)
         this.title = res.name
         this.product = res
         this.quantity = this.getCartItemCount(0) || 1
-        console.log('item', res);
+        // if (this.product.balances && this.product.balances.length > 0) {
+        //   const find = this.product.balances.find(i => i.storeId === this.store)
+        //   if (find) this.balance = find.quantity
+        // }
+        this.set_breadcrumbs()
       })
       .catch(error => {
         console.log('error', error);
@@ -255,14 +265,29 @@ export default {
   destroyed() {
     window.removeEventListener('scroll', this.handleScroll)
   },
+  watch: {
+    '$store.state.categories'(val) {
+      this.set_breadcrumbs()
+    }
+  },
   computed: {
+    balance_name() {
+      return balances[this.balance_level]
+    },
+    balance_level() {
+      // if (this.product.balance > 20) return 5
+      // if (this.product.balance > 10) return 4
+      if (this.product.balance > 11) return 3
+      if (this.product.balance > 3) return 2
+      if (this.product.balance > 0) return 1
+      return 0
+    },
     cart() {
       return this.getCartItemCount(this.index)
     },
     image() {
       return process.env.IMAGE_PREFIX + this.product.image
     },
-    ...mapGetters('items', { findOrdersInStore: 'find' }),
     viewed_ids() {
       const ids = this.$store.state.viewed.list.slice()
       ids.reverse()
@@ -272,8 +297,26 @@ export default {
     viewed() {
       return this.findOrdersInStore({ query: { $limit: 20, _id: { $in: this.viewed_ids } } }).data
     },
+    ...mapGetters('items', { findOrdersInStore: 'find' }),
+    ...mapGetters(['price_type', 'store'])
   },
   methods: {
+    set_breadcrumbs() {
+      this.breadcrumbs = []
+      // if (this.offer) {
+      //   this.breadcrumbs.unshift({ to: `/offer/`, name: 'Акции' })
+      // } else {
+        this.breadcrumbs.unshift({ to: `/products/${this.id}/`, name: this.product.name })
+        let find = this.$store.state.categories_.find(e => e.id === this.product.category)
+        if (find) {
+          do {
+            this.breadcrumbs.unshift({ to: `/categories/${find.id}/`, name: find.name })
+            find = find.parent
+          } while(find.parent)
+        }
+      // }
+      this.breadcrumbs.unshift({ to: `/`, name: 'Главная' })
+    },
     viewed_image(item) {
       return process.env.IMAGE_PREFIX + item.image
     },
@@ -387,7 +430,8 @@ export default {
   /* margin-right: 18px; */
   align-items: center;
 }
-.goods__exist, .goods__fabric, .goods__spec_arrows {
+// .goods__exist, .goods__fabric, .goods__spec_arrows {
+.goods__spec_arrows {
   margin-top: 7px;
 }
 .goods__value {
@@ -450,6 +494,7 @@ export default {
 .goods__text {
   font-size: 14px;
   line-height: 19px;
+  margin-right: 18px;
 }
 .fix-goods {
   position: fixed;

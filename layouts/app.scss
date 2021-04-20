@@ -194,6 +194,10 @@ a {
 }
 .b-search__base {
   position: relative;
+  background-color: white;
+  @media (max-width: 768px) {
+    background-color: inherit;
+  }
 }
 .b-search__input {
   box-sizing: border-box;
@@ -218,9 +222,6 @@ a {
   padding-left: 14px;
   color: #000;
   background-color: #fff;
-}
-.b-search__base {
-  background-color: white;
 }
 .b-search_header .b-search__input {
   padding-left: 12px;
@@ -2037,6 +2038,9 @@ a {
 .product {
   position: relative;
 }
+.product_state_inactive .product__link {
+  opacity: .3;
+}
 .product__box {
   background-color: #fff;
 }
@@ -2158,6 +2162,21 @@ a {
   top: 0;
   bottom: 0;
   left: 0;
+}
+.exist_0 .exist__value {
+  background-color: #fff;
+}
+.exist_1 .exist__value {
+  background-color: gray;
+}
+.exist_2 .exist__value {
+  background-color: #f91939;
+}
+.exist_3 .exist__value {
+  background-color: #f5b68a;
+}
+.exist_4 .exist__value {
+  background-color: #ffda68;
 }
 .exist_5 .exist__value {
   background-color: #87de65;

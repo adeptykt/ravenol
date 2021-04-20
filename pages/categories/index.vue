@@ -1,27 +1,5 @@
 <template>
-  <Category />
-  <!-- <div class="box">
-    <div class="top"><h1 class="title">Каталог</h1></div>
-    <template v-for="level1 in tree">
-      <h2 class="cat-title"><nuxt-link :to="`/categories/${level1.id}/`" class="cat-title__link">{{level1.name}}</nuxt-link></h2>
-      <ul class="category category_catalog">
-        <li class="category__cell" v-for="level2 in level1.children" :key="level2.id">
-          <div class="category__item">
-            <div class="category__side">
-              <svg-icon :name="level2.logo || 'logo_mini'" class="icon_catalog_1" />
-            </div>
-            <div class="category__base">
-              <div class="category__top">
-                <div class="category__title">
-                  <nuxt-link :to="`/categories/${level2.id}/`" class="category__link">{{level2.name}}</nuxt-link>
-                </div>
-              </div>
-            </div>
-          </div>
-        </li>
-      </ul>
-    </template>
-  </div> -->
+  <Category :page.sync="page" />
 </template>
 
 <script>
@@ -36,38 +14,15 @@ export default {
   components: {
     Category
   },
+  async asyncData({ query, params }) {
+    return {
+      page: parseInt(query.page) || 1
+    }
+  },
   data () {
     return {
       sharedState: this.$store.state,
-      tree: [],
     }
-  },
-  mounted() {
-    this.getCategories()
-  },
-  methods: {
-    getCategories() {
-      this.$store.dispatch('categories/find', { query: { $limit: null } }).then(response => {
-        const items = []
-        const root = { id: 0, children: this.tree }
-        const stack = [...response.data]
-        while (stack.length > 0) {
-          const item = stack.shift()
-          const child = { id: item._id, name: item.name, logo: item.logo, children: [] }
-          if (item.parent && item.parent !== "00000000-0000-0000-0000-000000000000") {
-            const find = items.find(e => e.id === item.parent)
-            if (!find) stack.push(item)
-            else child.parent = find
-          } else {
-            child.parent = root
-          }
-          if (child.parent) {
-            child.parent.children.push(child)
-            items.push(child)
-          }
-        }
-      })
-    },
   },
 }
 </script>

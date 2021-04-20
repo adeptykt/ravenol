@@ -26,9 +26,7 @@ export default {
     }
   },
   created() {
-    this.$store.dispatch('categories/get', this.id).then(category => {
-      this.title = category.name
-    })
+    this.$store.dispatch('categories/get', this.id).then(category => { this.title = category.name })
   },
 }
 </script>

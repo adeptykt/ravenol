@@ -51,7 +51,7 @@
                 <div class="filter__btn" v-if="chipClearAll"><a href="#" class="btn btn_type_white btn_wide" @click.prevent="chipClearAll=false"><span class="menu__text">Сбросить фильтр</span></a></div>
               </div>
               <ul class="filter__list form form_type_filter">
-                <!-- <FilterItem :title="getFilterName('Бренд', brand)" :items="brands" v-model="brand" uid="brand" /> -->
+                <FilterItem :title="getFilterName('Бренд', brand)" :items="brands" v-model="brand" uid="brand" />
                 <!-- <FilterItem :title="getFilterName('Тип техники', vehicle)" :items="vehicles" v-model="vehicle" uid="vehicle" />
                 <FilterItem :title="getFilterName('Состав', composition)" :items="compositions" v-model="composition" uid="composition" /> -->
               </ul>
@@ -106,6 +106,7 @@
 </template>
 
 <script>
+import { mapGetters, mapActions } from 'vuex'
 import FilterItem from '~/components/FilterItem.vue'
 import Paginator from '~/components/Paginator.vue'
 import DropdownSelect from '~/components/DropdownSelect.vue'
@@ -131,8 +132,6 @@ export default {
       sharedState: this.$store.state,
       page_: vm.page,
       find_: vm.find,
-      tree: [],
-      categories: [],
       items: [],
       limit: 24,
       pages: 1,
@@ -181,10 +180,19 @@ export default {
       }
       return category
     },
+    categories() {
+      return this.$store.state.categories_
+    },
+    tree() {
+      return this.$store.state.tree
+    },
+    ...mapGetters(['price_type', 'store'])
   },
   watch: {
     find: function(val) {
-      console.log('watch find', val);
+      this.getitems()
+    },
+    id(val) {
       this.getitems()
     },
     page_(val) {
@@ -226,40 +234,19 @@ export default {
     },
     view(value) {
       this.$store.commit('settings/set', { setting: 'view_items', value })
+    },
+    categories(val) {
+      this.getitems()
     }
   },
   mounted() {
-    this.getCategories()
-    // this.$store.dispatch('aggregate/find', { query: 'brand' }).then(res => this.brands = res.map(item => Object.assign({ value: item._id })))
+    // this.getCategories().then(this.getitems())
+    this.getitems()
     // this.$store.dispatch('aggregate/find', { query: 'vehicle' }).then(res => this.vehicles = res.map(item => Object.assign({ title: item._id, value: item._id })))
     // this.$store.dispatch('aggregate/find', { query: { name: 'compositions', isArray: true } }).then(res => this.compositions = res.map(item => Object.assign({ title: item._id, value: item._id })))
     // this.$store.dispatch('viscosities/find', { query: { $limit: null } }).then(res => this.viscosities = res.data.map(item => Object.assign({ title: item.name, value: item.name.replace('SAE ', '') })))
   },
   methods: {
-    getCategories() {
-      this.$store.dispatch('categories/find', { paginate: false } ).then(response => {
-        const nest = (items, id = null, link = 'parent_id') => items.filter(item => item[link] === id).map(item => ({ ...item, children: nest(items, item.id) }))
-        this.categories = []
-        const root = { id: 0, children: this.tree }
-        const stack = [...response]
-        while (stack.length > 0) {
-          const item = stack.shift()
-          const child = { id: item._id, name: item.name, children: [] }
-          if (item.parent && item.parent !== "00000000-0000-0000-0000-000000000000") {
-            const find = this.categories.find(e => e.id === item.parent)
-            if (!find) stack.push(item)
-            else child.parent = find
-          } else {
-            child.parent = root
-          }
-          if (child.parent) {
-            child.parent.children.push(child)
-            this.categories.push(child)
-          }
-        }
-        this.getitems()
-      })
-    },
     getFilterName(name, values) {
       return name + (values.length > 0 ? ': ' + values.length : '')
     },
@@ -277,13 +264,17 @@ export default {
     getitems() {
       const $skip = (this.page_ - 1) * this.limit
       const cart = this.$store.state.cart.list
-      const query = { $skip, $limit: this.limit, price: { $gt: 0 } }
+      const query = { price: { $gt: 0 } }
 
       const loaditems = response => {
-        console.log('response', response);
         this.items = response.data.reduce((items, item) => {
+          // console.log(item);
           const cart_item = cart.find(e => e.id === item._id)
-          const product = Object.assign({ quantity: 1, cart: 0, volume: '', price: 0 }, item)
+          const product = Object.assign({ quantity: 1, cart: 0, volume: '', price: 0, balance: 0 }, item)
+          // if (item.balances && item.balances.length > 0) {
+          //   const find = item.balances.find(i => i.storeId === this.store)
+          //   if (find) product.balance = find.quantity
+          // }
           if (cart_item !== undefined) Object.assign(product, { quantity: cart_item.quantity, cart: cart_item.quantity })
           items.push(product)
           return items
@@ -293,9 +284,8 @@ export default {
       }
 
       if (this.find) {
-        console.log('search', this.find);
         query.$search = this.find
-        this.$store.dispatch('search/find', { query }).then(loaditems)
+        this.$store.dispatch('search/find', { query: Object.assign({}, query, { $skip, $limit: this.limit }) }).then(loaditems)
       } else {
         if (this.brand.length) Object.assign(query, { brand: { $in: this.brand } })
         if (this.vehicle.length) Object.assign(query, { vehicle: { $in: this.vehicle } })
@@ -308,7 +298,9 @@ export default {
           this.getIds(find, ids)
           Object.assign(query, { category: { $in: ids } })
         }
-        this.$store.dispatch('items/find', { query }).then(loaditems)
+        this.$store.dispatch('items/find', { query: Object.assign({}, query, { $skip, $limit: this.limit, $sort: { haveRest: -1, name: 1 } }) }).then(loaditems)
+        // this.loadProperties(query).then(res => this.brands = res.map(item => Object.assign({ value: item._id })))
+        return this.$store.dispatch('aggregate/find', { query: { match: query, property: 'brand' } }).then(res => this.brands = res.map(item => Object.assign({ value: item._id })))
       }
     },
     typeOfProductSelect(value) {
@@ -352,7 +344,8 @@ export default {
         if (node.children && node.children.length) node.children.forEach(n => stack.push(n))
       }
       return false
-    }
+    },
+    ...mapActions({ getCategories: 'getCategories' })
   },
 }
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="box">
     <!-- <div class="screen__nav">
       <div class="swiper swiper_brands">
         <div class="swiper-container swiper-container-horizontal">
@@ -14,7 +14,8 @@
         </div>
       </div>
     </div> -->
-    <Category />
+    <!-- <img src="/images/promo0920.jpg" class="action_image"> -->
+    <Category :page.sync="page" />
     <!-- <div class="box">
       <div class="cover cover_main mb mb_large" ref="youtube">
         <div class="cover__title"><a href="/blog/" class="link-title">Блог</a></div>
@@ -72,6 +73,11 @@ export default {
   components: {
     Dialog,
     Category
+  },
+  async asyncData({ query, params }) {
+    return {
+      page: parseInt(query.page) || 1
+    }
   },
   data() {
     return {
@@ -386,5 +392,8 @@ export default {
 }
 .info_light .info__icon .icon__item {
   fill: #fff;
+}
+.action_image {
+  width: 100%;
 }
 </style>
