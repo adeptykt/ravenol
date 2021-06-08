@@ -91,7 +91,7 @@
                   </label>
                 </div>
               </div>
-              <div class="form__item">
+              <!-- <div class="form__item">
                 <div class="radio">
                   <input type="radio" id="payment_type_bank_card" name="payment_types" class="radio__input" value="bank_card" v-model="payment_type">
                   <label for="payment_type_bank_card" class="radio__label">
@@ -99,7 +99,7 @@
                     <div class="radio__note"></div>
                   </label>
                 </div>
-              </div>
+              </div> -->
               <div>
                 <div class="form__error-message" v-if="error_message">Поле способ оплаты обязательно для заполнения.</div>
               </div>

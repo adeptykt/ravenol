@@ -14,7 +14,7 @@
         </div>
       </div>
     </div> -->
-    <!-- <img src="/images/promo0920.jpg" class="action_image"> -->
+    <!-- <img src="/images/promo0421.jpg" class="action_image"> -->
     <Category :page.sync="page" />
     <!-- <div class="box">
       <div class="cover cover_main mb mb_large" ref="youtube">
