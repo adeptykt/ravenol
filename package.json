@@ -29,7 +29,7 @@
     "jquery": "^3.4.1",
     "js-cookie": "^2.2.1",
     "mini-toastr": "^0.8.1",
-    "nuxt": "^2.12.2",
+    "nuxt": "^2.15.8",
     "nuxt-client-init-module": "^0.1.8",
     "nuxt-feathers-vuex": "0.0.7",
     "nuxt-vuex-localstorage": "^1.2.6",
@@ -59,7 +59,7 @@
     "sass-loader": "^7.3.1",
     "stylus": "^0.54.7",
     "stylus-loader": "^3.0.1",
-    "svg-sprite-loader": "^4.2.1",
+    "svg-sprite-loader": "^6.0.11",
     "terser-webpack-plugin": "^3.0.2"
   }
 }
