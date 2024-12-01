@@ -23,7 +23,7 @@
     "@nuxtjs/svg-sprite": "^0.2.0",
     "@vue/composition-api": "^0.4.0",
     "autoprefixer": "^9.4.9",
-    "axios": "^0.18.1",
+    "axios": "^0.21.1",
     "dotenv": "^7.0.0",
     "feathers-vuex": "^3.9.1",
     "jquery": "^3.4.1",
