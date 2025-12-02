@@ -1,16 +1,14 @@
 <template>
 </template>
 
-<script>
-import { mapActions } from 'vuex'
+<script setup lang="ts">
+import { useRouter } from 'vue-router'
+import { useAuth } from '~/composables/useAuth'
 
-export default {
-  created() {
-    this.logout()
-    this.$router.push({ path: '/auth' })
-  },
-  methods: {
-    ...mapActions('auth', ['logout']),
-  }
-}
+const router = useRouter()
+const { logout } = useAuth()
+
+// Logout and redirect
+await logout()
+router.push({ path: '/auth' })
 </script>

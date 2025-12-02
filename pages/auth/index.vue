@@ -28,7 +28,7 @@
             </div>
             <div class="form__wrap form__btn">
               <button type="submit" class="btn btn_type_flat btn_size_big" v-bind:class="{ btn_loading: isLoading }"><span class="loader" v-if="isLoading"></span>Войти</button>
-              <a href="#" @click="dialog = false; inverse('showReset')" class="form__link link link_sm">Забыли пароль?</a>
+              <a href="#" @click="inverse('showReset')" class="form__link link link_sm">Забыли пароль?</a>
             </div>
           </form>
           <form action v-if="tab==1" @submit.prevent="register">
@@ -89,114 +89,104 @@
   </div>
 </template>
 
-<script>
-import { mapActions } from 'vuex'
+<script setup lang="ts">
+import { ref, computed, watch } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuth } from '~/composables/useAuth'
+import { useFeathersService } from '~/composables/useFeathersService'
+import { useUIStore } from '~/stores/ui'
 
-export default {
-  head () {
-    return {
-      title: 'Авторизация',
-    }
-  },
-  props: {
-    value: Boolean
-  },
-  data () {
-    return {
-      tab: 0,
-      valid: true,
-      type: 0,
-      user: {
-        type: '0',
-        company: '',
-        inn: '',
-        email: '',
-        password: '',
-        subscribe: true
-      },
-      hidePassword: true,
-      rules: {
-        required: value => !!value || 'Required.',
-        min: v => v.length >= 6 || 'Должно быть минимум 6 символов',
-        emailMatch: value => {
-          const reg = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
-          if (reg.test(value) == false) return 'Некорректный e-mail'
-          return true
-        }
-      },
-      error: undefined,
-      password_error: false,
-      email_error: false,
-      isLoading: false,
-      emailsent: false,
-      confirmation: ''
-    }
-  },
-  computed: {
-    passwordType() {
-      return this.hidePassword ? 'password' : 'text'
-    },
-    passwordIcon() {
-      return this.hidePassword ? 'fa-eye' : 'fa-eye-slash'
-    }
-  },
-  watch: {
-    dialog (val) {
-      this.$emit("input", val)
-    },
-    value (val) {
-      this.dialog = val
-      if (val) {
-        this.password_error = false
-        this.email_error = false
-      }
-    }
-  },
-  // mounted() {
-  //   // this.set_cart({ id: 3339, count: 1 })
-  //   this.$store.commit('localStorage/set_cart', { id: 3339, count: 1 })
-  // },
-  methods: {
-    onTabClick(value) {
-      this.tab = value
-    },
-    login() {
-      this.password_error = false
-      this.isLoading = true
-      this.authenticate({ strategy: 'local', ...this.user })
-        .then((res) => {
-          this.isLoading = false
-          this.$router.push({ path: '/' })
-        })
-        .catch(error => {
-          this.isLoading = false
-          this.password_error = true
-          // let type = error.className
-          // error = Object.assign({}, error)
-          // error.message = (type === 'not-authenticated')
-          //   ? 'Неверный логин или пароль'
-          //   : 'An error prevented login.'
-          // this.error = error
-        })
-    },
-    register() {
-      this.isLoading = true
-      this.addUser(this.user)
-        .then(res => {
-          this.isLoading = false
-          // this.emailsent = true
-          this.login()
-        })
-        .catch(error => {
-          this.isLoading = false
-          this.email_error = true
-          console.log('error', error);
-        })
-    },
-    ...mapActions('auth', ['authenticate']),
-    ...mapActions('users', { addUser: 'create' }),
+const props = defineProps<{
+  value?: boolean
+}>()
+
+const emit = defineEmits<{
+  (e: 'input', value: boolean): void
+}>()
+
+const router = useRouter()
+const { authenticate } = useAuth()
+const usersService = useFeathersService('users')
+const uiStore = useUIStore()
+
+const tab = ref(0)
+const valid = ref(true)
+const type = ref(0)
+const user = ref({
+  type: '0',
+  company: '',
+  inn: '',
+  email: '',
+  password: '',
+  subscribe: true
+})
+const hidePassword = ref(true)
+const password_error = ref(false)
+const email_error = ref(false)
+const isLoading = ref(false)
+const emailsent = ref(false)
+const confirmation = ref('')
+
+const passwordType = computed(() => {
+  return hidePassword.value ? 'password' : 'text'
+})
+
+const passwordIcon = computed(() => {
+  return hidePassword.value ? 'fa-eye' : 'fa-eye-slash'
+})
+
+watch(() => props.value, (val) => {
+  if (val) {
+    password_error.value = false
+    email_error.value = false
+  }
+})
+
+const onTabClick = (value: number) => {
+  tab.value = value
+}
+
+const login = async () => {
+  password_error.value = false
+  isLoading.value = true
+  try {
+    await authenticate('local', undefined, {
+      email: user.value.email,
+      password: user.value.password
+    })
+    isLoading.value = false
+    router.push({ path: '/' })
+  } catch (error) {
+    isLoading.value = false
+    password_error.value = true
   }
 }
+
+const register = async () => {
+  isLoading.value = true
+  try {
+    if (!usersService) {
+      throw new Error('Users service not available')
+    }
+    await usersService.create(user.value)
+    isLoading.value = false
+    // emailsent.value = true
+    login()
+  } catch (error) {
+    isLoading.value = false
+    email_error.value = true
+    console.log('error', error)
+  }
+}
+
+const inverse = (name: string) => {
+  uiStore.inverse(name as any)
+}
+
+// SEO
+useHead({
+  title: 'Авторизация'
+})
 </script>
 
 <style>
