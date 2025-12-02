@@ -2,75 +2,86 @@
   <Dialog v-model="dialog" max-width="580px">
     <div class="auth_dialog">
       <div class="i-dialog-action">
-        <a href="#" @click="dialog=false">
+        <a href="#" @click="dialog = false">
           <span class="icon icon_close_big">
-            <svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#close_big"></use></svg>
+            <svg class="icon__item">
+              <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#close_big"></use>
+            </svg>
           </span>
         </a>
       </div>
-    <!-- <dialog-form v-model="dialog" max-width="650px" title="Авторизация на сайте" buttonText="Войти" v-on:onSubmit="onSubmit" linkText="Регистрация" v-on:linkClick="dialog=false; inverse('showRegister')" :error="error"> -->
       <div class="form form_direct_row form_type_center">
         <div class="form__wrap">
           <div class="form__heading">Авторизация</div>
           <ul class="form__tabs switch">
-            <li class="switch__item" v-bind:class="{ switch__item_active: (tab == 0) }"><a href="#" class="switch__link link" @click.prevent="onTabClick(0)">Вход</a></li>
-            <li class="switch__item" v-bind:class="{ switch__item_active: (tab == 1) }"><a href="#" class="switch__link link" @click.prevent="onTabClick(1)">Регистрация</a></li>
+            <li class="switch__item" :class="{ switch__item_active: (tab === 0) }">
+              <a href="#" class="switch__link link" @click.prevent="onTabClick(0)">Вход</a>
+            </li>
+            <li class="switch__item" :class="{ switch__item_active: (tab === 1) }">
+              <a href="#" class="switch__link link" @click.prevent="onTabClick(1)">Регистрация</a>
+            </li>
           </ul>
         </div>
-        <form action v-if="tab==0" @submit.prevent="login">
+        <form v-if="tab === 0" @submit.prevent="login">
           <div class="form__row">
             <label class="form__label">Email</label>
             <div class="form__control">
-              <input type="email" class="form__input" v-model="user.email"><div></div>
+              <input type="email" class="form__input" v-model="user.email">
+              <div></div>
             </div>
           </div>
-          <div class="form__row" v-bind:class="{ form__error: password_error }">
+          <div class="form__row" :class="{ form__error: passwordError }">
             <label class="form__label">Пароль</label>
             <div class="form__control">
-              <input :type="passwordType" class="form__input" v-model="user.password"><div></div>
+              <input :type="passwordType" class="form__input" v-model="user.password">
+              <div></div>
               <i class="fa show-password" :class="[passwordIcon]" @click="hidePassword = !hidePassword"></i>
-              <div v-if="password_error"><div class="form__error-message">Неправильный пароль</div></div>
+              <div v-if="passwordError">
+                <div class="form__error-message">Неправильный пароль</div>
+              </div>
             </div>
           </div>
           <div class="form__wrap form__btn">
-            <button type="submit" class="btn btn_type_flat btn_size_big" v-bind:class="{ btn_loading: isLoading }"><span class="loader" v-if="isLoading"></span>Войти</button>
+            <button type="submit" class="btn btn_type_flat btn_size_big" :class="{ btn_loading: isLoading }">
+              <span class="loader" v-if="isLoading"></span>Войти
+            </button>
             <a href="#" @click="dialog = false; inverse('showReset')" class="form__link link link_sm">Забыли пароль?</a>
           </div>
         </form>
-        <form action v-if="tab==1" @submit.prevent="register">
+        <form v-if="tab === 1" @submit.prevent="register">
           <div class="form__row">
             <label class="form__label">Тип регистрации</label>
             <div class="form__control">
-              <select class="form__select" v-model="user.type"><option class="form__option" value='0'>Физическое лицо</option><option class="form__option" value='1'>Юридическое лицо</option></select>
+              <select class="form__select" v-model="user.type">
+                <option class="form__option" value="0">Физическое лицо</option>
+                <option class="form__option" value="1">Юридическое лицо</option>
+              </select>
             </div>
           </div>
-          <div class="form__row" v-if="user.type==='1'">
+          <div class="form__row" v-if="user.type === '1'">
             <label class="form__label">Наименование компании</label>
             <div class="form__control">
               <input type="text" class="form__input" v-model="user.company">
             </div>
           </div>
-          <div class="form__row" v-bind:class="{ form__error: email_error }">
+          <div class="form__row" :class="{ form__error: emailError }">
             <label class="form__label">Email</label>
             <div class="form__control">
-              <input type="email" class="form__input" v-model="user.email"><div></div>
-              <div v-if="email_error"><div class="form__error-message">Такое значение поля email уже существует.</div></div>
+              <input type="email" class="form__input" v-model="user.email">
+              <div></div>
+              <div v-if="emailError">
+                <div class="form__error-message">Такое значение поля email уже существует.</div>
+              </div>
             </div>
           </div>
           <div class="form__row">
             <label class="form__label">Пароль</label>
             <div class="form__control">
-              <input :type="passwordType" class="form__input" v-model="user.password" placeholder="Придумайте пароль"><div></div>
+              <input :type="passwordType" class="form__input" v-model="user.password" placeholder="Придумайте пароль">
+              <div></div>
               <i class="fa show-password" :class="[passwordIcon]" @click="hidePassword = !hidePassword"></i>
             </div>
           </div>
-          <!-- <div class="form__row">
-            <label class="form__label">Подтверждение</label>
-            <div class="form__control">
-              <input :type="passwordType" class="form__input" v-model="confirmation" placeholder="Подтвердите пароль"><div></div>
-              <i class="fa show-password" :class="[passwordIcon]" @click="hidePassword = !hidePassword"></i>
-            </div>
-          </div> -->
           <div class="form__row form__wrap">
             <div class="form__control form__control_pt">
               <div class="checkbox checkbox_light">
@@ -80,7 +91,9 @@
             </div>
           </div>
           <div class="form__wrap form__btn">
-            <button type="submit" class="btn btn_type_flat btn_size_big" v-bind:class="{ btn_loading: isLoading }"><span class="loader" v-if="isLoading"></span>Зарегистрироваться</button>
+            <button type="submit" class="btn btn_type_flat btn_size_big" :class="{ btn_loading: isLoading }">
+              <span class="loader" v-if="isLoading"></span>Зарегистрироваться
+            </button>
           </div>
         </form>
       </div>
@@ -88,108 +101,105 @@
   </Dialog>
 </template>
 
-<script>
-import { mapActions, mapMutations } from 'vuex'
-import Dialog from '~/components/Dialog.vue'
+<script setup lang="ts">
+import { useAuthStore } from '~/stores/auth'
+import { useUIStore } from '~/stores/ui'
+import { useTempUsers } from '~/composables/useTempUsers'
 
-export default {
-  components: {
-    Dialog
-  },
-  props: {
-    value: Boolean
-  },
-  data () {
-    return {
-      dialog: false,
-      tab: 0,
-      valid: true,
-      type: 0,
-      user: {
-        type: '1',
-        company: '',
-        email: '',
-        password: '',
-        subscribe: true
-      },
-      hidePassword: true,
-      rules: {
-        required: value => !!value || 'Required.',
-        min: v => v.length >= 6 || 'Должно быть минимум 6 символов',
-        emailMatch: value => {
-          const reg = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
-          if (reg.test(value) == false) return 'Некорректный e-mail'
-          return true
-        }
-      },
-      error: undefined,
-      password_error: false,
-      email_error: false,
-      isLoading: false,
-      confirmation: ''
-    }
-  },
-  computed: {
-    passwordType() {
-      return this.hidePassword ? 'password' : 'text'
-    },
-    passwordIcon() {
-      return this.hidePassword ? 'fa-eye' : 'fa-eye-slash'
-    }
-  },
-  watch: {
-    dialog (val) {
-      this.$emit("input", val)
-    },
-    value (val) {
-      this.dialog = val
-      if (val) {
-        this.password_error = false
-        this.email_error = false
-      }
-    }
-  },
-  methods: {
-    onTabClick(value) {
-      this.tab = value
-    },
-    login() {
-      this.password_error = false
-      this.isLoading = true
-      this.authenticate({ strategy: 'local', ...this.user })
-        .then((res) => {
-          this.isLoading = false
-          this.inverse('showAuthorization')
-        })
-        .catch(error => {
-          this.isLoading = false
-          this.password_error = true
-          // let type = error.className
-          // error = Object.assign({}, error)
-          // error.message = (type === 'not-authenticated')
-          //   ? 'Неверный логин или пароль'
-          //   : 'An error prevented login.'
-          // this.error = error
-        })
-    },
-    register() {
-      console.log('register');
-      this.isLoading = true
-      this.addUser(this.user)
-        .then(res => {
-          this.isLoading = false
-          this.dialog = false
-        })
-        .catch(error => {
-          this.isLoading = false
-          this.email_error = true
-          console.log('error', error);
-        })
-    },
-    ...mapActions('auth', ['authenticate']),
-    ...mapActions('tempusers', { addUser: 'create' }),
-    ...mapMutations({ inverse: 'inverse' })
+interface Props {
+  modelValue: boolean
+}
+
+const props = defineProps<Props>()
+
+const emit = defineEmits<{
+  'update:modelValue': [value: boolean]
+}>()
+
+const authStore = useAuthStore()
+const uiStore = useUIStore()
+const { create: addUser } = useTempUsers()
+
+const dialog = ref(props.modelValue)
+const tab = ref(0)
+const hidePassword = ref(true)
+const passwordError = ref(false)
+const emailError = ref(false)
+const isLoading = ref(false)
+
+const user = ref({
+  type: '1',
+  company: '',
+  email: '',
+  password: '',
+  subscribe: true
+})
+
+const passwordType = computed(() => hidePassword.value ? 'password' : 'text')
+const passwordIcon = computed(() => hidePassword.value ? 'fa-eye' : 'fa-eye-slash')
+
+watch(() => props.modelValue, (val) => {
+  dialog.value = val
+  if (val) {
+    passwordError.value = false
+    emailError.value = false
   }
+})
+
+watch(dialog, (val) => {
+  emit('update:modelValue', val)
+})
+
+const onTabClick = (value: number) => {
+  tab.value = value
+}
+
+const login = async () => {
+  passwordError.value = false
+  isLoading.value = true
+  
+  try {
+    const { $feathers } = useNuxtApp()
+    const feathers = $feathers as any
+    
+    const result = await feathers.authenticate({
+      strategy: 'local',
+      email: user.value.email,
+      password: user.value.password
+    })
+    
+    authStore.setAuth(result.accessToken, result.payload)
+    
+    // Get user data
+    const userService = feathers.service('users')
+    const userData = await userService.get(result.payload.userId)
+    authStore.setUser(userData)
+    
+    isLoading.value = false
+    uiStore.inverse('showAuthorization')
+  } catch (error) {
+    isLoading.value = false
+    passwordError.value = true
+  }
+}
+
+const register = async () => {
+  console.log('register')
+  isLoading.value = true
+  
+  try {
+    await addUser(user.value)
+    isLoading.value = false
+    dialog.value = false
+  } catch (error) {
+    isLoading.value = false
+    emailError.value = true
+    console.log('error', error)
+  }
+}
+
+const inverse = (name: string) => {
+  uiStore.inverse(name as any)
 }
 </script>
 
