@@ -28,7 +28,6 @@
 ### Другие зависимости
 - `vue-notifications@^0.9.0` → **ПРОВЕРИТЬ** совместимость с Vue 3
 - `vue-text-mask@^6.1.2` → **ПРОВЕРИТЬ** совместимость
-- `vue-youtube-embed@^2.2.1` → **ПРОВЕРИТЬ** совместимость
 - `vue-client-only@^2.0.0` → **ЗАМЕНИТЬ** на `<ClientOnly>` (встроено в Nuxt 3)
 - `jquery@^3.4.1` → **ОСТАВИТЬ** (работает, но лучше убрать позже)
 
@@ -155,8 +154,7 @@ npm install -D sass-loader@^13.3.0
 4. `nuxt-webfontloader` - может быть заменен на встроенный
 5. `vue-notifications` - проверить совместимость с Vue 3
 6. `vue-text-mask` - проверить совместимость
-7. `vue-youtube-embed` - проверить совместимость
-8. `stylus-loader` - проверить совместимость с Vite
+7. `stylus-loader` - проверить совместимость с Vite
 9. `svg-sprite-loader` - проверить совместимость с Vite
 
 ---

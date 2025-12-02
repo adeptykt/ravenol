@@ -36,8 +36,7 @@
     "throttle-debounce": "^1.1.0",
     "vue": "^3.4.21",
     "vue-notifications": "^0.9.0",
-    "vue-text-mask": "^6.1.2",
-    "vue-youtube-embed": "^2.2.1"
+    "vue-text-mask": "^6.1.2"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.23.0",

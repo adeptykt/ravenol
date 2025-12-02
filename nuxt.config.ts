@@ -6,7 +6,6 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       apiUrl: process.env.API_URL || 'https://indexol.ru/',
-      youtubeKey: process.env.youtube_key || 'AIzaSyAyQ36PQvHfsjTC0-S5M3XI0Y4ICYva3x0',
       imagePrefix: process.env.IMAGE_PREFIX || '',
       yandexMetrikaId: '64477855',
       googleAnalyticsId: 'UA-57404986-5',
