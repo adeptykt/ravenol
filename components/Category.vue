@@ -265,7 +265,7 @@ const getIds = (item: any, ids: string[] = []) => {
 }
 
 const getitems = async () => {
-  const $skip = (page_.value - 1) * limit.value
+  const skip = (page_.value - 1) * limit.value
   const cart = cartStore.list
   const query: any = { price: { $gt: 0 }, hidden: { $ne: true } }
 
@@ -290,7 +290,13 @@ const getitems = async () => {
   try {
     if (find_.value) {
       query.$search = find_.value
-      const response = await findSearch({ query: Object.assign({}, query, { $skip, $limit: limit.value }) })
+      const response = await findSearch({ 
+        query: {
+          ...query,
+          $skip: skip,
+          $limit: limit.value
+        }
+      })
       const result = loaditems(response)
       items.value = result.items
       total.value = result.total
@@ -319,11 +325,12 @@ const getitems = async () => {
       }
       
       const response = await findItems({ 
-        query: Object.assign({}, query, { 
-          $skip, 
-          $limit: limit.value, 
-          $sort: { haveRest: -1, name: 1 } 
-        }) 
+        query: {
+          ...query,
+          $skip: skip,
+          $limit: limit.value,
+          $sort: { haveRest: -1, name: 1 }
+        }
       })
       const result = loaditems(response)
       items.value = result.items
