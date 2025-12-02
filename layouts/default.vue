@@ -145,8 +145,8 @@
                 <div class="header__nav">
                   <nav class="nav nav_inner">
                     <ul class="nav__list">
-                      <template v-for="(item, i) in items">
-                        <li class="nav__item nav__item_sub" :key="i" v-bind:class="{ nav__item_opened: item.opened }" @mouseover="menuItemOver(item)" @mouseout="menuItemOut(item)">
+                      <template v-for="(item, i) in items" :key="i">
+                        <li class="nav__item nav__item_sub" v-bind:class="{ nav__item_opened: item.opened }" @mouseover="menuItemOver(item)" @mouseout="menuItemOut(item)">
                           <a :href="item.to" class="nav__link" @click.prevent="menuItemClick(item)">
                             <span class="nav__text" v-if="item.items">{{ item.title }}</span>
                             <template v-if="!item.items">{{ item.title }}</template>
