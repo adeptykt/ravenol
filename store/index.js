@@ -2,7 +2,6 @@ import { makeAuthPlugin, initAuth, hydrateApi, models } from '~/plugins/feathers
 import cart from './cart'
 import settings from './settings'
 import viewed from './viewed'
-import parseCookies from '@/utils/parse-cookies'
 
 const auth = makeAuthPlugin({
   userService: 'users',
@@ -24,8 +23,9 @@ const auth = makeAuthPlugin({
     ]
   },
   getters: {
-    user: (state, dispatch) => {
+    user: (state) => {
       if (!state.accessToken) return null
+      return state.user
     }
   },
   actions: {
@@ -79,6 +79,7 @@ export const state = () => ({
   menu_items: [],
   storeId: '',
   price_type: '',
+  selection_mode: '',
   categories_: [],
   tree: []
 })
@@ -130,6 +131,9 @@ export const mutations = {
   set_selection_mode(state, val) {
     state.selection_mode = val
   },
+  set_category_id(state, val) {
+    state.category_id = val
+  },
   set_history(state, val) {
     state.history = val
   },
@@ -154,15 +158,15 @@ export const mutations = {
   set_price_type(state, val) {
     state.price_type = val
   },
-  set_categories(state, val) {
-    state.categories = val
+  set_categories_(state, val) {
+    state.categories_ = val
   },
   set_state(state, { name, val }) {
     state[name] = val
   }
 }
 
-async function loadConstants(dispatch, commit, state) {
+async function loadConstants(dispatch, commit) {
   const response = await dispatch('constants/find', {})
   if (response && Array.isArray(response) && response.length > 0) {
     const settings = response[0]
@@ -197,14 +201,14 @@ function loadCategories(dispatch, commit) {
   })
 }
 
-function init(dispatch, commit, state) {
-  loadConstants(dispatch, commit, state)
+function init(dispatch, commit) {
+  loadConstants(dispatch, commit)
   loadCategories(dispatch, commit)
 }
 
 export const actions = {
   nuxtServerInit({ dispatch, commit }, { req }) { // eslint-disable-line consistent-return
-    init(dispatch, commit, state)
+    init(dispatch, commit)
     return initAuth({
       commit,
       dispatch,
@@ -213,10 +217,9 @@ export const actions = {
       cookieName: 'feathers-jwt'
     })
   },
-  nuxtClientInit ({ state, dispatch, commit }, context) {
-    // Run the authentication with the access token hydrated from the server store
+  nuxtClientInit ({ state, dispatch, commit }) {
     hydrateApi({ api: models.api })
-    init(dispatch, commit, state)
+    init(dispatch, commit)
 
     if (state.auth.accessToken) {
       return dispatch('auth/onInitAuth', state.auth.payload)
@@ -225,7 +228,7 @@ export const actions = {
   get_menu_items({ state, commit }) {
     const menu = []
     if (state.auth.user) {
-      const isCompany = state.auth.user.company ? true : false
+      const isCompany = !!state.auth.user.company
       menu.push({ to: "/account/", name: "Профиль" })
       menu.push({ to: "/account/history", name: "История заказов" })
       if (isCompany) {
@@ -275,8 +278,8 @@ export const actions = {
     .catch(error => console.log('generation_list error:', error))
   },
   async get_gears({ dispatch, commit, state }, generation) {
-    let res, model, vendor, category
-    history = []
+    let model, vendor, category
+    const history = []
     history.push({ dispatch: 'get_gears', data: generation, name: generation.name })
     if (generation.model._id) model = generation.model
     else model = await dispatch('models/get', generation.model)
@@ -296,7 +299,7 @@ export const actions = {
     let articles = []
     generation.gears.forEach(gear => {
       gear.products && gear.products.forEach(product => {
-        if (articles.indexOf(product) == -1) articles.push(product)
+        if (articles.indexOf(product) === -1) articles.push(product)
       })
     })
     if (articles.length) {
@@ -328,7 +331,7 @@ export const actions = {
     .catch(error => console.log('gears error:', error))
   },
   open_gear({ dispatch, commit, state }, category) {
-    history = []
+    const history = []
     const add_history = async (id) => {
       let cat
       if (id) cat = await dispatch('categories/get', id)
