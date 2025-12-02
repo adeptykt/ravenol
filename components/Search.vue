@@ -1,37 +1,53 @@
 <template>
-  <div class="search" v-bind:class="{ search_opened: search_opened }" v-on:keyup.esc="onCloseSearch" tabindex="0">
+  <div 
+    class="search" 
+    :class="{ search_opened: searchOpened }" 
+    @keyup.esc="onCloseSearch" 
+    tabindex="0"
+  >
     <div class="search__top">
       <div class="search__box">
         <div class="b-search b-search_sm b-search_popup">
           <div class="b-search__base">
-            <input type="text" placeholder="Быстрый поиск" class="b-search__input" v-model="global_search" @change="onchange_search" ref="top_search_input">
+            <input 
+              type="text" 
+              placeholder="Быстрый поиск" 
+              class="b-search__input" 
+              v-model="globalSearch" 
+              @change="onchangeSearch" 
+              ref="topSearchInput"
+            >
           </div>
         </div>
       </div>
       <a href="#" class="search__close" @click="onCloseSearch">
         <span class="icon icon_close_big">
-          <svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#close_big"></use></svg>
+          <svg class="icon__item">
+            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#close_big"></use>
+          </svg>
         </span>
       </a>
     </div>
     <div class="search__container">
       <div class="box">
         <div class="search__items items items_search">
-          <template v-for="(item, i) in results">
+          <template v-for="(item, i) in results" :key="i">
             <div class="items__row">
               <div class="items__wrap">
-                <n-link :to="link(item)" class="items__product" @click.native="onClickItemInSearch(item._id)">
-                <!-- <n-link to="#" class="items__product" @click.native="onClickItemInSearch(item._id)"> -->
+                <NuxtLink 
+                  :to="link(item)" 
+                  class="items__product" 
+                  @click="onClickItemInSearch(item._id)"
+                >
                   <div class="items__pic">
                     <img :src="image(item)" class="items__img">
                   </div>
                   <div class="items__base">
-                    <div class="items__title">{{item.name}}</div>
+                    <div class="items__title">{{ item.name }}</div>
                   </div>
-                </n-link>
+                </NuxtLink>
                 <div class="items__info">
-                  <!-- <div class="items__cell items__cell_value">1 л</div> -->
-                  <div class="items__cell items__cell_vendor">{{item.article}}</div>
+                  <div class="items__cell items__cell_vendor">{{ item.article }}</div>
                 </div>
               </div>
             </div>
@@ -42,88 +58,115 @@
   </div>
 </template>
 
-<script>
-import { mapMutations } from 'vuex'
+<script setup lang="ts">
+import { useUIStore } from '~/stores/ui'
+import { useSearch } from '~/composables/useSearch'
+import { useRuntimeConfig } from '#app'
 
-export default {
-  name: 'search',
+interface Props {
+  modelValue: boolean
+}
 
-  head () {
-    return {
-      bodyAttrs: {
-        class: this.search_opened ? 'overlayed' : ''
-      }
+const props = defineProps<Props>()
+
+const emit = defineEmits<{
+  'update:modelValue': [value: boolean]
+}>()
+
+const uiStore = useUIStore()
+const { find: searchFind } = useSearch()
+const config = useRuntimeConfig()
+const router = useRouter()
+
+const searchOpened = ref(props.modelValue)
+const results = ref<any[]>([])
+const loading = ref(false)
+const topSearchInput = ref<HTMLInputElement | null>(null)
+
+const globalSearch = computed({
+  get: () => uiStore.global_search,
+  set: (val: string) => uiStore.setSearch(val)
+})
+
+// Update body class when search opens
+useHead({
+  bodyAttrs: {
+    class: computed(() => searchOpened.value ? 'overlayed' : '')
+  }
+})
+
+watch(() => props.modelValue, (val) => {
+  searchOpened.value = val
+})
+
+watch(searchOpened, (val) => {
+  emit('update:modelValue', val)
+})
+
+watch(globalSearch, (val) => {
+  if (val) {
+    searchOpened.value = true
+    nextTick(() => {
+      topSearchInput.value?.focus()
+    })
+    if (val.length > 2) {
+      querySelections(val)
     }
-  },
-  props: {
-    value: Boolean
-  },
-  data () {
-    return {
-      search_opened: this.value,
-      results: []
+  }
+})
+
+const image = (item: any) => {
+  if (item.image && item.image.length > 0) {
+    return (config.public.imagePrefix as string) + item.image
+  }
+  return (config.public.imagePrefix as string) + 'noimage.jpg'
+}
+
+const link = (item: any) => {
+  return `/products/${item._id}`
+}
+
+const onClickItemInSearch = (id: string) => {
+  uiStore.setSearch('')
+  searchOpened.value = false
+  router.push({ path: `/products/${id}` })
+}
+
+const onCloseSearch = () => {
+  uiStore.setSearch('')
+  searchOpened.value = false
+}
+
+const querySelections = async (search: string) => {
+  if (search) {
+    loading.value = true
+    const query = { 
+      $skip: 0, 
+      $limit: 10, 
+      price: { $gt: 0 }, 
+      $search: search, 
+      $sort: { name: -1 }, 
+      hidden: false 
     }
-  },
-  computed: {
-    global_search: {
-      get: function () { return this.$store.state.global_search },
-      set: function (val) { this.set_search(val) }
-    },
-  },
-  watch: {
-    value(val) {
-      this.search_opened = val;
-    },
-    search_opened(val) {
-      this.$emit('input', val)
-    },
-    global_search(val) {
-      if (val) {
-        this.search_opened = true
-        this.$refs.top_search_input.focus()
-        val !== this.select && val.length > 2 && this.querySelections(val)
-      }
-    },
-  },
-  methods: {
-    image(item) {
-      if (item.image && item.image.length > 0) return process.env.IMAGE_PREFIX + item.image
-      return process.env.IMAGE_PREFIX + "noimage.jpg"
-    },
-    link(item) {
-      return `/products/${item._id}`
-    },
-    onClickItemInSearch(id) {
-      this.set_search('')
-      this.search_opened = false
-      this.$router.push({ path: `/products/${id}` })
-    },
-    onCloseSearch() {
-      this.global_search = ''
-      this.search_opened = false
-    },
-    querySelections(search) {
-      if (search) {
-        this.loading = true
-        const query = { $skip: 0, $limit: 10, price: { $gt: 0 }, $search: search, $sort: { name: -1 }, hidden: false }
-        console.log('querySelections', query);
-        this.$store.dispatch('search/find', { query })
-          .then(res => {
-            this.results = res.data || []
-            this.loading = false
-          })
-      } else {
-        this.results = []
-      }
-    },
-    onchange_search(e) {
-      if (this.search_opened) {
-        this.search_opened = false
-        this.$router.push({ path: '/search', query: { find: this.global_search } })
-        e.preventDefault()
-      }
-    },
-    ...mapMutations({ set_search: 'set_search' })
+    try {
+      const res = await searchFind({ query })
+      results.value = res.data || []
+    } catch (error) {
+      console.error('Search error:', error)
+      results.value = []
+    } finally {
+      loading.value = false
+    }
+  } else {
+    results.value = []
+  }
+}
+
+const onchangeSearch = (e: Event) => {
+  if (searchOpened.value) {
+    searchOpened.value = false
+    router.push({ path: '/search', query: { find: globalSearch.value } })
+    e.preventDefault()
   }
 }
 </script>

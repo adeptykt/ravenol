@@ -1,71 +1,75 @@
 <template>
   <div class="a-checkbox">
-    <v-icon :color="icon_color" :medium="medium" :small="small" @click="onclick">{{icon}}</v-icon>
+    <v-icon :color="iconColor" :medium="medium" :small="small" @click="onclick">{{ icon }}</v-icon>
     <div class="label">
-      {{this.label}}
+      {{ label }}
       <slot></slot>
     </div>
   </div>
 </template>
 
-<script>
-export default {
-  name: 'a-checkbox',
+<script setup lang="ts">
+interface Props {
+  modelValue: boolean | any[]
+  color?: string
+  small?: boolean
+  medium?: boolean
+  label?: string
+}
 
-  props: {
-    value: [Boolean, Array],
-    color: String,
-    small: {
-      type: Boolean,
-      default: true
-    },
-    medium: Boolean,
-    label: String
-  },
-  data (vm) {
-    const lazyValue = vm.$attrs.value || vm.value
-    return {
-      checked: false,
-      icon: 'check_box_outline_blank',
-      lazyValue,
-      values: vm.value || []
-    }
-  },
-  watch: {
-    checked (val) {
-      this.icon = val ? 'check_box' : 'check_box_outline_blank'
-      if (Array.isArray(this.value)) {
-        // const index = this.values.findIndex(a => a === this.lazyValue)
-        // if (index > -1 && !val) this.values.splice(index, 1)
-        // if (index == -1 && val) this.values.push(this.lazyValue)
-        // this.$emit("input", this.values)
-        const index = this.value.findIndex(a => a === this.lazyValue)
-        if (index > -1 && !val) this.value.splice(index, 1)
-        if (index == -1 && val) this.value.push(this.lazyValue)
-      } else {
-        this.$emit("input", val)
-      }
-      this.$emit("change", val, this.lazyValue)
-    },
-    value (val) {
-      if (Array.isArray(this.value)) {
-        const index = val.findIndex(a => a === this.lazyValue)
-        this.checked = index > -1
-      } else {
-        this.checked = val
-      }
-    }
-  },
-  computed: {
-    icon_color () {
-      return this.checked ? (this.color || 'primary') : 'inherit'
-    }
-  },
-  methods: {
-    onclick() {
-      this.checked = !this.checked
-    }
+const props = withDefaults(defineProps<Props>(), {
+  small: true,
+  medium: false,
+  color: undefined,
+  label: ''
+})
+
+const emit = defineEmits<{
+  'update:modelValue': [value: boolean | any[]]
+  'change': [value: boolean, lazyValue?: any]
+}>()
+
+const attrs = useAttrs()
+const lazyValue = attrs.value || props.modelValue
+
+const checked = ref(Array.isArray(props.modelValue) 
+  ? props.modelValue.findIndex((a: any) => a === lazyValue) > -1
+  : props.modelValue as boolean)
+
+const icon = computed(() => checked.value ? 'check_box' : 'check_box_outline_blank')
+
+const iconColor = computed(() => {
+  return checked.value ? (props.color || 'primary') : 'inherit'
+})
+
+watch(() => props.modelValue, (val) => {
+  if (Array.isArray(val)) {
+    const index = val.findIndex((a: any) => a === lazyValue)
+    checked.value = index > -1
+  } else {
+    checked.value = val as boolean
   }
+}, { immediate: true })
+
+watch(checked, (val) => {
+  if (Array.isArray(props.modelValue)) {
+    const currentValue = [...props.modelValue]
+    const index = currentValue.findIndex((a: any) => a === lazyValue)
+    if (index > -1 && !val) {
+      currentValue.splice(index, 1)
+    }
+    if (index === -1 && val) {
+      currentValue.push(lazyValue)
+    }
+    emit('update:modelValue', currentValue)
+  } else {
+    emit('update:modelValue', val)
+  }
+  emit('change', val, lazyValue)
+})
+
+const onclick = () => {
+  checked.value = !checked.value
 }
 </script>
 

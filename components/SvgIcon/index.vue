@@ -1,35 +1,24 @@
 <template>
-  <svg :class="svgClass" aria-hidden="true" v-on="$listeners">
+  <svg :class="svgClass" aria-hidden="true" v-bind="$attrs">
     <use :xlink:href="iconName" />
   </svg>
 </template>
 
-<script>
-export default {
-  name: 'SvgIcon',
-  props: {
-    iconClass: {
-      type: String,
-      required: true
-    },
-    className: {
-      type: String,
-      default: ''
-    }
-  },
-  computed: {
-    iconName() {
-      return `#icon-${this.iconClass}`
-    },
-    svgClass() {
-      if (this.className) {
-        return 'svg-icon ' + this.className
-      } else {
-        return 'svg-icon'
-      }
-    }
-  }
+<script setup lang="ts">
+interface Props {
+  iconClass: string
+  className?: string
 }
+
+const props = withDefaults(defineProps<Props>(), {
+  className: ''
+})
+
+const iconName = computed(() => `#icon-${props.iconClass}`)
+
+const svgClass = computed(() => {
+  return props.className ? `svg-icon ${props.className}` : 'svg-icon'
+})
 </script>
 
 <style scoped>

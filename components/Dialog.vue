@@ -1,39 +1,44 @@
 <template>
-  <transition name="modal" v-if="showModal">
+  <Transition name="modal" v-if="showModal">
     <div class="modal-mask" @click="closeAtOutsideClick()">
       <div class="modal-wrapper">
-        <div class="modal-container" v-bind:style="{ 'max-width': styleMaxWidth }" @click.stop>
+        <div class="modal-container" :style="{ 'max-width': styleMaxWidth }" @click.stop>
           <slot></slot>
         </div>
       </div>
     </div>
-  </transition>
+  </Transition>
 </template>
 
-<script>
-export default {
-  props: {
-    value: Boolean,
-    maxWidth: String
-  },
-  data: (vm) => ({
-    styleMaxWidth: vm.maxWidth || '300px',
-    showModal: false
-  }),
-  watch: {
-    showModal (val) {
-      this.$emit("input", val)
-    },
-    value (val) {
-      this.showModal = val
-    }
-  },
-  methods: {
-    closeAtOutsideClick() {
-      this.showModal = false
-    }
-  }
-};
+<script setup lang="ts">
+interface Props {
+  modelValue: boolean
+  maxWidth?: string
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  maxWidth: '300px'
+})
+
+const emit = defineEmits<{
+  'update:modelValue': [value: boolean]
+}>()
+
+const showModal = ref(props.modelValue)
+
+watch(() => props.modelValue, (val) => {
+  showModal.value = val
+})
+
+watch(showModal, (val) => {
+  emit('update:modelValue', val)
+})
+
+const closeAtOutsideClick = () => {
+  showModal.value = false
+}
+
+const styleMaxWidth = computed(() => props.maxWidth)
 </script>
 
 <style>
@@ -58,7 +63,6 @@ export default {
   margin: 0px auto;
   background-color: #fff;
   transition: all .3s ease;
-  /* font-family: Helvetica, Arial, sans-serif; */
   border-radius: 6px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, .5);
 }
@@ -72,16 +76,18 @@ export default {
  * these styles.
  */
 
-.modal-enter {
-  opacity: 0;
-}
-
+.modal-enter-active,
 .modal-leave-active {
+  transition: opacity .3s ease;
+}
+
+.modal-enter-from,
+.modal-leave-to {
   opacity: 0;
 }
 
-.modal-enter .modal-container,
-.modal-leave-active .modal-container {
+.modal-enter-from .modal-container,
+.modal-leave-to .modal-container {
   -webkit-transform: scale(1.1);
   transform: scale(1.1);
 }
