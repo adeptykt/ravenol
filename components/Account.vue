@@ -17,7 +17,7 @@
             </span>
           </a>
           <ul class="side-nav__list">
-            <template v-for="item in menu">
+            <template v-for="item in menu" :key="item.to">
               <li class="side-nav__item" v-bind:class="{ 'side-nav__item_active': path === item.to }">
                 <nuxt-link :to="item.to" class="side-nav__link">{{item.name}}</nuxt-link>
                 <span class="side-nav__icon icon icon_fields_remain" v-if="item.remain">
@@ -25,36 +25,8 @@
                 </span>
               </li>
             </template>
-            <!-- <li class="side-nav__item" v-bind:class="{ 'side-nav__item_active': path === '/account/history' }">
-              <nuxt-link to="/account/history" class="side-nav__link nuxt-link-exact-active nuxt-link-active">История заказов</nuxt-link>
-            </li>
-            <li class="side-nav__item" v-bind:class="{ 'side-nav__item_active': path === '/account/requisites' }">
-              <nuxt-link to="/account/requisites" class="side-nav__link nuxt-link-exact-active nuxt-link-active">Реквизиты</nuxt-link>
-              <span class="side-nav__icon icon icon_fields_remain">
-                <svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#fields_remain"></use></svg>
-              </span>
-            </li>
-            <li class="side-nav__item" v-bind:class="{ 'side-nav__item_active': path === '/account/delivery' }">
-              <nuxt-link to="/account/delivery" class="side-nav__link nuxt-link-exact-active nuxt-link-active">Пункты разгрузки</nuxt-link>
-              <span class="side-nav__icon icon icon_fields_remain">
-                <svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#fields_remain"></use></svg>
-              </span>
-            </li>
-            <li class="side-nav__item" v-bind:class="{ 'side-nav__item_active': path === '/account/employees' }">
-              <nuxt-link to="/account/employees" class="side-nav__link nuxt-link-exact-active nuxt-link-active">Сотрудники</nuxt-link>
-            </li>
-            <li class="side-nav__item" v-bind:class="{ 'side-nav__item_active': path === '/account/additionally' }">
-              <nuxt-link to="/account/additionally" class="side-nav__link nuxt-link-exact-active nuxt-link-active">Дополнительно</nuxt-link>
-              <span class="side-nav__icon icon icon_fields_remain">
-                <svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#fields_remain"></use></svg>
-              </span>
-            </li>
-            <li class="side-nav__item">
-              <nuxt-link to="/auth/logout" class="side-nav__link">Выход</nuxt-link>
-            </li> -->
           </ul>
         </div>
-        <!---->
       </div>
       <div class="sep__base">
         <div class="settings">
@@ -69,7 +41,6 @@
               <div class="card__contacts">
                 <div class="card__item"><a href="tel:+7914708866" class="link">+7 (914) 270-88-66</a></div>
                 <div class="card__item"><a href="mailto:bratlex@gmail.com" class="link">bratlex@gmail.com</a></div>
-                <!---->
               </div>
             </div>
             <ul class="settings__info data">

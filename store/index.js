@@ -173,7 +173,6 @@ async function loadConstants(dispatch, commit, state) {
 
 function loadCategories(dispatch, commit) {
   return dispatch('categories/find', { paginate: false } ).then(response => {
-    // const nest = (items, id = null, link = 'parent_id') => items.filter(item => item[link] === id).map(item => ({ ...item, children: nest(items, item.id) }))
     const categories = []
     const tree = []
     const root = { id: 0, children: tree }
@@ -205,8 +204,6 @@ function init(dispatch, commit, state) {
 
 export const actions = {
   nuxtServerInit({ dispatch, commit }, { req }) { // eslint-disable-line consistent-return
-    // const accessToken = parseCookies(req)['feathers-jwt']
-    // console.log('nuxtServerInit', accessToken);
     init(dispatch, commit, state)
     return initAuth({
       commit,

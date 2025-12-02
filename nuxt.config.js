@@ -1,12 +1,9 @@
-// import TerserPlugin from 'terser-webpack-plugin'
 var webpack = require('webpack')
-// var path = require('path')
 require('dotenv').config()
 
 export default {
   mode: 'universal',
   env: {
-    // apiUrl: process.env.API_URI || 'http://localhost:3030'
     API_URL: 'https://indexol.ru/',
     youtube_key: 'AIzaSyAyQ36PQvHfsjTC0-S5M3XI0Y4ICYva3x0',
     IMAGE_PREFIX: process.env.IMAGE_PREFIX,
@@ -17,9 +14,6 @@ export default {
   server: {
     port: process.env.PORT
   },
-  /*
-  ** Headers of the page
-  */
   head: {
     title: 'indexol',
     titleTemplate: '%s - indexol.ru',
@@ -31,7 +25,6 @@ export default {
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
-      // { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons' }
     ]
   },
   plugins: [
@@ -39,7 +32,6 @@ export default {
     { src: '~plugins/feathers' },
     { src: '~plugins/prototypes.js' },
     { src: '~plugins/vue-notifications', mode: 'client' }
-    // { src: '~plugins/youtube', mode: 'client' },
   ],
   middleware: [
     'middleware/feathers.js'
@@ -55,10 +47,6 @@ export default {
       {
         id: '64477855',
         webvisor: true
-        // clickmap:true,
-        // useCDN:false,
-        // trackLinks:true,
-        // accurateTrackBounce:true,
       }
     ]
   ],
@@ -72,16 +60,8 @@ export default {
       families: ['Roboto:300,400,500,700|Material+Icons']
     }
   },
-  /*
-  ** Customize the progress bar color
-  */
   loading: { color: '#3B8070' },
-  /*
-  ** Build configuration
-  */
-  // '~plugins/htmlEditor',
   build: {
-    // analyze: true,
     plugins: [
       new webpack.ProvidePlugin({
         '$': 'jquery',
@@ -103,19 +83,6 @@ export default {
       'vue-notifications'
     ],
     extractCSS: true,
-    /*
-    ** Run ESLint on save
-    */
-    // extend (config, {isDev}) {
-    //   if (isDev && process.client) {
-    //     config.module.rules.push({
-    //       enforce: 'pre',
-    //       test: /\.(js|vue)$/,
-    //       loader: 'eslint-loader',
-    //       exclude: /(node_modules)/
-    //     })
-    //   }
-    // },
     extend (config, {isDev}) {
       if (isDev && process.client) {
         config.module.rules.push({
@@ -131,14 +98,5 @@ export default {
         'autoprefixer': {}
       }
     }
-    // optimization: {
-    //   minimize: true,
-    //   minimizer: [
-    //     new TerserPlugin({
-    //       cache: true,
-    //       parallel: false
-    //     })
-    //   ]
-    // }
   }
 }

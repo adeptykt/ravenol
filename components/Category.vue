@@ -240,11 +240,6 @@ export default {
     }
   },
   mounted() {
-    // this.getCategories().then(this.getitems())
-    // this.getitems()
-    // this.$store.dispatch('aggregate/find', { query: 'vehicle' }).then(res => this.vehicles = res.map(item => Object.assign({ title: item._id, value: item._id })))
-    // this.$store.dispatch('aggregate/find', { query: { name: 'compositions', isArray: true } }).then(res => this.compositions = res.map(item => Object.assign({ title: item._id, value: item._id })))
-    // this.$store.dispatch('viscosities/find', { query: { $limit: null } }).then(res => this.viscosities = res.data.map(item => Object.assign({ title: item.name, value: item.name.replace('SAE ', '') })))
   },
   async fetch() {
     const { items, total, pages } = await this.getitems()
@@ -276,10 +271,6 @@ export default {
         const items = response.data.reduce((items, item) => {
           const cart_item = cart.find(e => e.id === item._id)
           const product = Object.assign({ quantity: 1, cart: 0, volume: '', price: 0, balance: 0 }, item)
-          // if (item.balances && item.balances.length > 0) {
-          //   const find = item.balances.find(i => i.storeId === this.store)
-          //   if (find) product.balance = find.quantity
-          // }
           if (cart_item !== undefined) Object.assign(product, { quantity: cart_item.quantity, cart: cart_item.quantity })
           items.push(product)
           return items
@@ -304,14 +295,11 @@ export default {
           this.getIds(find, ids)
           Object.assign(query, { category: { $in: ids } })
         }
-        // this.loadProperties(query).then(res => this.brands = res.map(item => Object.assign({ value: item._id })))
         this.$store.dispatch('aggregate/find', { query: { match: query, property: 'brand' } }).then(res => this.brands = res.map(item => Object.assign({ value: item._id })))
         return this.$store.dispatch('items/find', { query: Object.assign({}, query, { $skip, $limit: this.limit, $sort: { haveRest: -1, name: 1 } }) }).then(loaditems)
       }
     },
     typeOfProductSelect(value) {
-      // const index = this.typeOfProduct.indexOf(value)
-      // if (index === -1) this.typeOfProduct.push(value)
       this.menu_open = false
       this.typeOfProduct = [value]
       this.getitems()
@@ -334,10 +322,6 @@ export default {
       this.updateitem(item)
     },
     addcart(item) {
-      // this.$store.commit('cart/add', item)
-      // item.cart = item.quantity
-      // this.items.splice(this.items.indexOf(item), 1, item)
-      // this.showCartMessage()
     },
     getname(item) {
       return item.cart ? (item.cart === item.quantity ? "В корзине" : "Изменить") : "В корзину"
