@@ -169,10 +169,11 @@
 ### Этап 6: Миграция компонентов (10-15 дней) ⏳
 1. ✅ Начать с простых компонентов (Breadcrumbs, SvgIcon, Dialog, DialogForm, Question, Checkbox, Paginator, FilterItem)
 2. ✅ Мигрировать средние компоненты (ProductItem, Search)
-3. ✅ Мигрировать компоненты авторизации (Account, Login, Register, Authorization)
-4. ⏳ Мигрировать остальные компоненты (Category, Profile, Order, Service, Product, AuthReset, etc.)
-5. ⏳ Заменить все `this.$store` на Pinia stores (частично выполнено - ~60%)
-6. ✅ Заменить `.sync` на `v-model` (не найдено использований `.sync`)
+3. ✅ Мигрировать компоненты авторизации (Account, Login, Register, Authorization, AuthReset, Profile)
+4. ✅ Мигрировать остальные компоненты (Order, Service)
+5. ⏳ Мигрировать сложные компоненты (Category, Category_, Product)
+6. ⏳ Заменить все `this.$store` на Pinia stores (частично выполнено - ~75%)
+7. ✅ Заменить `.sync` на `v-model` (не найдено использований `.sync`)
 
 ### Этап 7: Миграция страниц (5-7 дней)
 1. Заменить `asyncData()` на `useAsyncData()`
