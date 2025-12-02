@@ -144,17 +144,17 @@
 6. ⏳ Установить обновленные зависимости (`npm install`)
 
 ### Этап 3: Миграция конфигурации (1 день)
-1. Переписать `nuxt.config.js` под Nuxt 3
-2. Обновить структуру плагинов
-3. Мигрировать middleware
-4. Настроить новые модули
+1. ✅ Переписать `nuxt.config.js` под Nuxt 3 → `nuxt.config.ts`
+2. ✅ Обновить структуру плагинов
+3. ✅ Мигрировать middleware
+4. ✅ Настроить новые модули
 
 ### Этап 4: Миграция Store (3-5 дней)
-1. Установить Pinia
-2. Мигрировать модули (cart, settings, viewed)
-3. Переписать feathers-vuex интеграцию
-4. Создать composables для FeathersJS
-5. Настроить персистентность (localStorage)
+1. ✅ Установить Pinia (в package.json)
+2. ✅ Мигрировать модули (cart, settings, viewed, auth, ui)
+3. ✅ Переписать feathers-vuex интеграцию → composables
+4. ✅ Создать composables для FeathersJS
+5. ✅ Настроить персистентность (localStorage через pinia-plugin-persistedstate)
 
 ### Этап 5: Миграция плагинов (2-3 дня)
 1. Переписать `plugins/feathers-vuex.js` (убрать Vue.use)
