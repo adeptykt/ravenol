@@ -16,3 +16,4 @@ static/images
 package-lock.json
 certificates
 .idea
+*.swp
