@@ -45,7 +45,7 @@ const { data: banners, pending, error, refresh } = await useAsyncData(
     return response.data || []
   },
   {
-    server: true,
+    server: false, // FeathersJS is client-only
     default: () => [],
     getCachedData(key) {
       // Check if data is fresh (less than 30 seconds old)
