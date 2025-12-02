@@ -10,6 +10,7 @@
 </template>
 
 <script setup lang="ts">
+import { onActivated } from 'vue'
 import { useRoute } from 'vue-router'
 import { useFeathersService } from '~/composables/useFeathersService'
 
@@ -49,6 +50,9 @@ const { data: banners, pending, error, refresh } = await useAsyncData(
     default: () => [],
     getCachedData(key) {
       // Check if data is fresh (less than 30 seconds old)
+      if (!nuxtApp.payload || !nuxtApp.payload.data) {
+        return undefined
+      }
       const cached = nuxtApp.payload.data[key]
       if (cached && cached.timestamp && Date.now() - cached.timestamp < 30000) {
         return cached.data
@@ -60,6 +64,9 @@ const { data: banners, pending, error, refresh } = await useAsyncData(
 
 // Refresh on activate if data is stale (equivalent to activated hook)
 onActivated(() => {
+  if (!nuxtApp.payload || !nuxtApp.payload.data) {
+    return
+  }
   const cached = nuxtApp.payload.data['banners']
   if (cached && cached.timestamp && Date.now() - cached.timestamp > 30000) {
     refresh()
@@ -67,7 +74,7 @@ onActivated(() => {
 })
 
 // Store timestamp for cache checking
-if (banners.value) {
+if (banners.value && nuxtApp.payload && nuxtApp.payload.data) {
   nuxtApp.payload.data['banners'] = {
     data: banners.value,
     timestamp: Date.now()
