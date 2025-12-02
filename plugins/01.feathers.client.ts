@@ -58,6 +58,8 @@ export default defineNuxtPlugin((nuxtApp) => {
 
   // Make FeathersJS client available throughout the app
   // In Nuxt 3, return provide object to make it available via $feathers
+  console.log('FeathersJS plugin: Providing feathers client')
+  
   return {
     provide: {
       feathers: feathersClient

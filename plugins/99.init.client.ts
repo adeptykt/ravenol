@@ -5,6 +5,8 @@ import { useConstants } from '~/composables/useConstants'
 import { useAuth } from '~/composables/useAuth'
 
 export default defineNuxtPlugin(async (nuxtApp) => {
+  console.log('Init plugin: Starting, checking for FeathersJS...')
+  
   // Wait for FeathersJS plugin to be available
   // Check if feathers is available, if not wait a bit
   let feathersAvailable = false
@@ -14,8 +16,12 @@ export default defineNuxtPlugin(async (nuxtApp) => {
   while (!feathersAvailable && retries < maxRetries) {
     const feathers = nuxtApp.$feathers
     if (feathers) {
+      console.log('Init plugin: FeathersJS found!')
       feathersAvailable = true
       break
+    }
+    if (retries === 0) {
+      console.log('Init plugin: Waiting for FeathersJS...')
     }
     await new Promise(resolve => setTimeout(resolve, 50))
     retries++
@@ -24,7 +30,8 @@ export default defineNuxtPlugin(async (nuxtApp) => {
   if (!feathersAvailable) {
     console.error('FeathersJS plugin not available after waiting', {
       hasFeathers: !!nuxtApp.$feathers,
-      retries
+      retries,
+      nuxtAppKeys: Object.keys(nuxtApp)
     })
     return
   }
