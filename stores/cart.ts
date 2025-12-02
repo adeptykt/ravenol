@@ -45,7 +45,7 @@ export const useCartStore = defineStore('cart', {
   },
   
   persist: {
-    storage: localStorage,
+    storage: process.client ? localStorage : undefined,
     paths: ['list']
   }
 })

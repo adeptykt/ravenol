@@ -30,7 +30,7 @@ export const useViewedStore = defineStore('viewed', {
   },
   
   persist: {
-    storage: localStorage,
+    storage: process.client ? localStorage : undefined,
     paths: ['list']
   }
 })

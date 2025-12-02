@@ -18,7 +18,7 @@ export const useSettingsStore = defineStore('settings', {
   },
   
   persist: {
-    storage: localStorage,
+    storage: process.client ? localStorage : undefined,
     paths: ['view_items', 'sort_items']
   }
 })
