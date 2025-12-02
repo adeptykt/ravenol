@@ -1,17 +1,18 @@
 import { useUIStore } from '~/stores/ui'
-import { useCategoriesService } from './useFeathersService'
 
 export const useCategories = () => {
   const uiStore = useUIStore()
-  const categoriesService = useCategoriesService()
   
   const loadCategories = async () => {
     try {
-      const response = await categoriesService.find({ paginate: false })
+      const categoriesService = useCategoriesService()
+      const response = await categoriesService.find({ paginate: false }) as any
+      const data = Array.isArray(response) ? response : response.data || []
+      
       const categories: any[] = []
       const tree: any[] = []
       const root = { id: 0, children: tree }
-      const stack = [...response]
+      const stack = [...data]
       
       while (stack.length > 0) {
         const item = stack.shift()!

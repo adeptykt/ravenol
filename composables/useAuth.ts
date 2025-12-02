@@ -1,12 +1,13 @@
 import { useAuthStore } from '~/stores/auth'
-import { useFeathers } from './useFeathers'
 
 export const useAuth = () => {
   const authStore = useAuthStore()
-  const feathers = useFeathers()
   
   const authenticate = async (strategy: string, accessToken?: string) => {
     try {
+      const { $feathers } = useNuxtApp()
+      const feathers = $feathers as any
+      
       const result = await feathers.authenticate({
         strategy,
         accessToken: accessToken || authStore.accessToken
@@ -29,6 +30,8 @@ export const useAuth = () => {
   
   const logout = async () => {
     try {
+      const { $feathers } = useNuxtApp()
+      const feathers = $feathers as any
       await feathers.logout()
     } catch (error) {
       console.error('Logout error:', error)

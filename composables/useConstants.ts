@@ -1,15 +1,16 @@
 import { useUIStore } from '~/stores/ui'
-import { useConstantsService } from './useFeathersService'
 
 export const useConstants = () => {
   const uiStore = useUIStore()
-  const constantsService = useConstantsService()
   
   const loadConstants = async () => {
     try {
-      const response = await constantsService.find({})
-      if (response && Array.isArray(response) && response.length > 0) {
-        const settings = response[0]
+      const constantsService = useConstantsService()
+      const response = await constantsService.find({}) as any
+      const data = Array.isArray(response) ? response : response.data || []
+      
+      if (data && Array.isArray(data) && data.length > 0) {
+        const settings = data[0]
         uiStore.setStoreId(settings.store || '')
         uiStore.setPriceType(settings.price_type || '')
       }
