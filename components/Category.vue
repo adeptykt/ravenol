@@ -11,12 +11,12 @@
               :class="{ menu__box_active: hasIncluded(level1) }"
             >
               <div class="menu__title">
-                <NuxtLink :to="`/categories/${level1.id}/`" class="menu__caption">{{ level1.name }}</NuxtLink>
+                <NuxtLink :to="`/categories/${level1.id}`" class="menu__caption">{{ level1.name }}</NuxtLink>
               </div>
               <ul class="menu__list">
                 <template v-for="level2 in level1.children" :key="level2.id">
                   <li class="menu__item" :class="{ menu__item_sub: hasIncluded(level2) }">
-                    <NuxtLink :to="`/categories/${level2.id}/`" class="menu__link">
+                    <NuxtLink :to="`/categories/${level2.id}`" class="menu__link">
                       <span class="menu__text">{{ level2.name }}</span>
                     </NuxtLink>
                     <ul class="menu__submenu" v-if="level2.children.length">
@@ -26,7 +26,7 @@
                         :key="level3.id"
                         :class="{ menu__item_active: hasIncluded(level3) }"
                       >
-                        <NuxtLink :to="`/categories/${level3.id}/`" class="menu__link">
+                        <NuxtLink :to="`/categories/${level3.id}`" class="menu__link">
                           <span class="menu__text">{{ level3.name }}</span>
                         </NuxtLink>
                         <ul class="menu__subsubmenu" v-if="level3.children.length">
@@ -36,7 +36,7 @@
                             :key="level4.id"
                             :class="{ submenu__item_active: level4.id === id }"
                           >
-                            <NuxtLink :to="`/categories/${level4.id}/`" class="submenu__link">
+                            <NuxtLink :to="`/categories/${level4.id}`" class="submenu__link">
                               <span class="menu__text">{{ level4.name }}</span>
                             </NuxtLink>
                           </li>
