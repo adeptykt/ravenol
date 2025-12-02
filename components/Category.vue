@@ -320,8 +320,12 @@ const getitems = async () => {
       // Load brands aggregate (Express /aggregate endpoint via axios)
       try {
         const aggregateRes = await findAggregate({ match: query, property: 'brand' })
-        const data = Array.isArray(aggregateRes?.data) ? aggregateRes.data : (aggregateRes || [])
-        brands.value = data.map((item: any) => ({ value: item._id }))
+        const data = Array.isArray(aggregateRes)
+          ? aggregateRes
+          : (Array.isArray(aggregateRes?.data) ? aggregateRes.data : [])
+        if (Array.isArray(data)) {
+          brands.value = data.map((item: any) => ({ value: item._id }))
+        }
       } catch (err) {
         console.error('Error loading brands:', err)
       }

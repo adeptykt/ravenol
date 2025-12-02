@@ -1,7 +1,9 @@
 <template>
-  <ClientOnly>
-    <Category :id="id" v-model:page="page" />
-  </ClientOnly>
+  <div>
+    <ClientOnly>
+      <Category :id="id" v-model:page="page" />
+    </ClientOnly>
+  </div>
 </template>
 
 <script setup lang="ts">
