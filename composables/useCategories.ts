@@ -1,11 +1,12 @@
 import { useUIStore } from '~/stores/ui'
+import { useFeathersService } from '~/composables/useFeathersService'
 
 export const useCategories = () => {
   const uiStore = useUIStore()
   
   const loadCategories = async () => {
     try {
-      const categoriesService = useCategoriesService()
+      const categoriesService = useFeathersService('categories')
       const response = await categoriesService.find({ paginate: false }) as any
       const data = Array.isArray(response) ? response : response.data || []
       
