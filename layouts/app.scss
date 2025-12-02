@@ -3567,3 +3567,39 @@ a {
     font-size: 20px;
   }
 }
+
+.header_logo {
+	border-top: 50px solid #ffd008;
+	border-right: 24px solid transparent;
+	height: 0;
+	width: 362px;
+  position: relative;
+  @media (max-width: 550px) {
+    width: 146px;
+  }
+}
+.logo_indexol {
+  position: absolute;
+  right: 52px;
+  top: -42px;
+  color: #003263;
+  font-size: 31pt;
+  font-weight: bold;
+  @media (max-width: 550px) {
+    font-size: 19pt;
+    right: 13px;
+    top: -36px;
+  }
+}
+.logo_im {
+  position: absolute;
+  right: 235px;
+  top: -34px;
+  color: #003263;
+  font-size: 11pt;
+  font-weight: 900;
+  width: 100px;
+  @media (max-width: 550px) {
+    display: none;
+  }
+}

@@ -7,8 +7,12 @@
           <div class="header__mob">
             <div class="header__side">
               <nuxt-link to="/" class="logo logo_mob">
-                <img src="/header_logo_mob.svg" alt="Indexol" v-if="windowWidth<551">
-                <img src="/header_logo.svg" alt="Indexol" v-else>
+                <!-- <img src="/header_logo_mob.svg" alt="Indexol" v-if="windowWidth<551"> -->
+                <!-- <img src="/header_logo.svg" alt="Indexol" v-else> -->
+                <div class="header_logo">
+                  <div class="logo_im">ИНТЕРНЕТ МАГАЗИН</div>
+                  <div class="logo_indexol">indexol.ru</div>
+                </div>
               </nuxt-link>
             </div>
             <div class="header__base">
@@ -34,7 +38,11 @@
               <div class="header__box header__box_top">
                 <div class="header__logo" id="logo">
                   <nuxt-link to="/" class="logo logo_icon content_logo">
-                    <img src="/header_logo.svg" alt="Indexol">
+                    <!-- <img src="/header_logo.svg" alt="Indexol"> -->
+                    <div class="header_logo">
+                      <div class="logo_im">ИНТЕРНЕТ МАГАЗИН</div>
+                      <div class="logo_indexol">indexol.ru</div>
+                    </div>
                   </nuxt-link>
                 </div>
                 <!-- <div class="header__phone">
@@ -358,4 +366,11 @@ export default {
 </script>
 
 <style lang="scss" src="./app.scss">
+</style>
+
+<style>
+.super_logo {
+  background-color: #ffd008;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 23px) 100%, 0 100%);
+}
 </style>
