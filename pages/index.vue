@@ -1,10 +1,17 @@
 <template>
   <div class="box">
-    <p v-if="pending">Loading....</p>
-    <p v-else-if="error">Error while fetching banners</p>
-    <template v-else v-for="(banner, i) in banners" :key="i">
-      <img :src="banner.image" class="action_image">
-    </template>
+    <ClientOnly>
+      <template #default>
+        <p v-if="pending">Loading....</p>
+        <p v-else-if="error">Error while fetching banners</p>
+        <template v-else v-for="(banner, i) in banners" :key="i">
+          <img :src="banner.image" class="action_image">
+        </template>
+      </template>
+      <template #fallback>
+        <div></div>
+      </template>
+    </ClientOnly>
     <Category v-model:page="page" />
   </div>
 </template>
