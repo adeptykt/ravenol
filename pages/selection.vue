@@ -57,16 +57,20 @@
         </div>
         <div class="selection-category center" v-if="sharedState.selection_mode === 'generations'">
           <table cellspacing="0">
-            <tr>
-              <th>Модификация</th>
-              <th>Даты выпуска</th>
-            </tr>
-            <template v-for="(item, r) in sharedState.generation_list" :key="r">
-              <tr @click="getgears(item)">
-                <td>{{ item.name }}</td>
-                <td>{{ item.begin }}&nbsp;-&nbsp;{{ item.end }}</td>
+            <thead>
+              <tr>
+                <th>Модификация</th>
+                <th>Даты выпуска</th>
               </tr>
-            </template>
+            </thead>
+            <tbody>
+              <template v-for="(item, r) in sharedState.generation_list" :key="r">
+                <tr @click="getgears(item)">
+                  <td>{{ item.name }}</td>
+                  <td>{{ item.begin }}&nbsp;-&nbsp;{{ item.end }}</td>
+                </tr>
+              </template>
+            </tbody>
           </table>
         </div>
         <div class="selection-gear" v-if="sharedState.selection_mode === 'gears'">

@@ -155,12 +155,18 @@ export default {
       error_message: '',
       payment_type: '',
       address: '',
-      day: ''
+      day: '',
+      note: this.note || ''
     }
   },
   watch: {
     tab(val) {
       this.initMap()
+    },
+    note(newVal) {
+      if (newVal !== undefined) {
+        this.note = newVal
+      }
     }
   },
   mounted() {

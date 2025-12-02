@@ -35,8 +35,8 @@
           <div class="items__cell items__cell_delete hidden-print"></div>
         </div>
       </div>
-      <template v-for="(row, i) in rows">
-        <div class="items__row" :key="i">
+      <template v-for="(row, i) in rows" :key="i">
+        <div class="items__row">
           <div class="items__wrap">
             <nuxt-link :to="'/products/' + row._id" class="items__product">
               <div class="items__pic"><img :src="image_prefix + row.image" class="items__img"></div>

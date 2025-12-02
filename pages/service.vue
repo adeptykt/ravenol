@@ -36,8 +36,8 @@
               <div class="service-calendar-item" :key=d>
                 <h5 class="mm-serv-sh-ttl">{{day.date}}<br><span>({{day.dayweek}})</span></h5>
                 <ul class="mm-serv-sh-time-n">
-                  <template v-for="(time, t) in day.times">
-                    <li data-vacant="Свободных мест: <b>1</b>" :key="t" v-bind:class="{selected: time.selected, busy: time.busy}" @click="calendar_click(day, time, t)">
+                  <template v-for="(time, t) in day.times" :key="t">
+                    <li data-vacant="Свободных мест: <b>1</b>" v-bind:class="{selected: time.selected, busy: time.busy}" @click="calendar_click(day, time, t)">
                       {{time.time}}
                     </li>
                   </template>
