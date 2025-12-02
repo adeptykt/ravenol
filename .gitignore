@@ -11,3 +11,8 @@ npm-debug.log
 dist
 
 static/images
+
+.env
+package-lock.json
+certificates
+.idea

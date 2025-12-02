@@ -1,9 +1,10 @@
 // import TerserPlugin from 'terser-webpack-plugin'
 var webpack = require('webpack')
-var path = require('path')
+// var path = require('path')
 require('dotenv').config()
 
 export default {
+  mode: 'universal',
   env: {
     // apiUrl: process.env.API_URI || 'http://localhost:3030'
     API_URL: 'https://indexol.ru/',
@@ -16,7 +17,7 @@ export default {
   server: {
     port: process.env.PORT
   },
-   /*
+  /*
   ** Headers of the page
   */
   head: {
@@ -26,10 +27,10 @@ export default {
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
       { hid: 'description', name: 'description', content: 'Оптовая и розничная продажа автомасел и автохимии' },
-      { name: 'yandex-verification', content: '66b3d90705a4443e' },
+      { name: 'yandex-verification', content: '66b3d90705a4443e' }
     ],
     link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
       // { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons' }
     ]
   },
@@ -37,8 +38,8 @@ export default {
     { src: '~plugins/feathers-vuex' },
     { src: '~plugins/feathers' },
     { src: '~plugins/prototypes.js' },
-    { src: '~plugins/vue-notifications', mode: 'client' },
-    { src: '~plugins/youtube', mode: 'client' },
+    { src: '~plugins/vue-notifications', mode: 'client' }
+    // { src: '~plugins/youtube', mode: 'client' },
   ],
   middleware: [
     'middleware/feathers.js'
@@ -53,7 +54,7 @@ export default {
       '@naumstory/nuxtjs-yandex-metrika',
       {
         id: '64477855',
-        webvisor: true,
+        webvisor: true
         // clickmap:true,
         // useCDN:false,
         // trackLinks:true,
@@ -64,7 +65,7 @@ export default {
   buildModules: [
     ['@nuxtjs/google-analytics', {
       id: 'UA-57404986-5'
-    }],
+    }]
   ],
   webfontloader: {
     google: {
@@ -127,9 +128,9 @@ export default {
     },
     postcss: {
       plugins: {
-        'autoprefixer': {},
+        'autoprefixer': {}
       }
-    },
+    }
     // optimization: {
     //   minimize: true,
     //   minimizer: [
