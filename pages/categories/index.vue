@@ -1,30 +1,23 @@
 <template>
-  <Category :page.sync="page" />
+  <Category v-model:page="page" />
 </template>
 
-<script>
-import Category from '~/components/Category.vue'
+<script setup lang="ts">
+import { useRoute } from 'vue-router'
 
-export default {
-  head () {
-    return {
-      title: 'Каталог',
-    }
-  },
-  components: {
-    Category
-  },
-  async asyncData({ query, params }) {
-    return {
-      page: parseInt(query.page) || 1
-    }
-  },
-  data () {
-    return {
-      sharedState: this.$store.state,
-    }
-  },
-}
+const route = useRoute()
+
+const page = ref(Number(route.query.page) || 1)
+
+// Update page when query changes
+watch(() => route.query.page, (val) => {
+  page.value = val ? Number(val) : 1
+})
+
+// SEO
+useHead({
+  title: 'Каталог'
+})
 </script>
 
 <style>

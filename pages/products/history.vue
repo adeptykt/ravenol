@@ -2,18 +2,32 @@
   <div class="box">
     <ul class="breadcrumbs">
       <li class="breadcrumbs__item">
-        <nuxt-link to="/" class="breadcrumbs__link nuxt-link-active"><span class="breadcrumbs__text">Главная</span></nuxt-link>
+        <NuxtLink to="/" class="breadcrumbs__link nuxt-link-active">
+          <span class="breadcrumbs__text">Главная</span>
+        </NuxtLink>
       </li>
       <li class="breadcrumbs__item">
-        <nuxt-link to="/products/history" class="breadcrumbs__link nuxt-link-exact-active nuxt-link-active"><span class="breadcrumbs__text">История просмотров</span></nuxt-link>
+        <NuxtLink to="/products/history" class="breadcrumbs__link nuxt-link-exact-active nuxt-link-active">
+          <span class="breadcrumbs__text">История просмотров</span>
+        </NuxtLink>
       </li>
     </ul>
     <div class="top top_big">
-      <h1 class="title">История просмотров</h1></div>
-    <div class="mb mb_big"><a href="#" class="btn btn_type_grey btn_size_mid" @click.prevent="viewedClear">Очистить историю</a></div>
+      <h1 class="title">История просмотров</h1>
+    </div>
+    <div class="mb mb_big">
+      <a href="#" class="btn btn_type_grey btn_size_mid" @click.prevent="viewedClear">Очистить историю</a>
+    </div>
     <div class="catalog catalog_view_table catalog_size_5">
-      <div v-for="(item, i) in items" :key="item.id" class="catalog__cell">
-        <ProductItem v-model="item.quantity" :name="item.name" :_id="item._id" :skus="item.skus" />
+      <div v-for="item in items" :key="item._id || item.id" class="catalog__cell">
+        <ProductItem 
+          v-model="item.quantity" 
+          :name="item.name" 
+          :_id="item._id || item.id" 
+          :item="item" 
+          :packages="item.packages || []" 
+          :price="item.price" 
+        />
       </div>
     </div>
     <div class="pag-wrap">
@@ -22,60 +36,70 @@
   </div>
 </template>
 
-<script>
-import { mapActions, mapGetters, mapMutations } from 'vuex'
-import ProductItem from '~/components/ProductItem.vue'
-import Paginator from '~/components/Paginator.vue'
+<script setup lang="ts">
+import { useRoute } from 'vue-router'
+import { useViewedStore } from '~/stores/viewed'
+import { useItems } from '~/composables/useItems'
+import { useUIStore } from '~/stores/ui'
 
-export default {
-  head () {
-    return {
-      title: 'История просмотров - Indexol',
+const route = useRoute()
+const viewedStore = useViewedStore()
+const { find: findItems } = useItems()
+const uiStore = useUIStore()
+
+const page = ref(Number(route.query.page) || 1)
+const limit = ref(24)
+const pages = ref(1)
+const total = ref(0)
+
+const ids = computed(() => {
+  const list = [...viewedStore.list]
+  list.reverse()
+  return list
+})
+
+const query = computed(() => {
+  const $skip = (page.value - 1) * limit.value
+  const idsList = [...ids.value]
+  idsList.splice(0, $skip)
+  if (idsList.length > limit.value) idsList.length = limit.value
+  return { $skip, $limit: limit.value, _id: { $in: idsList } }
+})
+
+const { data: items } = await useAsyncData(
+  'viewed-items',
+  async () => {
+    if (ids.value.length === 0) return []
+    try {
+      const res = await findItems({ query: query.value })
+      total.value = res.total || res.data.length
+      pages.value = Math.ceil(total.value / limit.value)
+      return res.data || []
+    } catch (error) {
+      console.error('Error loading viewed items:', error)
+      return []
     }
   },
-  components: { ProductItem, Paginator },
-  async asyncData({ query, params }) {
-    return {
-      page: parseInt(query.page) || 1,
-    }
-  },
-  data () {
-    return {
-      page: 1,
-      limit: 24,
-      pages: 1,
-      total: 0,
-    }
-  },
-  created() {
-    this.findViewed()
-  },
-  computed: {
-    ...mapGetters('items', { findOrdersInStore: 'find' }),
-    ids() {
-      // return this.$store.state.viewed.list.reverse()
-      return this.$store.state.viewed.list
-    },
-    query() {
-      const $skip = (this.page - 1) * this.limit
-      const ids = this.ids
-      console.log('ids:', ids);
-      ids.splice(0, $skip)
-      if (ids.length > this.limit) ids.length = this.limit
-      return { $skip, $limit: this.limit, _id: { $in: ids } }
-    },
-    items() {
-      const res = this.findOrdersInStore({ query: this.query })
-      console.log('res:', res);
-      this.total = res.total
-      return res.data
-    },
-  },
-  methods: {
-    ...mapActions('items', { findViewed: 'find' }),
-    ...mapMutations('viewed', { viewedClear: 'clear' })
-  },
+  {
+    watch: [ids, query],
+    default: () => []
+  }
+)
+
+// Update page when query changes
+watch(() => route.query.page, (val) => {
+  page.value = val ? Number(val) : 1
+})
+
+const viewedClear = () => {
+  viewedStore.clear()
+  items.value = []
 }
+
+// SEO
+useHead({
+  title: 'История просмотров - Indexol'
+})
 </script>
 
 <style>
