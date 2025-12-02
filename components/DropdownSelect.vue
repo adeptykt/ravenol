@@ -3,7 +3,9 @@
     <a href="#" class="sort__caption" @click.prevent="opened=!opened">
       <span class="sort__title">{{title}}</span>
       <span class="sort__arrow icon icon_arrow_down2">
-        <svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#arrow_down"></use></svg>
+        <ClientOnly>
+          <svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" :xlink:href="`${spriteUrl}#arrow_down`"></use></svg>
+        </ClientOnly>
       </span>
     </a>
     <div class="sort__dropdown">
@@ -14,7 +16,9 @@
               {{item.label || item.value}}
               <div class="dropdown__tooltip tooltip tooltip_bottom" v-if="item.tooltip">
                 <div class="tooltip__icon icon icon_question">
-                  <svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#question"></use></svg>
+                  <ClientOnly>
+                    <svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" :xlink:href="`${spriteUrl}#question`"></use></svg>
+                  </ClientOnly>
                 </div>
                 <div class="tooltip__drop">
                   <div class="tooltip__content">{{item.tooltip}}</div>
@@ -35,7 +39,8 @@ export default {
     items: Array
   },
   data: () => ({
-    opened: false
+    opened: false,
+    spriteUrl: '/images/icons-sprite.svg'
   }),
   computed: {
     title() {
