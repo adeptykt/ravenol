@@ -32,8 +32,8 @@
             </div>
           </div>
           <div class="service-calendar">
-            <template v-for="(day, d) in daytimes">
-              <div class="service-calendar-item" :key=d>
+            <template v-for="(day, d) in daytimes" :key="d">
+              <div class="service-calendar-item">
                 <h5 class="mm-serv-sh-ttl">{{day.date}}<br><span>({{day.dayweek}})</span></h5>
                 <ul class="mm-serv-sh-time-n">
                   <template v-for="(time, t) in day.times" :key="t">

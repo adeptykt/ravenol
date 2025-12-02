@@ -1,28 +1,11 @@
-import { useAuthStore } from '~/stores/auth'
-import { useUIStore } from '~/stores/ui'
-import { useCategories } from '~/composables/useCategories'
-import { useConstants } from '~/composables/useConstants'
-
 export default defineNuxtPlugin(async (nuxtApp) => {
-  // Initialize stores
-  const authStore = useAuthStore()
-  const uiStore = useUIStore()
-  const { loadCategories } = useCategories()
-  const { loadConstants } = useConstants()
-
-  // Load constants and categories on server
-  try {
-    await Promise.all([
-      loadConstants(),
-      loadCategories()
-    ])
-  } catch (error) {
-    console.error('Error initializing app on server:', error)
-  }
-
-  // Note: Server-side authentication with FeathersJS may require REST client
-  // For now, authentication will be handled on client side
-  // Token will be read from cookies on client in init.client.ts
+  // Server-side initialization
+  // Note: FeathersJS client is only available on client side
+  // Constants and categories will be loaded on client in init.client.ts
+  // This prevents errors when trying to use FeathersJS on server
+  
+  // Server-side stores initialization can happen here if needed
+  // but without FeathersJS calls
 })
 
 function parseCookies(req: any): Record<string, string> {

@@ -98,3 +98,9 @@ export function formatDuration(duration: string): string {
     (find[3] ? two(parseInt(find[3])) : '')
 }
 
+// Nuxt 3 plugin export
+export default defineNuxtPlugin(() => {
+  // Prototype extensions are already applied when this file is imported
+  // This plugin ensures the extensions are available globally
+})
+

@@ -2,7 +2,18 @@ import feathers from '@feathersjs/feathers'
 import socketio from '@feathersjs/socketio-client'
 import auth from '@feathersjs/authentication-client'
 import io from 'socket.io-client'
-import { CookieStorage } from 'cookie-storage'
+import Cookies from 'js-cookie'
+
+// Create storage adapter for FeathersJS auth using js-cookie
+const cookieStorage = {
+  getItem: (key: string) => Cookies.get(key) || null,
+  setItem: (key: string, value: string) => {
+    Cookies.set(key, value, { expires: 365 }) // 1 year expiration
+  },
+  removeItem: (key: string) => {
+    Cookies.remove(key)
+  }
+}
 
 export default defineNuxtPlugin((nuxtApp) => {
   const config = useRuntimeConfig()
@@ -17,12 +28,11 @@ export default defineNuxtPlugin((nuxtApp) => {
   })
   
   const transport = socketio(socket)
-  const storage = new CookieStorage()
 
   // Create FeathersJS client
   const feathersClient = feathers()
     .configure(transport)
-    .configure(auth({ storage }))
+    .configure(auth({ storage: cookieStorage }))
 
   // Handle socket connection events
   socket.on('connect', () => {
