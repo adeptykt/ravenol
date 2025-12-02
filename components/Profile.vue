@@ -1,79 +1,107 @@
 <template>
-  <dialog-form v-model="dialog" max-width="450px" title="Профиль" buttonText="Сохранить" v-on:onSubmit="onSubmit">
+  <DialogForm 
+    v-model="dialog" 
+    max-width="450px" 
+    title="Профиль" 
+    button-text="Сохранить" 
+    @onSubmit="onSubmit"
+  >
     <div class="dialog-form">
       <v-text-field label="Телефон" type="text" v-model="phone" />
-      <v-text-field label="Адрес электронной почты (e-mail)" type="text" v-model="email" :rules="[rules.emailMatch]" />
-      <!-- <v-text-field
-        label="Пароль"
-        type="password"
-        v-model="password"
-        :append-icon="showpassword ? 'visibility_off' : 'visibility'"
-        :type="showpassword ? 'text' : 'password'"
-        @click:append="showpassword = !showpassword"
-        :rules="[rules.min]"
-        outline
-      /> -->
+      <v-text-field 
+        label="Адрес электронной почты (e-mail)" 
+        type="text" 
+        v-model="email" 
+        :rules="[rules.emailMatch]" 
+      />
       <v-text-field label="Имя" type="text" v-model="firstName" />
       <v-text-field label="Фамилия" type="text" v-model="lastName" />
     </div>
-  </dialog-form>
+  </DialogForm>
 </template>
 
-<script>
-import { mapActions } from 'vuex'
-import DialogForm from '~/components/DialogForm.vue'
+<script setup lang="ts">
+import { useAuthStore } from '~/stores/auth'
+import { useUIStore } from '~/stores/ui'
+import { useFeathers } from '~/composables/useFeathers'
 
-export default {
-  components: {
-    DialogForm
-  },
-  props: {
-    value: Boolean
-  },
-  data () {
-    return {
-      dialog: false,
-      email: '',
-      phone: '',
-      firstName: '',
-      lastName: '',
-      password: '',
-      showpassword: false,
-      rules: {
-        required: value => !!value || 'Required.',
-        min: v => v.length >= 6 || 'Должно быть минимум 6 символов',
-        emailMatch: value => {
-          const reg = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
-          if (reg.test(value) == false) return 'Некорректный e-mail'
-          return true
-        }
+interface Props {
+  modelValue: boolean
+}
+
+const props = defineProps<Props>()
+
+const emit = defineEmits<{
+  'update:modelValue': [value: boolean]
+}>()
+
+const authStore = useAuthStore()
+const uiStore = useUIStore()
+const feathers = useFeathers()
+
+const dialog = ref(props.modelValue)
+const email = ref('')
+const phone = ref('')
+const firstName = ref('')
+const lastName = ref('')
+
+const rules = {
+  required: (value: any) => !!value || 'Required.',
+  emailMatch: (value: string) => {
+    const reg = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/
+    if (!reg.test(value)) return 'Некорректный e-mail'
+    return true
+  }
+}
+
+watch(() => props.modelValue, (val) => {
+  dialog.value = val
+  if (val && authStore.user) {
+    // Load user data when dialog opens
+    email.value = authStore.user.email || ''
+    phone.value = authStore.user.phone || ''
+    firstName.value = authStore.user.firstName || ''
+    lastName.value = authStore.user.lastName || ''
+  }
+})
+
+watch(dialog, (val) => {
+  emit('update:modelValue', val)
+})
+
+watch(() => authStore.user, (user) => {
+  if (user && dialog.value) {
+    email.value = user.email || ''
+    phone.value = user.phone || ''
+    firstName.value = user.firstName || ''
+    lastName.value = user.lastName || ''
+  }
+}, { deep: true })
+
+const onSubmit = async () => {
+  if (!authStore.user || !authStore.accessToken) return
+  
+  const data = { 
+    phone: phone.value, 
+    firstName: firstName.value, 
+    lastName: lastName.value 
+  }
+  
+  try {
+    const usersService = feathers.service('users')
+    await usersService.patch(authStore.user._id, data, {
+      headers: {
+        Authorization: `Bearer ${authStore.accessToken}`
       }
-    }
-  },
-  watch: {
-    dialog (val) {
-      this.$emit("input", val)
-    },
-    value (val) {
-      this.dialog = val
-    },
-    'this.$store.state.auth.user' (val) {
-      console.log('this.$store.state.auth.user');
-    }
-  },
-  methods: {
-    onSubmit() {
-      const data = { phone: this.phone, firstName: this.firstName, lastName: this.lastName }
-      // console.log('payload', this.$store.state.auth.payload);
-      // console.log('accessToken', this.$store.state.auth.accessToken);
-      // console.log('user', this.$store.state.auth.user);
-      // console.log('this.patch', this.patch);
-      // this.$store.dispatch('users/patch', [this.$store.state.auth.user._id, data, { accessToken: this.$store.state.auth.accessToken }])
-      this.patch([this.$store.state.auth.user._id, data, { accessToken: this.$store.state.auth.accessToken }])
-      this.inverse('showProfile')
-    },
-    ...mapActions(['inverse']),
-    ...mapActions('users', ['patch'])
+    })
+    
+    // Update user in store
+    authStore.setUser({ ...authStore.user, ...data })
+    
+    uiStore.inverse('showProfile')
+    dialog.value = false
+  } catch (error) {
+    console.error('Profile update error:', error)
   }
 }
 </script>

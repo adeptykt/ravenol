@@ -2,9 +2,11 @@
   <Dialog v-model="dialog" max-width="580px">
     <div class="auth_dialog">
       <div class="i-dialog-action">
-        <a @click="dialog=false">
+        <a @click="dialog = false">
           <span class="icon icon_close_big">
-            <svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#close_big"></use></svg>
+            <svg class="icon__item">
+              <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#close_big"></use>
+            </svg>
           </span>
         </a>
       </div>
@@ -12,16 +14,19 @@
         <div class="form__wrap">
           <div class="form__heading">Новый пароль</div>
         </div>
-        <form action @submit.prevent="onSubmit">
+        <form @submit.prevent="onSubmit">
           <div class="form__row">
             <label class="form__label">Email</label>
             <div class="form__control">
-              <input type="email" class="form__input" v-model="email"><div></div>
+              <input type="email" class="form__input" v-model="email">
+              <div></div>
             </div>
           </div>
           <div class="form__wrap form__btn">
-            <button type="submit" class="btn btn_type_flat btn_size_big" v-bind:class="{ btn_loading: isLoading }"><span class="loader" v-if="isLoading"></span>Восстановить</button>
-            <a href="#" @click="inverse('showReset')" class="form__link link link_sm">Вход</a>
+            <button type="submit" class="btn btn_type_flat btn_size_big" :class="{ btn_loading: isLoading }">
+              <span class="loader" v-if="isLoading"></span>Восстановить
+            </button>
+            <a href="#" @click="onLinkClick" class="form__link link link_sm">Вход</a>
           </div>
         </form>
       </div>
@@ -29,49 +34,67 @@
   </Dialog>
 </template>
 
-<script>
-import { mapMutations } from 'vuex'
-import Dialog from '~/components/Dialog.vue'
+<script setup lang="ts">
+import { useUIStore } from '~/stores/ui'
+import { useFeathers } from '~/composables/useFeathers'
 
-export default {
-  components: {
-    Dialog
-  },
-  props: {
-    value: Boolean
-  },
-  data () {
-    return {
-      dialog: false,
-      email: '',
-      email_error: false,
-      isLoading: false
+interface Props {
+  modelValue: boolean
+}
+
+const props = defineProps<Props>()
+
+const emit = defineEmits<{
+  'update:modelValue': [value: boolean]
+}>()
+
+const uiStore = useUIStore()
+const feathers = useFeathers()
+
+const dialog = ref(props.modelValue)
+const email = ref('')
+const emailError = ref(false)
+const isLoading = ref(false)
+
+watch(() => props.modelValue, (val) => {
+  dialog.value = val
+})
+
+watch(dialog, (val) => {
+  emit('update:modelValue', val)
+})
+
+const onSubmit = async () => {
+  emailError.value = false
+  isLoading.value = true
+  
+  try {
+    // Try to use auth-reset service, or fallback to direct API call
+    try {
+      const authResetService = feathers.service('auth-reset')
+      await authResetService.create({ email: email.value })
+    } catch (err) {
+      // Fallback: might need to use a different service or endpoint
+      // Adjust based on your backend implementation
+      const { $fetch } = useNuxtApp()
+      const config = useRuntimeConfig()
+      await $fetch(`${config.public.apiUrl}auth-reset`, {
+        method: 'POST',
+        body: { email: email.value }
+      })
     }
-  },
-  watch: {
-    dialog (val) {
-      this.$emit("input", val)
-    },
-    value (val) {
-      this.dialog = val
-    }
-  },
-  methods: {
-    onSubmit() {
-      this.email_error = false
-      this.isLoading = true
-      this.$store.dispatch('auth_reset', this.email)
-        .then((res) => {
-          this.isLoading = false
-          this.inverse('showReset')
-        })
-        .catch(error => {
-          this.isLoading = false
-          this.email_error = true
-        })
-    },
-    ...mapMutations({ inverse: 'inverse' })
+    
+    isLoading.value = false
+    uiStore.inverse('showReset')
+    dialog.value = false
+  } catch (error) {
+    isLoading.value = false
+    emailError.value = true
   }
+}
+
+const onLinkClick = () => {
+  uiStore.inverse('showReset')
 }
 </script>
 
@@ -115,7 +138,6 @@ export default {
   align-items: flex-start;
 }
 .form_type_center .form__wrap {
-  /* padding-left: 210px; */
   text-align: center;
   justify-content: center;
 }
@@ -196,63 +218,6 @@ export default {
   max-width: 210px;
   justify-content: flex-end;
   flex: 1;
-}
-.checkbox, .radio {
-  line-height: 1;
-}
-.checkbox__input, .radio__input {
-  display: none;
-}
-.checkbox__label, .radio__label {
-  display: inline-block;
-  vertical-align: top;
-  box-sizing: border-box;
-  font-size: 14px;
-  line-height: 18px;
-  cursor: pointer;
-  position: relative;
-  min-height: 22px;
-  color: #000;
-}
-.checkbox__label {
-  padding-top: 2px;
-  padding-left: 32px;
-}
-.checkbox_light .checkbox__label {
-  color: #666;
-}
-.checkbox__label:before, .radio__label:before {
-  top: 0;
-  content: "";
-  box-sizing: border-box;
-  position: absolute;
-  transition: border-color .25s ease;
-}
-.checkbox__label:before {
-  top: 0;
-  left: 0;
-  height: 22px;
-  width: 22px;
-  background-color: #fff;
-  border: 1px solid #cbcbcb;
-}
-.checkbox__label:after {
-  content: "";
-  box-sizing: border-box;
-  position: absolute;
-  top: 5px;
-  left: 5px;
-  width: 14px;
-  height: 12px;
-  background-image: url("../static/marked.svg");
-  opacity: 0;
-  transform: scale(.8);
-  transform-origin: center center;
-  transition: opacity .25s ease,transform .25s ease,-webkit-transform .25s ease;
-}
-.checkbox__input:checked+.checkbox__label:after {
-  opacity: 1;
-  transform: scale(1);
 }
 .form__btn {
   display: flex;
