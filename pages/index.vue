@@ -28,6 +28,11 @@ watch(() => route.query.page, (val) => {
 const { data: banners, pending, error, refresh } = await useAsyncData(
   'banners',
   async () => {
+    // Only fetch on client side (FeathersJS is client-only)
+    if (process.server || !bannersService) {
+      return []
+    }
+    
     const now = Date.now()
     const response = await bannersService.find({
       query: {
