@@ -1,27 +1,39 @@
 <template>
   <div class="box">
     <ul class="breadcrumbs">
-      <li class="breadcrumbs__item"><a href="/" class="breadcrumbs__link nuxt-link-active"><span class="breadcrumbs__text">Главная</span></a></li>
-      <li class="breadcrumbs__item"><a href="/account/" class="breadcrumbs__link nuxt-link-active"><span class="breadcrumbs__text">Профиль</span></a></li>
+      <li class="breadcrumbs__item">
+        <a href="/" class="breadcrumbs__link nuxt-link-active">
+          <span class="breadcrumbs__text">Главная</span>
+        </a>
+      </li>
+      <li class="breadcrumbs__item">
+        <a href="/account/" class="breadcrumbs__link nuxt-link-active">
+          <span class="breadcrumbs__text">Профиль</span>
+        </a>
+      </li>
     </ul>
     <div class="top">
       <h1 class="title">Профиль</h1>
     </div>
     <div class="sep sep_left">
       <div class="sep__side">
-        <div class="side-nav" v-bind:class="{ 'side-nav_opened': side_nav_opened }">
-          <a href="#" class="side-nav__selected" @click.prevent="side_nav_opened = !side_nav_opened">
-        		Реквизиты
-        		<span class="side-nav__arrow icon icon_arrow_down">
-              <svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#arrow_down"></use></svg>
+        <div class="side-nav" :class="{ 'side-nav_opened': sideNavOpened }">
+          <a href="#" class="side-nav__selected" @click.prevent="sideNavOpened = !sideNavOpened">
+            Реквизиты
+            <span class="side-nav__arrow icon icon_arrow_down">
+              <svg class="icon__item">
+                <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#arrow_down"></use>
+              </svg>
             </span>
           </a>
           <ul class="side-nav__list">
             <template v-for="item in menu" :key="item.to">
-              <li class="side-nav__item" v-bind:class="{ 'side-nav__item_active': path === item.to }">
-                <nuxt-link :to="item.to" class="side-nav__link">{{item.name}}</nuxt-link>
+              <li class="side-nav__item" :class="{ 'side-nav__item_active': path === item.to }">
+                <NuxtLink :to="item.to" class="side-nav__link">{{ item.name }}</NuxtLink>
                 <span class="side-nav__icon icon icon_fields_remain" v-if="item.remain">
-                  <svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#fields_remain"></use></svg>
+                  <svg class="icon__item">
+                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#fields_remain"></use>
+                  </svg>
                 </span>
               </li>
             </template>
@@ -45,27 +57,19 @@
             </div>
             <ul class="settings__info data">
               <li class="data__item">
-                <div class="data__title">
-                  Консультация по доставке
-                </div>
+                <div class="data__title">Консультация по доставке</div>
                 <div class="data__box"><a href="tel:+79247697327" class="link">+7 924 769-73-27</a></div>
               </li>
               <li class="data__item">
-                <div class="data__title">
-                  Возврат товара
-                </div>
+                <div class="data__title">Возврат товара</div>
                 <div class="data__box"><a href="tel:+79247697327" class="link">+7 924 769-73-27</a></div>
               </li>
               <li class="data__item">
-                <div class="data__title">
-                  техническая поддержка
-                </div>
+                <div class="data__title">техническая поддержка</div>
                 <div class="data__box"><a href="tel:+79247697327" class="link">+7 924 769-73-27</a></div>
               </li>
               <li class="data__item">
-                <div class="data__title">
-                  бухгалтерия
-                </div>
+                <div class="data__title">бухгалтерия</div>
                 <div class="data__box"><a href="tel:+79247697327" class="link">+7 924 769-73-27</a></div>
               </li>
             </ul>
@@ -76,22 +80,16 @@
   </div>
 </template>
 
-<script>
-export default {
-  data () {
-    return {
-      side_nav_opened: false,
-    }
-  },
-  computed: {
-    path() {
-      return this.$route.path
-    },
-    menu() {
-      return this.$store.state.menu_items
-    }
-  }
-}
+<script setup lang="ts">
+import { useUIStore } from '~/stores/ui'
+
+const route = useRoute()
+const uiStore = useUIStore()
+
+const sideNavOpened = ref(false)
+
+const path = computed(() => route.path)
+const menu = computed(() => uiStore.menu_items)
 </script>
 
 <style>

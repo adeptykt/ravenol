@@ -3,15 +3,19 @@ import { useAuthStore } from '~/stores/auth'
 export const useAuth = () => {
   const authStore = useAuthStore()
   
-  const authenticate = async (strategy: string, accessToken?: string) => {
+  const authenticate = async (strategy: string, accessToken?: string, credentials?: { email?: string; password?: string }) => {
     try {
       const { $feathers } = useNuxtApp()
       const feathers = $feathers as any
       
-      const result = await feathers.authenticate({
-        strategy,
-        accessToken: accessToken || authStore.accessToken
-      })
+      const authParams: any = { strategy }
+      if (accessToken) {
+        authParams.accessToken = accessToken
+      } else if (credentials) {
+        Object.assign(authParams, credentials)
+      }
+      
+      const result = await feathers.authenticate(authParams)
       
       authStore.setAuth(result.accessToken, result.payload)
       
