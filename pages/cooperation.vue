@@ -50,7 +50,7 @@
       <div class="grid grid_content">
         <div class="grid__cell">
           <figure class="shadow"><img src="~assets/img/dogovor.jpg" alt="" class="shadow__img"></figure>
-          <div class="mark"><span class="mark__icon icon icon_info_big"><svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" :xlink:href="`/images/icons-sprite.svg#info"></use></svg></span>
+          <div class="mark"><span class="mark__icon icon icon_info_big"><svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" :xlink:href="`/images/icons-sprite.svg#info`"></use></svg></span>
             <div class="mark__text">
               Для заключения договора и определения форм взаимовыгодного сотрудничества просим Вас внимательно подойти к предоставлению информации и подготовке документов. Конфиденциальность полученной информации гарантируем.
             </div>
