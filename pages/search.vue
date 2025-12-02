@@ -1,32 +1,38 @@
 <template>
-  <Category :find="find" :page.sync="page" />
+  <Category :find="find" v-model:page="page" />
 </template>
 
-<script>
-import { mapMutations } from 'vuex'
-import Category from '~/components/Category.vue'
+<script setup lang="ts">
+import { useRoute } from 'vue-router'
+import { useUIStore } from '~/stores/ui'
 
-export default {
-  head () {
-    return {
-      title: 'Результаты поиска',
-    }
-  },
-  components: {
-    Category
-  },
-  async asyncData({ query, params }) {
-    return {
-      page: parseInt(query.page) || 1,
-      find: query.find
-    }
-  },
-  watchQuery: true,
-  mounted() {
-    this.set_search(this.find)
-  },
-  methods: {
-    ...mapMutations({ set_search: 'set_search' })
+const route = useRoute()
+const uiStore = useUIStore()
+
+const page = ref(Number(route.query.page) || 1)
+const find = computed(() => route.query.find as string || '')
+
+// Update search in store when find changes
+watch(find, (val) => {
+  if (val) {
+    uiStore.setSearch(val)
   }
-}
+}, { immediate: true })
+
+// Update page when query changes
+watch(() => route.query.page, (val) => {
+  page.value = val ? Number(val) : 1
+})
+
+// Watch for query changes (equivalent to watchQuery: true)
+watch(() => route.query.find, (val) => {
+  if (val) {
+    uiStore.setSearch(val as string)
+  }
+})
+
+// SEO
+useHead({
+  title: 'Результаты поиска'
+})
 </script>
