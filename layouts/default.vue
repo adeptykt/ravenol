@@ -190,7 +190,7 @@
         </div>
       </div>
       <div class="container" id="container" v-bind:class="{ container_main: container_main }">
-        <nuxt />
+        <NuxtPage />
       </div>
     </div>
     <footer class="footer" v-if="!no_footer" ref="footer">
