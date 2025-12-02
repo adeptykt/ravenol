@@ -309,7 +309,7 @@ const setBreadcrumbs = () => {
   if (found) {
     let current = found
     do {
-      breadcrumbs.value.unshift({ to: `/categories/${current.id}/`, name: current.name })
+      breadcrumbs.value.unshift({ to: `/categories/${current.id}`, name: current.name })
       current = current.parent
     } while (current && current.parent)
   }
