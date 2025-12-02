@@ -142,6 +142,25 @@ export const useUIStore = defineStore('ui', {
     
     setState(name: string, val: any) {
       (this as any)[name] = val
+    },
+    
+    getMenuItems() {
+      const authStore = useAuthStore()
+      const menu: any[] = []
+      if (authStore.user) {
+        const isCompany = !!authStore.user.company
+        menu.push({ to: "/account/", name: "Профиль" })
+        menu.push({ to: "/account/history", name: "История заказов" })
+        if (isCompany) {
+          menu.push({ to: "/account/requisites", name: "Реквизиты", remain: true })
+          menu.push({ to: "/account/delivery", name: "Пункты разгрузки" })
+          menu.push({ to: "/account/employees", name: "Сотрудники" })
+          menu.push({ to: "/account/additionally", name: "Дополнительно" })
+        }
+        menu.push({ to: "/auth/logout", name: "Выход" })
+      }
+      this.menu_items = menu
+      return menu
     }
   }
 })

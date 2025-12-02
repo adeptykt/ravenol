@@ -94,7 +94,7 @@
                 </div>
                 <div class="header__auth">
                   <div>
-                    <div class="auth auth_logged" v-bind:class="{ auth_opened: auth_opened }" @mouseover="auth_opened=true" @mouseout="auth_opened=false" v-if="sharedState.auth.user">
+                    <div class="auth auth_logged" v-bind:class="{ auth_opened: auth_opened }" @mouseover="auth_opened=true" @mouseout="auth_opened=false" v-if="authStore.user">
                       <nuxt-link to="/account/" @click.prevent="onAuthClick" class="auth__header">
                         <div class="auth__item">
                           <div class="auth__icon">
@@ -103,7 +103,7 @@
                             </span>
                           </div>
                           <div class="auth__text">
-                            <span class="auth__name">{{sharedState.auth.user.email}}</span>
+                            <span class="auth__name">{{authStore.user.email}}</span>
                           </div>
                         </div>
                       </nuxt-link>
@@ -130,7 +130,7 @@
                             </span>
                           </div>
                           <div class="auth__text">
-                            <span class="auth__name" v-if="sharedState.auth.user">{{sharedState.auth.user.email}}</span>
+                            <span class="auth__name" v-if="authStore.user">{{authStore.user.email}}</span>
                             <span class="auth__name" v-else>Вход</span>
                           </div>
                         </div>
@@ -140,7 +140,7 @@
                 </div>
               </div>
             </div>
-            <div class="header__bottom hidden-print" v-bind:class="{ header__bottom__fixed: sharedState.menu_fixed }" v-if="!no_footer">
+            <div class="header__bottom hidden-print" v-bind:class="{ header__bottom__fixed: uiStore.menu_fixed }" v-if="!no_footer">
               <div class="header__box header__box_bottom">
                 <div class="header__nav">
                   <nav class="nav nav_inner">
@@ -221,148 +221,173 @@
         </div>
       </div>
     </footer>
-    <AuthReset v-model="sharedState.showReset" />
+    <AuthReset v-model="uiStore.showReset" />
   </div>
 </template>
 
-<script>
-import { mapActions, mapMutations } from 'vuex'
+<script setup lang="ts">
+import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { useAuthStore } from '~/stores/auth'
+import { useUIStore } from '~/stores/ui'
+import { useCartStore } from '~/stores/cart'
+import { useAuth } from '~/composables/useAuth'
 import AuthReset from '~/components/AuthReset.vue'
 import Search from '~/components/Search.vue'
-import ClientOnly from 'vue-client-only'
 
-export default {
-  middleware: 'auth',
-  components: {
-    ClientOnly,
-    AuthReset,
-    Search
-  },
-  data () {
-    return {
-      alert: false,
-      sharedState: this.$store.state,
-      paddingHeader: '0px',
-      phones_opened: false,
-      auth_opened: false,
-      search_opened: false,
-      showService: false,
-      loading: false,
-      select: null,
-      results: [],
-      items: [
-        { title: 'Каталог', to: '/categories' },
-        // { title: 'Подбор', to: '/selection' },
-        // { title: 'Бренды', to: '/brands' },
-        // { title: 'Блог', to: '/blog' },
-        // { title: 'Вопросы', to: '/questions' },
-        { title: 'Доставка', to: '/delivery' },
-        { title: 'Оплата', to: '/payment' },
-        { title: 'Сотрудничество', to: '/cooperation' },
-        {
-          title: 'О нас',
-          to: '/about',
-          // opened: false,
-          // items: [ { title: 'О компании', to: '/about' }, { title: 'Сотрудничество', to: '/cooperation' }, { title: 'Контакты', to: '/contacts' }, { title: 'Обратная связь', to: '/feedback' } ]
-        }
-      ],
-      windowWidth: 0,
-      maxWidth: 940,
-      menu: false,
-      cart_count: 0
-    }
-  },
-  computed: {
-    global_search: {
-      get: function () { return this.$store.state.global_search },
-      set: function (val) { this.set_search(val) }
-    },
-    menu_items() {
-      return this.$store.state.menu_items
-    },
-    isAdmin() {
-      return this.$store.state.auth.user && (this.$store.state.auth.user.role === 'admin')
-    },
-    cart_total() {
-      if (this.$store.state.cart.status) return this.$store.state.cart.list.reduce((s, i) => { return s + i.quantity }, 0)
-      return 0
-    },
-    container_main() {
-      return (this.$route.path === "/" || this.$route.path === "")
-    },
-    no_footer() {
-      return /^\/cart\/order\//.test(this.$route.path)
-    }
-  },
-  watch: {
-    select(val) {
-      if (val) {
-        if (val.vendor) {
-          this.$router.push({ path: 'selection' })
-          this.$store.dispatch('get_gears', val)
-        } else {
-          this.set_showProduct(true)
-          this.set_product_id(val._id)
-        }
-      }
-      this.results = []
-    },
-    windowWidth(width) {
-      this.maxWidth = this.windowWidth <= 940 ? this.windowWidth  : 940
-      this.set_mobile(this.windowWidth < 640)
-    }
-  },
-  mounted() {
-    this.$store.dispatch('auth/authenticate').then(() => this.$store.dispatch('get_menu_items'))
-    this.$nextTick(() => window.addEventListener('resize', this.handleResize))
-    window.addEventListener('scroll', this.handleScroll)
-    this.handleResize()
+// Stores
+const authStore = useAuthStore()
+const uiStore = useUIStore()
+const cartStore = useCartStore()
+const { authenticate } = useAuth()
 
-    this.set_search('')
-  },
-  destroyed() {
-    window.removeEventListener('scroll', this.handleScroll)
-    window.removeEventListener('resize', this.handleResize)
-  },
-  methods: {
-    phoneOpened(val) {
-      if (window.innerWidth >= 960) this.phones_opened = val
-    },
-    menuItemOver(item) {
-      if (window.innerWidth >= 960) item.opened = true
-    },
-    menuItemOut(item) {
-      if (window.innerWidth >= 960) item.opened = false
-    },
-    menuItemClick(item) {
-      if (item.items && window.innerWidth < 960) {
-        item.opened = !item.opened
-      } else {
-        this.$router.push({ path: item.to })
-        this.menu = false
-      }
-    },
-    onAuthClick() {
-      if (!this.sharedState.auth.user) {
-        this.inverse('showAuthorization')
-        this.menu = false
-      }
-    },
-    handleScroll(event) {
-      // const fixed = (window.pageYOffset >= this.$refs.topbar.clientHeight)
-      const fixed = false
-      const quick_search = this.$refs.footer ? (window.pageYOffset >= this.$refs.topbar.clientHeight) && (window.pageYOffset + window.innerHeight <= this.$refs.footer.offsetTop - 50) : false
-      this.paddingHeader = fixed ? '56px' : '0px'
-      this.menu_fix(fixed)
-      this.quick_search(quick_search)
-    },
-    handleResize() {
-      this.windowWidth = window.innerWidth;
-    },
-    ...mapActions('auth', ['logout']),
-    ...mapMutations({ inverse: 'inverse', menu_fix: 'menu_fix', quick_search: 'quick_search', set_search: 'set_search', set_mobile: 'set_mobile', set_product_id: 'set_product_id', set_showProduct: 'set_showProduct' })
-  },
+// Router
+const route = useRoute()
+const router = useRouter()
+
+// Refs
+const alert = ref(false)
+const paddingHeader = ref('0px')
+const phones_opened = ref(false)
+const auth_opened = ref(false)
+const search_opened = ref(false)
+const showService = ref(false)
+const loading = ref(false)
+const select = ref(null)
+const results = ref([])
+const windowWidth = ref(0)
+const maxWidth = ref(940)
+const menu = ref(false)
+const cart_count = ref(0)
+const topbar = ref<HTMLElement | null>(null)
+const footer = ref<HTMLElement | null>(null)
+
+const items = [
+  { title: 'Каталог', to: '/categories' },
+  { title: 'Доставка', to: '/delivery' },
+  { title: 'Оплата', to: '/payment' },
+  { title: 'Сотрудничество', to: '/cooperation' },
+  {
+    title: 'О нас',
+    to: '/about'
+  }
+]
+
+// Computed
+const global_search = computed({
+  get: () => uiStore.global_search,
+  set: (val: string) => uiStore.setSearch(val)
+})
+
+const menu_items = computed(() => uiStore.menu_items)
+
+const isAdmin = computed(() => authStore.user && (authStore.user as any).role === 'admin')
+
+const cart_total = computed(() => {
+  return cartStore.totalItems
+})
+
+const container_main = computed(() => {
+  return route.path === "/" || route.path === ""
+})
+
+const no_footer = computed(() => {
+  return /^\/cart\/order\//.test(route.path)
+})
+
+// Watch
+watch(select, (val) => {
+  if (val) {
+    if ((val as any).vendor) {
+      router.push({ path: '/selection' })
+      // TODO: Implement get_gears functionality
+      // uiStore.getGears(val)
+    } else {
+      uiStore.setShowProduct(true)
+      uiStore.setProductId((val as any)._id)
+    }
+  }
+  results.value = []
+})
+
+watch(windowWidth, (width) => {
+  maxWidth.value = windowWidth.value <= 940 ? windowWidth.value : 940
+  uiStore.setMobile(windowWidth.value < 640)
+})
+
+watch(() => route.path, () => {
+  menu.value = false
+})
+
+// Methods
+const phoneOpened = (val: boolean) => {
+  if (window.innerWidth >= 960) phones_opened.value = val
 }
+
+const menuItemOver = (item: any) => {
+  if (window.innerWidth >= 960) item.opened = true
+}
+
+const menuItemOut = (item: any) => {
+  if (window.innerWidth >= 960) item.opened = false
+}
+
+const menuItemClick = (item: any) => {
+  if (item.items && window.innerWidth < 960) {
+    item.opened = !item.opened
+  } else {
+    router.push({ path: item.to })
+    menu.value = false
+  }
+}
+
+const onAuthClick = () => {
+  if (!authStore.user) {
+    uiStore.inverse('showAuthorization')
+    menu.value = false
+  }
+}
+
+const handleScroll = (event?: Event) => {
+  const fixed = false
+  const quick_search = footer.value && topbar.value
+    ? (window.pageYOffset >= topbar.value.clientHeight) && (window.pageYOffset + window.innerHeight <= footer.value.offsetTop - 50)
+    : false
+  paddingHeader.value = fixed ? '56px' : '0px'
+  uiStore.setMenuFix(fixed)
+  uiStore.setQuickSearch(quick_search)
+}
+
+const handleResize = () => {
+  windowWidth.value = window.innerWidth
+}
+
+// Lifecycle
+onMounted(async () => {
+  if (process.client) {
+    // Authenticate and load menu items
+    try {
+      await authenticate('jwt')
+      uiStore.getMenuItems()
+    } catch (error) {
+      // Not authenticated, continue
+    }
+    
+    await nextTick()
+    window.addEventListener('resize', handleResize)
+    window.addEventListener('scroll', handleScroll)
+    handleResize()
+    
+    uiStore.setSearch('')
+  }
+})
+
+onBeforeUnmount(() => {
+  if (process.client) {
+    window.removeEventListener('scroll', handleScroll)
+    window.removeEventListener('resize', handleResize)
+  }
+})
 </script>
 
 <style lang="scss" src="./app.scss">
