@@ -2,28 +2,43 @@
   <div class="box">
     <div class="sep sep_catalog">
       <div class="sep__side">
-        <div class="sticky-side" v-bind:class="{ 'sticky-side-fixed': sharedState.menu_fixed }">
-          <div class="menu" v-bind:class="{ menu_opened: menu_open }">
-            <div class="menu__box" v-for="level1 in tree" :key="level1.id" v-bind:class="{ menu__box_active: hasIncluded(level1) }">
+        <div class="sticky-side" :class="{ 'sticky-side-fixed': uiStore.menu_fixed }">
+          <div class="menu" :class="{ menu_opened: menuOpen }">
+            <div 
+              class="menu__box" 
+              v-for="level1 in tree" 
+              :key="level1.id" 
+              :class="{ menu__box_active: hasIncluded(level1) }"
+            >
               <div class="menu__title">
-                <nuxt-link :to="`/categories/${level1.id}/`" class="menu__caption">{{level1.name}}</nuxt-link>
+                <NuxtLink :to="`/categories/${level1.id}/`" class="menu__caption">{{ level1.name }}</NuxtLink>
               </div>
               <ul class="menu__list">
-                <template v-for="level2 in level1.children">
-                  <li class="menu__item" :key="level2.id" v-bind:class="{ menu__item_sub: hasIncluded(level2) }">
-                    <nuxt-link :to="`/categories/${level2.id}/`" class="menu__link">
+                <template v-for="level2 in level1.children" :key="level2.id">
+                  <li class="menu__item" :class="{ menu__item_sub: hasIncluded(level2) }">
+                    <NuxtLink :to="`/categories/${level2.id}/`" class="menu__link">
                       <span class="menu__text">{{ level2.name }}</span>
-                    </nuxt-link>
+                    </NuxtLink>
                     <ul class="menu__submenu" v-if="level2.children.length">
-                      <li class="menu__item" v-for="level3 in level2.children" v-bind:class="{ menu__item_active: hasIncluded(level3) }">
-                        <nuxt-link :to="`/categories/${level3.id}/`" class="menu__link">
-                          <span class="menu__text">{{level3.name}}</span>
-                        </nuxt-link>
+                      <li 
+                        class="menu__item" 
+                        v-for="level3 in level2.children" 
+                        :key="level3.id"
+                        :class="{ menu__item_active: hasIncluded(level3) }"
+                      >
+                        <NuxtLink :to="`/categories/${level3.id}/`" class="menu__link">
+                          <span class="menu__text">{{ level3.name }}</span>
+                        </NuxtLink>
                         <ul class="menu__subsubmenu" v-if="level3.children.length">
-                          <li class="menu__item" v-for="level4 in level3.children" v-bind:class="{ submenu__item_active: level4.id === id }">
-                            <nuxt-link :to="`/categories/${level4.id}/`" class="submenu__link">
-                              <span class="menu__text">{{level4.name}}</span>
-                            </nuxt-link>
+                          <li 
+                            class="menu__item" 
+                            v-for="level4 in level3.children" 
+                            :key="level4.id"
+                            :class="{ submenu__item_active: level4.id === id }"
+                          >
+                            <NuxtLink :to="`/categories/${level4.id}/`" class="submenu__link">
+                              <span class="menu__text">{{ level4.name }}</span>
+                            </NuxtLink>
                           </li>
                         </ul>
                       </li>
@@ -32,71 +47,118 @@
                 </template>
               </ul>
             </div>
-            <a href="#" class="menu__close" @click.prevent="menu_open=false">
-              <span class="icon icon_close_medium"><svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#close_medium"></use></svg></span>
+            <a href="#" class="menu__close" @click.prevent="menuOpen = false">
+              <span class="icon icon_close_medium">
+                <svg class="icon__item">
+                  <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#close_medium"></use>
+                </svg>
+              </span>
             </a>
           </div>
         </div>
       </div>
       <div class="sep__base">
-        <div class="filter-wrap" v-bind:class="{ 'filter-wrap-fixed': sharedState.menu_fixed }">
+        <div class="filter-wrap" :class="{ 'filter-wrap-fixed': uiStore.menu_fixed }">
           <div class="filter-btns">
-            <div class="filter-btns__cell"><a href="#" class="btn btn_type_grey btn_wide" @click.prevent="menu_open=true">Каталог</a></div>
-            <div class="filter-btns__cell"><a href="#" class="btn btn_type_grey btn_wide" @click.prevent="filter_open=true">Фильтр</a></div>
+            <div class="filter-btns__cell">
+              <a href="#" class="btn btn_type_grey btn_wide" @click.prevent="menuOpen = true">Каталог</a>
+            </div>
+            <div class="filter-btns__cell">
+              <a href="#" class="btn btn_type_grey btn_wide" @click.prevent="filterOpen = true">Фильтр</a>
+            </div>
           </div>
-          <div class="filter" v-bind:class="{ filter_opened: filter_open }">
+          <div class="filter" :class="{ filter_opened: filterOpen }">
             <div class="filter__box">
               <div class="filter__top">
-                <div class="filter__btn"><a href="#" class="btn btn_type_flat btn_wide" @click.prevent="filter_open=false">Найдено товаров: {{total}}</a></div>
-                <div class="filter__btn" v-if="chipClearAll"><a href="#" class="btn btn_type_white btn_wide" @click.prevent="chipClearAll=false"><span class="menu__text">Сбросить фильтр</span></a></div>
+                <div class="filter__btn">
+                  <a href="#" class="btn btn_type_flat btn_wide" @click.prevent="filterOpen = false">
+                    Найдено товаров: {{ total }}
+                  </a>
+                </div>
+                <div class="filter__btn" v-if="chipClearAll">
+                  <a href="#" class="btn btn_type_white btn_wide" @click.prevent="chipClearAll = false">
+                    <span class="menu__text">Сбросить фильтр</span>
+                  </a>
+                </div>
               </div>
               <ul class="filter__list form form_type_filter">
-                <!-- <FilterItem :title="getFilterName('Бренд', brand)" :items="brands" v-model="brand" uid="brand" /> -->
-                <!-- <FilterItem :title="getFilterName('Тип техники', vehicle)" :items="vehicles" v-model="vehicle" uid="vehicle" />
-                <FilterItem :title="getFilterName('Состав', composition)" :items="compositions" v-model="composition" uid="composition" /> -->
+                <!-- Filters commented out -->
               </ul>
               <div class="filter__side" v-if="chipClearAll">
-                <a href="#" class="filter__reset" @click.prevent="chipClearAll=false">Сбросить фильтр</a>
+                <a href="#" class="filter__reset" @click.prevent="chipClearAll = false">Сбросить фильтр</a>
               </div>
             </div>
           </div>
         </div>
         <div class="bar">
-          <div class="bar__result">Найдено товаров: {{total}}</div>
+          <div class="bar__result">Найдено товаров: {{ total }}</div>
           <div class="bar__side">
             <div class="bar__sort">
-              <DropdownSelect v-model="sort" :items="sort_items" />
+              <DropdownSelect v-model="sort" :items="sortItems" />
             </div>
             <div class="bar__switcher">
-              <a href="#" class="bar__view bar__view_table" v-bind:class="{ bar__view_active: view==0 }" @click="view=0">
+              <a 
+                href="#" 
+                class="bar__view bar__view_table" 
+                :class="{ bar__view_active: view === 0 }" 
+                @click="view = 0"
+              >
                 <span class="icon icon_view1">
-                  <svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#view1"></use></svg>
+                  <svg class="icon__item">
+                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#view1"></use>
+                  </svg>
                 </span>
               </a>
-              <a href="#" class="bar__view bar__view_table" v-bind:class="{ bar__view_active: view==1 }" @click="view=1">
+              <a 
+                href="#" 
+                class="bar__view bar__view_table" 
+                :class="{ bar__view_active: view === 1 }" 
+                @click="view = 1"
+              >
                 <span class="icon icon_view2">
-                  <svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#view2"></use></svg>
+                  <svg class="icon__item">
+                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#view2"></use>
+                  </svg>
                 </span>
               </a>
             </div>
           </div>
         </div>
-        <div class="catalog catalog_size_4" v-bind:class="{ catalog_view_table: view==0, catalog_view_row: view==1 }">
-          <div v-for="(item, i) in items" :key="item.id" class="catalog__cell">
-            <ProductItem v-model="item.quantity" :name="item.name" :_id="item._id" :skus="item.skus" :item="item" :packages="item.packages" :price="item.price" />
+        <div 
+          class="catalog catalog_size_4" 
+          :class="{ catalog_view_table: view === 0, catalog_view_row: view === 1 }"
+        >
+          <div v-for="item in items" :key="item._id || item.id" class="catalog__cell">
+            <ProductItem 
+              v-model="item.quantity" 
+              :name="item.name" 
+              :_id="item._id || item.id" 
+              :item="item" 
+              :packages="item.packages || []" 
+              :price="item.price" 
+            />
           </div>
         </div>
         <div class="pag-wrap">
-          <Paginator v-model="page" :pages="pages" />
+          <Paginator v-model="page_" :pages="pages" />
         </div>
       </div>
     </div>
-    <div class="cat-search" v-bind:class="{ 'cat-search_opened': sharedState.quick_search }">
+    <div class="cat-search" :class="{ 'cat-search_opened': uiStore.quick_search }">
       <div class="cat-search__box">
         <div class="b-search b-search_sm">
-          <input type="text" placeholder="Быстрый поиск" class="b-search__input" v-model="sharedState.global_search">
+          <input 
+            type="text" 
+            placeholder="Быстрый поиск" 
+            class="b-search__input" 
+            v-model="globalSearch"
+          >
           <span class="b-search__button">
-            <span class="icon icon_search"><svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#search"></use></svg></span>
+            <span class="icon icon_search">
+              <svg class="icon__item">
+                <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#search"></use>
+              </svg>
+            </span>
           </span>
         </div>
       </div>
@@ -104,240 +166,254 @@
   </div>
 </template>
 
-<script>
-import FilterItem from '~/components/FilterItem.vue'
-import Paginator from '~/components/Paginator.vue'
-import DropdownSelect from '~/components/DropdownSelect.vue'
-import ProductItem from '~/components/ProductItem.vue'
+<script setup lang="ts">
+import { useUIStore } from '~/stores/ui'
+import { useCartStore } from '~/stores/cart'
+import { useSettingsStore } from '~/stores/settings'
+import { useCategories } from '~/composables/useCategories'
+import { useItems } from '~/composables/useItems'
+import { useAggregate } from '~/composables/useAggregate'
+import { useFeathersService } from '~/composables/useFeathersService'
 
-export default {
-  props: {
-    id: String,
-    page: {
-      type: Number,
-      default: 1
-    }
-  },
-  components: {
-    FilterItem,
-    Paginator,
-    DropdownSelect,
-    ProductItem
-  },
-  data() {
-    return {
-      sharedState: this.$store.state,
-      tree: [],
-      categories: [],
-      items: [],
-      limit: 24,
-      pages: 1,
-      total: 0,
-      types: [],
-      typeOfProduct: [],
-      brands: [],
-      brand: [],
-      vehicles: [],
-      vehicle: [],
-      compositions: [],
-      composition: [],
-      viscosities: [],
-      viscosity: [],
-      requests: [],
-      request: [],
-      chipClearAll: false,
-      chipBrand: false,
-      chipBrandName: '',
-      chipVehicle: false,
-      chipVehicleName: '',
-      chipComposition: false,
-      chipCompositionName: '',
-      types_dropdown: false,
-      view: this.$store.state.settings.view_items,
-      sort_open: false,
-      filter_open: false,
-      menu_open: false,
-      sort: 0,
-      sort_items: [
-        { value: 0, label: 'Популярные', tooltip: 'Популярность товаров определяется по спросу. Чем чаще заказывают товар — тем он выше в поиске' },
-        { value: 1, label: 'Дешевые'},
-        { value: 2, label: 'Дорогие'}
-      ]
-    }
-  },
-  watch: {
-    page(val) {
-      this.getitems()
-    },
-    chipClearAll(val) {
-      if (!val) {
-        this.brand = []
-        this.vehicle = []
-        this.composition = []
-      }
-    },
-    brand(val) {
-      this.chipBrand = this.brand.length > 0
-      this.chipBrandName = 'Бренд: ' + (this.brand.length > 0 ? (this.brand.length == 1 ? this.brand[0] : this.brand.length + ' знач.') : '')
-      this.setClearAll()
-      this.getitems()
-    },
-    chipBrand(val) {
-      if (!val) this.brand = []
-    },
-    vehicle(val) {
-      this.chipVehicle = this.vehicle.length > 0
-      this.chipVehicleName = 'Тип продукта: ' + (this.vehicle.length > 0 ? (this.vehicle.length == 1 ? this.vehicle[0] : this.vehicle.length + ' знач.') : '')
-      this.setClearAll()
-      this.getitems()
-    },
-    chipVehicle(val) {
-      if (!val) this.vehicle = []
-    },
-    composition(val) {
-      this.chipComposition = this.composition.length > 0
-      this.chipCompositionName = 'Состав: ' + (this.composition.length > 0 ? (this.composition.length == 1 ? this.composition[0] : this.composition.length + ' знач.') : '')
-      this.setClearAll()
-      this.getitems()
-    },
-    chipComposition(val) {
-      if (!val) this.composition = []
-    },
-    view(value) {
-      this.$store.commit('settings/set', { setting: 'view_items', value })
-    }
-  },
-  mounted() {
-    this.getCategories()
-    this.$store.dispatch('aggregate/find', { query: 'brand' }).then(res => this.brands = res.map(item => Object.assign({ value: item._id })))
-    this.$store.dispatch('aggregate/find', { query: 'vehicle' }).then(res => this.vehicles = res.map(item => Object.assign({ title: item._id, value: item._id })))
-    this.$store.dispatch('aggregate/find', { query: { name: 'compositions', isArray: true } }).then(res => this.compositions = res.map(item => Object.assign({ title: item._id, value: item._id })))
-    this.$store.dispatch('viscosities/find', { query: { $limit: null } }).then(res => this.viscosities = res.data.map(item => Object.assign({ title: item.name, value: item.name.replace('SAE ', '') })))
-  },
-  methods: {
-    getCategories() {
-      this.$store.dispatch('categories/find', { query: { $limit: 100 } }).then(response => {
-        this.categories = []
-        const root = { id: 0, children: this.tree }
-        const stack = [...response.data]
-        while (stack.length > 0) {
-          const item = stack.shift()
-          const child = { id: item._id, name: item.name, children: [] }
-          if (item.parent && item.parent !== "00000000-0000-0000-0000-000000000000") {
-            const find = this.categories.find(e => e.id === item.parent)
-            if (!find) stack.push(item)
-            else child.parent = find
-          } else {
-            child.parent = root
-          }
-          if (child.parent) {
-            child.parent.children.push(child)
-            this.categories.push(child)
-          }
-        }
-        this.getitems()
-      })
-    },
-    packagePrev(item) {
-      // if (item.skus.length > 0) {
-      //   if (item.current_package > 0) item.current_package --
-      // }
-    },
-    packageNext(item) {
-      // if (item.skus.length > 0) {
-      //   if (item.skus.length > item.current_package + 1) item.current_package ++
-      // }
-    },
-    getVolume(item) {
-      // if (item.skus.length > 0) {
-      //   return item.skus[item.current_package].volume
-      // }
-      return "226 г"
-    },
-    getFilterName(name, values) {
-      return name + (values.length > 0 ? ': ' + values.length : '')
-    },
-    setClearAll() {
-      this.chipClearAll = this.chipBrand || this.chipVehicle || this.chipComposition
-    },
-    opendialog(id) {
-      this.$store.state.showProduct = true
-      this.$store.state.product_id = id
-    },
-    getIds(item, ids) {
-      ids.push(item.id)
-      item.children.forEach(subitem => this.getIds(subitem, ids))
-    },
-    getitems() {
-      const $skip = (this.page - 1) * this.limit
-      const cart = this.$store.state.cart.list
-      let query = { $skip, $limit: this.limit }
-      if (this.brand.length) Object.assign(query, { brand: { $in: this.brand } })
-      if (this.vehicle.length) Object.assign(query, { vehicle: { $in: this.vehicle } })
-      if (this.composition.length) Object.assign(query, { compositions: { $in: this.composition } })
-      if (this.viscosity.length) Object.assign(query, { sae: { $in: this.viscosity } })
-      if (this.request.length) Object.assign(query, { requests: { $in: this.request } })
-      const find = this.categories.find(e => e.id === this.id)
-      if (find) {
-        const ids = []
-        this.getIds(find, ids)
-        Object.assign(query, { category: { $in: ids } })
-      }
-      this.$store.dispatch('items/find', { query })
-        .then(response => {
-          this.items = response.data.reduce((items, item) => {
-            const cart_item = cart.find(e => e.id === item._id)
-            const product = Object.assign({ quantity: 1, cart: 0, volume: '', price: 0, current_package: 0 }, item)
-            if (cart_item !== undefined) Object.assign(product, { quantity: cart_item.quantity, cart: cart_item.quantity })
-            items.push(product)
-            return items
-          }, [])
-          this.total = response.total
-          this.pages = Math.ceil(this.total / this.limit)
-        })
-    },
-    typeOfProductSelect(value) {
-      // const index = this.typeOfProduct.indexOf(value)
-      // if (index === -1) this.typeOfProduct.push(value)
-      this.menu_open = false
-      this.typeOfProduct = [value]
-      this.getitems()
-    },
-    categorySelect(category) {
-      this.menu_open = false
-      this.id = category.id
-      this.getitems()
-    },
-    updateitem(item) {
-      this.$refs['input' + item._id][0].value = item.quantity
-      this.items.splice(this.items.indexOf(item), 1, item)
-    },
-    increase(item) {
-      item.quantity++
-      this.updateitem(item)
-    },
-    decrease(item) {
-      if (item.quantity > 1) item.quantity--
-      this.updateitem(item)
-    },
-    addcart(item) {
-      // this.$store.commit('cart/add', item)
-      // item.cart = item.quantity
-      // this.items.splice(this.items.indexOf(item), 1, item)
-      // this.showCartMessage()
-    },
-    getname(item) {
-      return item.cart ? (item.cart === item.quantity ? "В корзине" : "Изменить") : "В корзину"
-    },
-    hasIncluded(node) {
-      const stack = [node]
-      while (stack.length > 0) {
-        node = stack.pop()
-        if (node.id == this.id) return true
-        if (node.children && node.children.length) node.children.forEach(n => stack.push(n))
-      }
-      return false
-    }
-  },
+interface Props {
+  id?: string
+  page?: number
 }
+
+const props = withDefaults(defineProps<Props>(), {
+  page: 1
+})
+
+const uiStore = useUIStore()
+const cartStore = useCartStore()
+const settingsStore = useSettingsStore()
+const { categories, tree } = useCategories()
+const { find: findItems } = useItems()
+const { find: findAggregate } = useAggregate()
+const viscositiesService = useFeathersService('viscosities')
+
+const page_ = ref(props.page)
+const items = ref<any[]>([])
+const limit = ref(24)
+const pages = ref(1)
+const total = ref(0)
+const localCategories = ref<any[]>([])
+const brands = ref<any[]>([])
+const brand = ref<any[]>([])
+const vehicles = ref<any[]>([])
+const vehicle = ref<any[]>([])
+const compositions = ref<any[]>([])
+const composition = ref<any[]>([])
+const viscosities = ref<any[]>([])
+const viscosity = ref<any[]>([])
+const request = ref<any[]>([])
+const chipClearAll = ref(false)
+const chipBrand = ref(false)
+const chipBrandName = ref('')
+const chipVehicle = ref(false)
+const chipVehicleName = ref('')
+const chipComposition = ref(false)
+const chipCompositionName = ref('')
+const view = ref(settingsStore.view_items)
+const sort = ref(0)
+const filterOpen = ref(false)
+const menuOpen = ref(false)
+
+const sortItems = [
+  { value: 0, label: 'Популярные', tooltip: 'Популярность товаров определяется по спросу. Чем чаще заказывают товар — тем он выше в поиске' },
+  { value: 1, label: 'Дешевые' },
+  { value: 2, label: 'Дорогие' }
+]
+
+const globalSearch = computed({
+  get: () => uiStore.global_search,
+  set: (val: string) => uiStore.setSearch(val)
+})
+
+const getFilterName = (name: string, values: any[]) => {
+  return name + (values.length > 0 ? ': ' + values.length : '')
+}
+
+const setClearAll = () => {
+  chipClearAll.value = chipBrand.value || chipVehicle.value || chipComposition.value
+}
+
+const opendialog = (id: string) => {
+  uiStore.setShowProduct(true)
+  uiStore.setProductId(id)
+}
+
+const getIds = (item: any, ids: string[] = []) => {
+  ids.push(item.id)
+  if (item.children && item.children.length) {
+    item.children.forEach((subitem: any) => getIds(subitem, ids))
+  }
+  return ids
+}
+
+const getitems = async () => {
+  const $skip = (page_.value - 1) * limit.value
+  const cart = cartStore.list
+  const query: any = { $skip, $limit: limit.value }
+  
+  if (brand.value.length) Object.assign(query, { brand: { $in: brand.value } })
+  if (vehicle.value.length) Object.assign(query, { vehicle: { $in: vehicle.value } })
+  if (composition.value.length) Object.assign(query, { compositions: { $in: composition.value } })
+  if (viscosity.value.length) Object.assign(query, { sae: { $in: viscosity.value } })
+  if (request.value.length) Object.assign(query, { requests: { $in: request.value } })
+  
+  const found = localCategories.value.find((e: any) => e.id === props.id)
+  if (found) {
+    const ids: string[] = []
+    getIds(found, ids)
+    Object.assign(query, { category: { $in: ids } })
+  }
+  
+  try {
+    const response = await findItems({ query })
+    items.value = response.data.reduce((itemsList: any[], item: any) => {
+      const cartItem = cart.find(e => e.id === item._id)
+      const product = Object.assign(
+        { quantity: 1, cart: 0, volume: '', price: 0, current_package: 0 },
+        item
+      )
+      if (cartItem !== undefined) {
+        Object.assign(product, { quantity: cartItem.quantity, cart: cartItem.quantity })
+      }
+      itemsList.push(product)
+      return itemsList
+    }, [])
+    total.value = response.total || response.data.length
+    pages.value = Math.ceil(total.value / limit.value)
+  } catch (error) {
+    console.error('Error loading items:', error)
+  }
+}
+
+const getCategories = async () => {
+  try {
+    const categoriesService = useFeathersService('categories')
+    const response = await categoriesService.find({ query: { $limit: 100 } })
+    const data = response.data || response || []
+    
+    localCategories.value = []
+    const localTree: any[] = []
+    const root = { id: 0, children: localTree }
+    const stack = [...data]
+    
+    while (stack.length > 0) {
+      const item = stack.shift()!
+      const child = { id: item._id, name: item.name, children: [] }
+      
+      if (item.parent && item.parent !== "00000000-0000-0000-0000-000000000000") {
+        const find = localCategories.value.find((e: any) => e.id === item.parent)
+        if (!find) {
+          stack.push(item)
+        } else {
+          child.parent = find
+        }
+      } else {
+        child.parent = root
+      }
+      
+      if (child.parent) {
+        child.parent.children.push(child)
+        localCategories.value.push(child)
+      }
+    }
+    
+    await getitems()
+  } catch (error) {
+    console.error('Error loading categories:', error)
+  }
+}
+
+const hasIncluded = (node: any): boolean => {
+  const stack = [node]
+  while (stack.length > 0) {
+    const currentNode = stack.pop()
+    if (currentNode && currentNode.id === props.id) return true
+    if (currentNode?.children && currentNode.children.length) {
+      currentNode.children.forEach((n: any) => stack.push(n))
+    }
+  }
+  return false
+}
+
+watch(() => props.page, () => {
+  page_.value = props.page
+  getitems()
+})
+
+watch(page_, () => {
+  getitems()
+})
+
+watch(chipClearAll, (val) => {
+  if (!val) {
+    brand.value = []
+    vehicle.value = []
+    composition.value = []
+  }
+})
+
+watch(brand, (val) => {
+  chipBrand.value = val.length > 0
+  chipBrandName.value = 'Бренд: ' + (val.length > 0 ? (val.length === 1 ? val[0] : val.length + ' знач.') : '')
+  setClearAll()
+  getitems()
+})
+
+watch(chipBrand, (val) => {
+  if (!val) brand.value = []
+})
+
+watch(vehicle, (val) => {
+  chipVehicle.value = val.length > 0
+  chipVehicleName.value = 'Тип продукта: ' + (val.length > 0 ? (val.length === 1 ? val[0] : val.length + ' знач.') : '')
+  setClearAll()
+  getitems()
+})
+
+watch(chipVehicle, (val) => {
+  if (!val) vehicle.value = []
+})
+
+watch(composition, (val) => {
+  chipComposition.value = val.length > 0
+  chipCompositionName.value = 'Состав: ' + (val.length > 0 ? (val.length === 1 ? val[0] : val.length + ' знач.') : '')
+  setClearAll()
+  getitems()
+})
+
+watch(chipComposition, (val) => {
+  if (!val) composition.value = []
+})
+
+watch(view, (value) => {
+  settingsStore.set('view_items', value)
+})
+
+onMounted(async () => {
+  await getCategories()
+  
+  try {
+    const brandRes = await findAggregate({ query: 'brand' })
+    brands.value = (brandRes.data || brandRes || []).map((item: any) => ({ value: item._id }))
+    
+    const vehicleRes = await findAggregate({ query: 'vehicle' })
+    vehicles.value = (vehicleRes.data || vehicleRes || []).map((item: any) => ({ title: item._id, value: item._id }))
+    
+    const compositionRes = await findAggregate({ query: { name: 'compositions', isArray: true } })
+    compositions.value = (compositionRes.data || compositionRes || []).map((item: any) => ({ title: item._id, value: item._id }))
+    
+    const viscositiesRes = await viscositiesService.find({ query: { $limit: null } })
+    viscosities.value = (viscositiesRes.data || viscositiesRes || []).map((item: any) => ({ 
+      title: item.name, 
+      value: item.name.replace('SAE ', '') 
+    }))
+  } catch (error) {
+    console.error('Error loading filters:', error)
+  }
+})
 </script>
