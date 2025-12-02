@@ -18,11 +18,13 @@ const cookieStorage = {
 export default defineNuxtPlugin((nuxtApp) => {
   // Only run on client side
   if (process.server) {
-    return {
-      provide: {
-        feathers: null
-      }
-    }
+    return
+  }
+
+  // Check if feathers is already provided to avoid redefinition
+  if (nuxtApp.$feathers) {
+    console.log('FeathersJS plugin: Already provided, skipping')
+    return
   }
 
   const config = useRuntimeConfig()
