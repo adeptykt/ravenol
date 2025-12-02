@@ -20,8 +20,8 @@
           <div class="items__cell items__cell_delete hidden-print"></div>
         </div>
       </div>
-      <template v-for="(user, i) in users">
-        <div class="items__row" :key="i">
+      <template v-for="(user, i) in users" :key="i">
+        <div class="items__row">
           <div class="items__wrap">
             <a href="#" class="items__product">
               <div class="items__base">

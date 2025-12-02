@@ -13,8 +13,8 @@
             </div>
           </div>
           <div class="service-f-b">
-            <template v-for="(service, i) in services">
-              <Checkbox v-model="selected" :label="service.name" :value="service.value" :key="i" color='#ef9a20'></Checkbox>
+            <template v-for="(service, i) in services" :key="i">
+              <Checkbox v-model="selected" :label="service.name" :value="service.value" color='#ef9a20'></Checkbox>
             </template>
             <hr style="margin-right: 10px;">
             <p>
