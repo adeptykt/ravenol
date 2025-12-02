@@ -156,11 +156,15 @@
 4. ✅ Создать composables для FeathersJS
 5. ✅ Настроить персистентность (localStorage через pinia-plugin-persistedstate)
 
-### Этап 5: Миграция плагинов (2-3 дня)
-1. Переписать `plugins/feathers-vuex.js` (убрать Vue.use)
-2. Конвертировать `plugins/prototypes.js` в composables
-3. Обновить `plugins/vue-notifications.js`
-4. Протестировать все плагины
+### Этап 5: Миграция плагинов (2-3 дня) ✅
+1. ✅ Переписать `plugins/feathers-vuex.js` (убрать Vue.use) → удален, заменен на `feathers.client.ts`
+2. ✅ Конвертировать `plugins/prototypes.js` в composables → обновлен `prototypes.ts` + создан `useFormat.ts`
+3. ✅ Обновить `plugins/vue-notifications.js` → обновлен на `vue-notifications.client.ts`
+4. ✅ Создать плагины инициализации (`init.client.ts`, `init.server.ts`)
+5. ✅ Улучшить `feathers.client.ts` (добавить обработку событий подключения)
+6. ✅ Удалить старые плагины (feathers.js, feathers-vuex.js, prototypes.js, vue-notifications.js)
+7. ✅ Создать composable `useNotifications.ts` как альтернативу vue-notifications
+8. ⏳ Протестировать все плагины (требует запуска приложения)
 
 ### Этап 6: Миграция компонентов (10-15 дней)
 1. Начать с простых компонентов (Button, Input)
