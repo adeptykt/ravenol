@@ -51,7 +51,7 @@ export default {
   },
   watch: {
     '$route.query.page'(val) {
-      this.page = val
+      this.page = val ? Number(val) : 1
     },
     value(val) {
       this.page = val

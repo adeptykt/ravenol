@@ -82,7 +82,7 @@
           </div>
         </div>
         <div class="catalog catalog_size_4" v-bind:class="{ catalog_view_table: view==0, catalog_view_row: view==1 }">
-          <div v-for="(item, i) in items" :key="item.id" class="catalog__cell">
+          <div v-for="(item) in items" :key="item.id" class="catalog__cell">
             <ProductItem v-model="item.quantity" :name="item.name" :_id="item._id" :skus="item.skus" :item="item" :packages="item.packages" :price="item.price" />
           </div>
         </div>
@@ -241,10 +241,16 @@ export default {
   },
   mounted() {
     // this.getCategories().then(this.getitems())
-    this.getitems()
+    // this.getitems()
     // this.$store.dispatch('aggregate/find', { query: 'vehicle' }).then(res => this.vehicles = res.map(item => Object.assign({ title: item._id, value: item._id })))
     // this.$store.dispatch('aggregate/find', { query: { name: 'compositions', isArray: true } }).then(res => this.compositions = res.map(item => Object.assign({ title: item._id, value: item._id })))
     // this.$store.dispatch('viscosities/find', { query: { $limit: null } }).then(res => this.viscosities = res.data.map(item => Object.assign({ title: item.name, value: item.name.replace('SAE ', '') })))
+  },
+  async fetch() {
+    const { items, total, pages } = await this.getitems()
+    this.items = items
+    this.total = total
+    this.pages = pages
   },
   methods: {
     getFilterName(name, values) {
@@ -261,14 +267,13 @@ export default {
       ids.push(item.id)
       item.children.forEach(subitem => this.getIds(subitem, ids))
     },
-    getitems() {
+    async getitems() {
       const $skip = (this.page_ - 1) * this.limit
       const cart = this.$store.state.cart.list
-      const query = { price: { $gt: 0 } }
+      const query = { price: { $gt: 0 }, hidden: { $ne: true } }
 
       const loaditems = response => {
-        this.items = response.data.reduce((items, item) => {
-          // console.log(item);
+        const items = response.data.reduce((items, item) => {
           const cart_item = cart.find(e => e.id === item._id)
           const product = Object.assign({ quantity: 1, cart: 0, volume: '', price: 0, balance: 0 }, item)
           // if (item.balances && item.balances.length > 0) {
@@ -279,13 +284,14 @@ export default {
           items.push(product)
           return items
         }, [])
-        this.total = response.total
-        this.pages = Math.ceil(this.total / this.limit)
+        const total = response.total
+        const pages = Math.ceil(this.total / this.limit)
+        return { items, total, pages }
       }
 
       if (this.find) {
         query.$search = this.find
-        this.$store.dispatch('search/find', { query: Object.assign({}, query, { $skip, $limit: this.limit }) }).then(loaditems)
+        return this.$store.dispatch('search/find', { query: Object.assign({}, query, { $skip, $limit: this.limit }) }).then(loaditems)
       } else {
         if (this.brand.length) Object.assign(query, { brand: { $in: this.brand } })
         if (this.vehicle.length) Object.assign(query, { vehicle: { $in: this.vehicle } })
@@ -298,9 +304,9 @@ export default {
           this.getIds(find, ids)
           Object.assign(query, { category: { $in: ids } })
         }
-        this.$store.dispatch('items/find', { query: Object.assign({}, query, { $skip, $limit: this.limit, $sort: { haveRest: -1, name: 1 } }) }).then(loaditems)
         // this.loadProperties(query).then(res => this.brands = res.map(item => Object.assign({ value: item._id })))
-        return this.$store.dispatch('aggregate/find', { query: { match: query, property: 'brand' } }).then(res => this.brands = res.map(item => Object.assign({ value: item._id })))
+        this.$store.dispatch('aggregate/find', { query: { match: query, property: 'brand' } }).then(res => this.brands = res.map(item => Object.assign({ value: item._id })))
+        return this.$store.dispatch('items/find', { query: Object.assign({}, query, { $skip, $limit: this.limit, $sort: { haveRest: -1, name: 1 } }) }).then(loaditems)
       }
     },
     typeOfProductSelect(value) {

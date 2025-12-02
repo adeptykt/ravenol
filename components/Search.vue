@@ -105,7 +105,7 @@ export default {
     querySelections(search) {
       if (search) {
         this.loading = true
-        const query = { $skip: 0, $limit: 10, price: { $gt: 0 }, $search: search, $sort: { name: -1 } }
+        const query = { $skip: 0, $limit: 10, price: { $gt: 0 }, $search: search, $sort: { name: -1 }, hidden: false }
         console.log('querySelections', query);
         this.$store.dispatch('search/find', { query })
           .then(res => {
