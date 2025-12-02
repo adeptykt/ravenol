@@ -13,14 +13,19 @@
       <div class="product">
         <v-toolbar light flat color="#FFFFFF" height="46" extension-height="36">
           <v-spacer></v-spacer>
-          <v-toolbar-title :style="{ marginLeft: '20px' }">{{product.name}}</v-toolbar-title>
+          <v-toolbar-title :style="{ marginLeft: '20px' }">{{ product.name }}</v-toolbar-title>
           <v-spacer></v-spacer>
           <v-tabs centered color="transparent" slider-color="black" v-model="model" height="30px" slot="extension">
-            <v-tab v-for="(tab, i) in tabs" :key="i" :href="`#ptab-${i}`" v-if="!tab.condition || (product[tab.condition] && (!Array.isArray(product[tab.condition]) || product[tab.condition].length))">
+            <v-tab 
+              v-for="(tab, i) in tabs" 
+              :key="i" 
+              :href="`#ptab-${i}`" 
+              v-if="!tab.condition || (product[tab.condition] && (!Array.isArray(product[tab.condition]) || product[tab.condition].length))"
+            >
               {{ tab.name }}
             </v-tab>
           </v-tabs>
-          <v-btn icon @click="dialog=false">
+          <v-btn icon @click="dialog = false">
             <v-icon small>clear</v-icon>
           </v-btn>
         </v-toolbar>
@@ -28,21 +33,24 @@
           <v-tab-item v-for="(tab, i) in tabs" :key="i" :value="`ptab-${i}`">
             <v-card flat>
               <v-card-text>
-                <v-container :style="{padding: '10px 0 0 0'}">
-                  <div v-if="tab.name=='Информация'" class="product-info">
-                    <!-- <h1>{{product.name}}</h1> -->
-                    <h2>{{product.type}}</h2>
-                    <p>{{product.description}}</p>
-                    <p>Артикул продукта: {{product.article}}</p>
-                    <p v-if="product.sae && product.sae.length"><b>SAE:</b> {{product.sae.join(', ')}}</p>
-                    <p v-if="product.acea && product.acea.length"><b>ACEA:</b> {{product.acea.join(', ')}}</p>
-                    <p v-if="product.api && product.api.length"><b>API:</b> {{product.api.join(', ')}}</p>
-                    <p v-if="product.oem && product.oem.length"><b>OEM:</b> {{product.oem.join(', ')}}</p>
-                    <p v-if="product.tags && product.tags.length"><b>Теги:</b> {{product.tags.join(', ')}}</p>
-                    <p v-if="product.approved && product.approved.length"><b>Одобрено производителями техники:</b> {{product.approved.join(', ')}}</p>
-                    <p v-if="product.requests && product.requests.length"><b>Соответствие требованиям:</b> {{product.requests.join(', ')}}</p>
+                <v-container :style="{ padding: '10px 0 0 0' }">
+                  <div v-if="tab.name === 'Информация'" class="product-info">
+                    <h2>{{ product.type }}</h2>
+                    <p>{{ product.description }}</p>
+                    <p>Артикул продукта: {{ product.article }}</p>
+                    <p v-if="product.sae && product.sae.length"><b>SAE:</b> {{ product.sae.join(', ') }}</p>
+                    <p v-if="product.acea && product.acea.length"><b>ACEA:</b> {{ product.acea.join(', ') }}</p>
+                    <p v-if="product.api && product.api.length"><b>API:</b> {{ product.api.join(', ') }}</p>
+                    <p v-if="product.oem && product.oem.length"><b>OEM:</b> {{ product.oem.join(', ') }}</p>
+                    <p v-if="product.tags && product.tags.length"><b>Теги:</b> {{ product.tags.join(', ') }}</p>
+                    <p v-if="product.approved && product.approved.length">
+                      <b>Одобрено производителями техники:</b> {{ product.approved.join(', ') }}
+                    </p>
+                    <p v-if="product.requests && product.requests.length">
+                      <b>Соответствие требованиям:</b> {{ product.requests.join(', ') }}
+                    </p>
                   </div>
-                  <v-flex class="packages" v-if="tab.name=='Фасовка'">
+                  <v-flex class="packages" v-if="tab.name === 'Фасовка'">
                     <v-flex xs12 sm6 md6 lg6>
                       <div class="product-table">
                         <div id="head">
@@ -50,11 +58,11 @@
                           <span>Артикул</span>
                           <span>Код</span>
                         </div>
-                        <template v-for="(pack, p) in product.packages">
-                          <div class="product-row" :key="p" @mouseover="currentpack=pack">
-                            <span>{{pack.volume}} л.</span>
-                            <span>{{pack.article}}</span>
-                            <span>{{pack.code}}</span>
+                        <template v-for="(pack, p) in product.packages" :key="p">
+                          <div class="product-row" @mouseover="showPackage(p)">
+                            <span>{{ pack.volume }} л.</span>
+                            <span>{{ pack.article }}</span>
+                            <span>{{ pack.code }}</span>
                           </div>
                         </template>
                       </div>
@@ -62,33 +70,36 @@
                     <v-flex xs12 sm6 md6 lg6>
                       <div class="blokimg">
                         <a href="#imagelarge">
-                          <img :src="'/images/fullscreen/' + currentpack.article + '.jpg'" class="product-image">
+                          <img 
+                            :src="'/images/fullscreen/' + currentpack.article + '.jpg'" 
+                            class="product-image"
+                          >
                         </a>
                       </div>
                     </v-flex>
                   </v-flex>
-                  <div v-html="product.text" class="product-desc" v-if="tab.name=='Описание'"></div>
-                  <div class="product-txt" v-if="tab.name=='Применение'">
-                    <h2>Применение {{product.name}} обеспечивает:</h2>
+                  <div v-html="product.text" class="product-desc" v-if="tab.name === 'Описание'"></div>
+                  <div class="product-txt" v-if="tab.name === 'Применение'">
+                    <h2>Применение {{ product.name }} обеспечивает:</h2>
                     <ul>
-                      <template v-for="(usage, i) in product.usage">
-                        <li :key="i">{{usage}}</li>
+                      <template v-for="(usage, i) in product.usage" :key="i">
+                        <li>{{ usage }}</li>
                       </template>
                     </ul>
                   </div>
-                  <div class="product-table" v-if="tab.name=='Параметры'">
+                  <div class="product-table" v-if="tab.name === 'Параметры'">
                     <div id="head">
                       <span>Параметр</span>
                       <span>Ед. измерения</span>
                       <span>Данные</span>
                       <span>Метод испытания</span>
                     </div>
-                    <template v-for="(char, c) in product.characteristics">
-                      <div class="product-row" :key="c">
-                        <span>{{char[0]}}</span>
-                        <span>{{char[1]}}</span>
-                        <span>{{char[2]}}</span>
-                        <span>{{char[3]}}</span>
+                    <template v-for="(char, c) in product.characteristics" :key="c">
+                      <div class="product-row">
+                        <span>{{ char[0] }}</span>
+                        <span>{{ char[1] }}</span>
+                        <span>{{ char[2] }}</span>
+                        <span>{{ char[3] }}</span>
                       </div>
                     </template>
                   </div>
@@ -102,55 +113,64 @@
   </div>
 </template>
 
-<script>
-  export default {
-    props: {
-      value: Boolean,
-      id: String
-    },
-    data () {
-      return {
-        sharedState: this.$store.state,
-        model: 'ptab-0',
-        dialog: false,
-        product: {},
-        tabs: [
-          { name: 'Информация' },
-          { name: 'Описание', condition: 'text' },
-          { name: 'Фасовка', condition: 'packages' },
-          { name: 'Применение', condition: 'usage' },
-          { name: 'Параметры', condition: 'characteristics' }
-        ],
-        name: '',
-        text: '',
-        current: 0,
-        currentpack: {}
-      }
-    },
-    watch: {
-      dialog (val) {
-        this.$emit("input", val)
-      },
-      value (val) {
-        this.dialog = val
-      },
-      id (id) {
-        id && this.$store.dispatch('items/get', id)
-          .then(res => {
-            this.product = res
-            this.current = 0
-            this.text = res.text
-            this.currentpack = (res.packages && res.packages.length) ? res.packages[0] : { article: res.article, price: res.price, image: res.image }
-          })
-      }
-    },
-    methods: {
-      showpackage(index) {
-        this.current = index
-        this.currentpack = this.product.packages[index]
-      }
+<script setup lang="ts">
+import { useFeathers } from '~/composables/useFeathers'
+
+interface Props {
+  modelValue: boolean
+  id?: string
+}
+
+const props = defineProps<Props>()
+
+const emit = defineEmits<{
+  'update:modelValue': [value: boolean]
+}>()
+
+const feathers = useFeathers()
+
+const dialog = ref(props.modelValue)
+const model = ref('ptab-0')
+const product = ref<any>({})
+const current = ref(0)
+const currentpack = ref<any>({})
+
+const tabs = [
+  { name: 'Информация' },
+  { name: 'Описание', condition: 'text' },
+  { name: 'Фасовка', condition: 'packages' },
+  { name: 'Применение', condition: 'usage' },
+  { name: 'Параметры', condition: 'characteristics' }
+]
+
+watch(() => props.modelValue, (val) => {
+  dialog.value = val
+})
+
+watch(dialog, (val) => {
+  emit('update:modelValue', val)
+})
+
+watch(() => props.id, async (id) => {
+  if (id) {
+    try {
+      const itemsService = feathers.service('items')
+      const res = await itemsService.get(id)
+      product.value = res
+      current.value = 0
+      currentpack.value = (res.packages && res.packages.length) 
+        ? res.packages[0] 
+        : { article: res.article, price: res.price, image: res.image }
+    } catch (error) {
+      console.error('Error loading product:', error)
     }
   }
+}, { immediate: true })
+
+const showPackage = (index: number) => {
+  current.value = index
+  currentpack.value = product.value.packages[index]
+}
 </script>
 
 <style>
@@ -247,90 +267,66 @@
 }
 .overlay{
   display: none;
-  height: auto;
-  position: absolute;
-  /* left: -14px;
-  top: -12px; */
-  width: auto;
-  z-index: 999;
-}
-.overlay .overlay_container{
-  display: table-cell;
-  vertical-align: middle;
-}
-.overlay_container img {
-  background-color: #007acc;
-  padding: 10px;
-  -webkit-border-radius: 5px;
-  -moz-border-radius: 5px;
-  cursor: zoom-out;
+  position: fixed;
+  z-index: 9999;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, .8);
 }
 .overlay:target {
   display: table;
 }
-.scroll {
-  /* overflow-y: auto;
-  height: 100%; */
-  /* max-height: 570px; */
-}
-.product-txt {
-  padding-left: 20px;
-}
-.product-txt h1 {
-  margin-bottom: 0;
-  font-size: 32px;
-  font-weight: 300;
-  margin: 0;
-  text-align: left;
-}
-.product-txt h2 {
-  margin-top: 0;
-  font-size: 18px;
-  font-weight: 700;
-  color: #007acc;
-  margin: 0 0 5px;
-}
-.product-txt p {
-  margin-bottom: 0;
-}
-.product-txt .pr-desc {
-  font-size: 18px;
-  margin-bottom: 20px;
-}
-.product-table #head {
-  align-items: flex-end;
-  margin-bottom: 0;
-  font-weight: 700;
-  color: #fff;
-  background-color: #c5c5c5;
-}
-.product-table #head>span:first-child, .product-table .product-row>span:first-child {
-  width: 40%;
-  text-align: left;
-}
-.product-table #head>span, .product-table .product-row>span {
-  display: inline-block;
-  width: 20%;
-  padding: 5px;
-  font-size: 14px;
+.overlay_container {
+  display: table-cell;
+  vertical-align: middle;
   text-align: center;
 }
-.product-table .product-row, .product-table #head {
-  display: flex;
-  flex-flow: row nowrap;
+.overlay_container img {
+  max-width: 90%;
+  max-height: 90%;
+}
+.overlay_container a {
+  position: absolute;
+  top: 0;
+  right: 0;
+  color: #fff;
+  font-size: 30px;
+  text-decoration: none;
+  padding: 10px;
+}
+.product-table {
+  display: table;
   width: 100%;
+  border-collapse: collapse;
 }
-.packages .product-table #head>span, .packages .product-table .product-row>span {
-  width: 40%;
+.product-table #head {
+  display: table-row;
+  font-weight: 700;
+  background-color: #f5f5f5;
 }
-.packages .product-table #head>span:first-child, .packages .product-table .product-row>span:first-child {
-  width: 20%;
-  text-align: left;
+.product-table #head span {
+  display: table-cell;
+  padding: 10px;
+  border: 1px solid #ddd;
 }
-.product-row:nth-child(2n+2) {
-  background-color: #ececec;
+.product-table .product-row {
+  display: table-row;
 }
-.packages .product-row:hover {
-  background-color: #ef920f;
+.product-table .product-row span {
+  display: table-cell;
+  padding: 10px;
+  border: 1px solid #ddd;
+}
+.product-table .product-row:hover {
+  background-color: #f9f9f9;
+}
+.product-txt ul {
+  list-style: disc;
+  padding-left: 20px;
+}
+.product-txt li {
+  margin-bottom: 8px;
 }
 </style>
