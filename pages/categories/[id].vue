@@ -1,8 +1,11 @@
 <template>
-  <Category :id="id" v-model:page="page" />
+  <ClientOnly>
+    <Category :id="id" v-model:page="page" />
+  </ClientOnly>
 </template>
 
 <script setup lang="ts">
+import { ref, computed, watch, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useFeathersService } from '~/composables/useFeathersService'
 
