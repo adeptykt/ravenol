@@ -154,8 +154,8 @@
                           <div class="nav__dropdown" v-if="item.items">
                             <div class="dropdown dropdown_nav">
                               <ul class="dropdown__list">
-                                <template v-for="(subitem, j) in item.items">
-                                  <li class="dropdown__item" @click="menu = false" :key="i*1000+j">
+                                <template v-for="(subitem, j) in item.items" :key="i*1000+j">
+                                  <li class="dropdown__item" @click="menu = false">
                                     <nuxt-link :to="subitem.to" class="dropdown__link nuxt-link-exact-active nuxt-link-active">{{ subitem.title }}</nuxt-link>
                                   </li>
                                 </template>
