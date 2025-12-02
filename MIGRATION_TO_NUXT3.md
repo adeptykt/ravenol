@@ -171,7 +171,7 @@
 2. ✅ Мигрировать средние компоненты (ProductItem, Search)
 3. ✅ Мигрировать компоненты авторизации (Account, Login, Register, Authorization, AuthReset, Profile)
 4. ✅ Мигрировать остальные компоненты (Order, Service, Product)
-5. ✅ Мигрировать сложные компоненты (Category, Category_)
+5. ✅ Мигрировать сложные компоненты (Category)
 6. ✅ Заменить все `this.$store` на Pinia stores (~95% выполнено)
 7. ✅ Заменить `.sync` на `v-model` (не найдено использований `.sync`)
 8. ⏳ Осталось: RegisterOld.vue (старый компонент, можно удалить)
