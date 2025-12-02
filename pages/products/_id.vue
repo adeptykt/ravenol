@@ -4,29 +4,19 @@
     <div class="sep sep_product sep_goods">
       <div class="sep__base">
         <div class="goods">
-          <div class="goods__pic" @click="show_image=!show_image"><img :src="image" class="goods__img"></div>
+          <div class="goods__pic" @click="showImage = !showImage">
+            <img :src="image" class="goods__img">
+          </div>
           <div class="goods__base">
-            <h1 class="goods__title">{{product.name}}</h1>
-            <!-- <div class="goods__type">SYNTHETIC BLEND MOTOR OIL SL/CF 10W40</div> -->
-            <div class="goods__short">{{product.short}}</div>
+            <h1 class="goods__title">{{ product.name }}</h1>
+            <div class="goods__short">{{ product.short }}</div>
             <div class="goods__info">
-              <div class="goods__spec_arrows">
-                <!-- <a class="btn arrow__btn-item_left btn_type_small" @click="skuPrev()" v-if="this.skus.length > 1" v-bind:class="{btn_disable: index === 0}">
-                  <span class="arrow__btn-icon icon icon_plus_small"><svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#arrow_left"></use></svg></span>
-                </a> -->
-                <!-- <div class="goods__spec">
-                  <span class="goods__value">{{curr_sku.sku}}</span>
-                  <span class="goods__value">{{curr_sku.volume}}</span>
-                </div> -->
-                <!-- <a class="btn arrow__btn-item_right btn_type_small" @click="skuNext()" v-if="this.skus.length > 1" v-bind:class="{btn_disable: index === this.skus.length-1}">
-                  <span class="arrow__btn-icon icon icon_plus_small"><svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#arrow_right"></use></svg></span>
-                </a> -->
-              </div>
+              <div class="goods__spec_arrows"></div>
             </div>
-            <div class="goods__border" ref="goods__border">
+            <div class="goods__border" ref="goodsBorder">
               <div class="goods__box">
-                <div class="goods__prices" v-if="show_price">
-                  <span class="goods__price">{{rub(product.price)}}</span>
+                <div class="goods__prices" v-if="showPrice">
+                  <span class="goods__price">{{ rub(product.price) }}</span>
                 </div>
                 <div class="product__price_info" v-else>Авторизируйтесь, чтобы посмотреть цены</div>
                 <div class="goods__actions" v-if="product.haveRest">
@@ -36,54 +26,48 @@
                       <input type="tel" class="counter__number" v-model="quantity">
                       <div class="counter__btn counter__btn_plus" @click="increase">+</div>
                     </div>
-                  </div><a href="#" class="btn goods__btn btn_size_big btn_type_flat" v-bind:class="{ btn_type_grey: (quantity === cart) }" @click.prevent="addcart">{{getname()}}</a></div>
+                  </div>
+                  <a 
+                    href="#" 
+                    class="btn goods__btn btn_size_big btn_type_flat" 
+                    :class="{ btn_type_grey: (quantity === cart) }" 
+                    @click.prevent="addcart"
+                  >
+                    {{ getname() }}
+                  </a>
+                </div>
               </div>
               <div class="goods__message">
-                <!-- <div class="goods__icon">%</div> -->
-                <!-- <div class="goods__text">
-                  Специальные условия сотрудничества для юридических лиц
-                </div> -->
-                <div class="goods__fabric"><strong>{{product.brand}}</strong></div>
-                <div class="goods__text">
-                  {{product.article}}
-                </div>
+                <div class="goods__fabric"><strong>{{ product.brand }}</strong></div>
+                <div class="goods__text">{{ product.article }}</div>
                 <div class="goods__exist">
-                  <div :class="`exist exist_${balance_level}`">
-                    <!-- <div class="exist__icon">
-                      <div class="exist__level"><span class="exist__value" :style="`width:${(balance_level*20)}%;`"></span></div>
-                    </div> -->
-                    <div class="exist__base">{{balance_name}}</div>
+                  <div :class="`exist exist_${balanceLevel}`">
+                    <div class="exist__base">{{ balanceName }}</div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <div class="fix-goods" v-bind:class="{ 'fix-goods_show': fix_goods_show }">
+        <div class="fix-goods" :class="{ 'fix-goods_show': fixGoodsShow }">
           <div class="fix-goods__box box">
             <div class="fix-goods__base">
-              <div class="fix-goods__pic"><img :src="image" class="fix-goods__img"></div>
+              <div class="fix-goods__pic">
+                <img :src="image" class="fix-goods__img">
+              </div>
               <div class="fix-goods__row">
-                <div class="fix-goods__title">{{product.name}}</div>
+                <div class="fix-goods__title">{{ product.name }}</div>
                 <div class="fix-goods__flex">
-                  <div class="fix-goods__prices" v-if="show_price">
-                    <span class="fix-goods__price">{{rub(product.price)}}</span>
+                  <div class="fix-goods__prices" v-if="showPrice">
+                    <span class="fix-goods__price">{{ rub(product.price) }}</span>
                   </div>
                   <div class="product__price_info" v-else>Авторизируйтесь, чтобы посмотреть цены</div>
-                  <!-- <div class="fix-goods__spec">
-                    <a class="btn arrow__btn-item_left btn_type_small" @click="skuPrev()" v-if="this.skus.length > 1" v-bind:class="{btn_disable: index === 0}">
-                      <span class="arrow__btn-icon icon icon_plus_small"><svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#arrow_left"></use></svg></span>
-                    </a>
-                    <span class="fix-goods__value">{{curr_sku.sku}}</span>
-                    <span class="fix-goods__value">{{curr_sku.volume}}</span>
-                    <a class="btn arrow__btn-item_right btn_type_small" @click="skuNext()" v-if="this.skus.length > 1" v-bind:class="{btn_disable: index === this.skus.length-1}">
-                      <span class="arrow__btn-icon icon icon_plus_small"><svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#arrow_right"></use></svg></span>
-                    </a>
-                  </div> -->
                   <div class="fix-goods__exist">
                     <div class="exist exist_2">
                       <div class="exist__icon">
-                        <div class="exist__level"><span class="exist__value" style="width: 40%;"></span></div>
+                        <div class="exist__level">
+                          <span class="exist__value" style="width: 40%;"></span>
+                        </div>
                       </div>
                       <div class="exist__base">Мало</div>
                     </div>
@@ -99,40 +83,55 @@
                     <input type="tel" class="counter__number" v-model="quantity">
                     <div class="counter__btn counter__btn_plus" @click="increase">+</div>
                   </div>
-                </div><a href="#" class="btn fix-goods__btn btn_size_min btn_type_flat" v-bind:class="{ btn_type_grey: (quantity === cart) }" @click.prevent="addcart">{{getname()}}</a></div>
+                </div>
+                <a 
+                  href="#" 
+                  class="btn fix-goods__btn btn_size_min btn_type_flat" 
+                  :class="{ btn_type_grey: (quantity === cart) }" 
+                  @click.prevent="addcart"
+                >
+                  {{ getname() }}
+                </a>
+              </div>
             </div>
           </div>
         </div>
       </div>
-      <div class="sep__side"><!----><!----></div>
+      <div class="sep__side"></div>
     </div>
     <div class="sep sep_product mb mb_large">
       <div class="sep__base">
         <ul class="tabs tabs_mid">
-          <li class="tabs__item" v-bind:class="{ tabs__item_active: tab === 0 }">
-            <a href="#" class="tabs__link" @click.prevent="tab=0"><span class="tabs__text">Описание</span></a>
+          <li class="tabs__item" :class="{ tabs__item_active: tab === 0 }">
+            <a href="#" class="tabs__link" @click.prevent="tab = 0">
+              <span class="tabs__text">Описание</span>
+            </a>
           </li>
-          <li class="tabs__item" v-bind:class="{ tabs__item_active: tab === 1 }" v-if="product.usage">
-            <a href="#" class="tabs__link" @click.prevent="tab=1"><span class="tabs__text">Применение</span></a>
+          <li class="tabs__item" :class="{ tabs__item_active: tab === 1 }" v-if="product.usage">
+            <a href="#" class="tabs__link" @click.prevent="tab = 1">
+              <span class="tabs__text">Применение</span>
+            </a>
           </li>
-          <!-- <li class="tabs__item" v-bind:class="{ tabs__item_active: tab === 2 }" v-if="product.requests && product.requests.length">
-            <a href="#" class="tabs__link" @click.prevent="tab=2"><span class="tabs__text">Применение</span></a>
-          </li> -->
-          <li class="tabs__item" v-bind:class="{ tabs__item_active: tab === 3 }" v-if="product.specs && product.specs.length">
-            <a href="#" class="tabs__link" @click.prevent="tab=3"><span class="tabs__text">Характеристики</span></a>
+          <li class="tabs__item" :class="{ tabs__item_active: tab === 3 }" v-if="product.specs && product.specs.length">
+            <a href="#" class="tabs__link" @click.prevent="tab = 3">
+              <span class="tabs__text">Характеристики</span>
+            </a>
           </li>
-          <li class="tabs__item" v-bind:class="{ tabs__item_active: tab === 5 }" v-if="product.info && product.info.params">
-            <a href="#" class="tabs__link" @click.prevent="tab=5"><span class="tabs__text">Параметры</span></a>
+          <li class="tabs__item" :class="{ tabs__item_active: tab === 5 }" v-if="product.info && product.info.params">
+            <a href="#" class="tabs__link" @click.prevent="tab = 5">
+              <span class="tabs__text">Параметры</span>
+            </a>
           </li>
         </ul>
         <div class="description">
-          <div class="content content_sm content_desc" v-if="tab===0" v-html="product.description"></div>
-          <div class="content content_sm" v-if="tab===1" v-html="product.usage"></div>
-          <!-- <div class="content content_sm" v-if="tab===4" v-html="product.info"></div> -->
-          <div class="content content_sm" v-if="tab===2">
-            <p v-if="product.requests && product.requests.length"><b>Соответствие требованиям:</b> {{product.requests.join(', ')}}</p>
+          <div class="content content_sm content_desc" v-if="tab === 0" v-html="product.description"></div>
+          <div class="content content_sm" v-if="tab === 1" v-html="product.usage"></div>
+          <div class="content content_sm" v-if="tab === 2">
+            <p v-if="product.requests && product.requests.length">
+              <b>Соответствие требованиям:</b> {{ product.requests.join(', ') }}
+            </p>
           </div>
-          <div class="content content_sm" v-if="tab===3">
+          <div class="content content_sm" v-if="tab === 3">
             <div class="desc" v-if="product.specs && product.specs.length">
               <div class="desc__char">
                 <h2 class="desc__title">Основные характеристики</h2>
@@ -140,17 +139,16 @@
                   <table>
                     <tbody>
                       <tr v-for="(row, i) in product.specs" :key="i">
-                        <td>{{row.name}}</td>
-                        <td>{{row.value}}</td>
+                        <td>{{ row.name }}</td>
+                        <td>{{ row.value }}</td>
                       </tr>
                     </tbody>
                   </table>
                 </div>
               </div>
-              <!---->
             </div>
           </div>
-          <div class="content content_sm" v-if="tab===5">
+          <div class="content content_sm" v-if="tab === 5">
             <div class="desc" v-if="product.info && product.info.params && product.info.params.length">
               <div class="desc__char">
                 <h2 class="desc__title">Параметры продукта</h2>
@@ -167,205 +165,224 @@
                       </thead>
                       <tbody>
                         <tr v-for="(row, i) in product.info.params" :key="i">
-                          <td>{{row.param}}</td>
-                          <td>{{row.unit}}</td>
-                          <td>{{row.value}}</td>
-                          <td>{{row.test}}</td>
+                          <td>{{ row.param }}</td>
+                          <td>{{ row.unit }}</td>
+                          <td>{{ row.value }}</td>
+                          <td>{{ row.test }}</td>
                         </tr>
                       </tbody>
                     </table>
                   </div>
                 </div>
               </div>
-              <!---->
             </div>
           </div>
         </div>
       </div>
-      <!---->
     </div>
     <div class="cover">
-      <h2 class="smtitle"><a href="/products/history" class="link-title">Вы смотрели</a></h2>
+      <h2 class="smtitle">
+        <a href="/products/history" class="link-title">Вы смотрели</a>
+      </h2>
       <div class="cover__content">
         <div class="viewed">
           <div class="viewed__box">
-            <template v-for="item in viewed">
-              <nuxt-link :to="'/products/' + item._id" class="viewed__item">
-                <div class="viewed__pic"><img :src="viewed_image(item)" alt="" class="viewed__img"></div>
-                <div class="viewed__title" style="">{{item.name}}</div>
-              </nuxt-link>
+            <template v-for="item in viewed" :key="item._id">
+              <NuxtLink :to="'/products/' + item._id" class="viewed__item">
+                <div class="viewed__pic">
+                  <img :src="viewedImage(item)" alt="" class="viewed__img">
+                </div>
+                <div class="viewed__title">{{ item.name }}</div>
+              </NuxtLink>
             </template>
           </div>
         </div>
       </div>
     </div>
-    <ImageViewer :url="image" v-model="show_image" />
+    <ImageViewer :url="image" v-model="showImage" />
   </div>
 </template>
 
-<script>
-import { mapActions, mapGetters } from 'vuex'
-import ImageViewer from '~/components/ImageViewer.vue'
-import Breadcrumbs from '~/components/Breadcrumbs.vue'
+<script setup lang="ts">
+import { useRoute, useRouter } from 'vue-router'
+import { useAuthStore } from '~/stores/auth'
+import { useCartStore } from '~/stores/cart'
+import { useViewedStore } from '~/stores/viewed'
+import { useUIStore } from '~/stores/ui'
+import { useCategories } from '~/composables/useCategories'
+import { useItems } from '~/composables/useItems'
+import { useFormat } from '~/composables/useFormat'
+import { useNotifications } from '~/composables/useNotifications'
+import { useRuntimeConfig } from '#app'
+
+definePageMeta({
+  validate: (route) => {
+    return /^[0-9a-f-]{36}$/.test(route.params.id as string)
+  }
+})
+
+const route = useRoute()
+const router = useRouter()
+const authStore = useAuthStore()
+const cartStore = useCartStore()
+const viewedStore = useViewedStore()
+const uiStore = useUIStore()
+const { categories } = useCategories()
+const { find: findItems, get: getItem } = useItems()
+const { rub } = useFormat()
+const { success } = useNotifications()
+const config = useRuntimeConfig()
 
 const balances = ['Под заказ', 'Количество: <4', 'Количество: <12', 'Количество: много', 'Достаточно', 'Много']
 
-export default {
-  head () {
-    return {
-      title: this.title,
-    }
-  },
-  components: {
-    Breadcrumbs,
-    ImageViewer
-  },
-  validate ({ params }) {
-    // Must be a number
-    return /^[0-9a-f-]{36}$/.test(params.id)
-  },
-  async asyncData ({ params }) {
-    return { id: params.id }
-  },
-  data () {
-    return {
-      title: '',
-      id: String,
-      product: {},
-      text: '',
-      tab: 0,
-      quantity: 1,
-      fix_goods_show: false,
-      show_image: false,
-      breadcrumbs: []
-    }
-  },
-  created() {
-    this.findViewed({ query: { $limit: 20, _id: { $in: this.viewed_ids } } })
-  },
-  mounted() {
-    window.addEventListener('scroll', this.handleScroll)
-    this.id && this.$store.dispatch('items/get', this.id)
-      .then(res => {
-        console.log(res);
-        this.$store.commit('viewed/add', res._id)
-        this.title = res.name
-        this.product = res
-        this.quantity = this.getCartItemCount(0) || 1
-        // if (this.product.balances && this.product.balances.length > 0) {
-        //   const find = this.product.balances.find(i => i.storeId === this.store)
-        //   if (find) this.balance = find.quantity
-        // }
-        this.set_breadcrumbs()
+const id = computed(() => route.params.id as string)
+const title = ref('')
+const product = ref<any>({})
+const tab = ref(0)
+const quantity = ref(1)
+const fixGoodsShow = ref(false)
+const showImage = ref(false)
+const breadcrumbs = ref<Array<{ to: string; name: string }>>([])
+const goodsBorder = ref<HTMLElement | null>(null)
+
+const showPrice = computed(() => {
+  if (authStore.user) return true
+  if (product.value.brand === 'BG') return false
+  return true
+})
+
+const balanceLevel = computed(() => {
+  if (product.value.balance > 11) return 3
+  if (product.value.balance > 3) return 2
+  if (product.value.balance > 0) return 1
+  return 0
+})
+
+const balanceName = computed(() => balances[balanceLevel.value])
+
+const cart = computed(() => {
+  return cartStore.getQuantity(id.value)
+})
+
+const image = computed(() => {
+  const prefix = config.public.imagePrefix as string
+  return prefix + (product.value.image || 'noimage.jpg')
+})
+
+const viewedIds = computed(() => {
+  const ids = [...viewedStore.list]
+  ids.reverse()
+  if (ids.length > 6) ids.length = 6
+  return ids
+})
+
+const { data: viewed } = await useAsyncData(
+  'viewed-items',
+  async () => {
+    if (viewedIds.value.length === 0) return []
+    try {
+      const res = await findItems({ 
+        query: { $limit: 20, _id: { $in: viewedIds.value } } 
       })
-      .catch(error => {
-        console.log('error', error);
-      })
-  },
-  destroyed() {
-    window.removeEventListener('scroll', this.handleScroll)
-  },
-  watch: {
-    '$store.state.categories'(val) {
-      this.set_breadcrumbs()
+      return res.data || []
+    } catch (error) {
+      console.error('Error loading viewed items:', error)
+      return []
     }
   },
-  computed: {
-    show_price() {
-      if (this.$store.state.auth.user) return true
-      if (this.product.brand == 'BG') return false
-      return true
-    },
-    balance_name() {
-      return balances[this.balance_level]
-    },
-    balance_level() {
-      // if (this.product.balance > 20) return 5
-      // if (this.product.balance > 10) return 4
-      if (this.product.balance > 11) return 3
-      if (this.product.balance > 3) return 2
-      if (this.product.balance > 0) return 1
-      return 0
-    },
-    cart() {
-      return this.getCartItemCount(this.index)
-    },
-    image() {
-      return process.env.IMAGE_PREFIX + this.product.image
-    },
-    viewed_ids() {
-      const ids = this.$store.state.viewed.list.slice()
-      ids.reverse()
-      if (ids.length > 6) ids.length = 6
-      return ids
-    },
-    viewed() {
-      return this.findOrdersInStore({ query: { $limit: 20, _id: { $in: this.viewed_ids } } }).data
-    },
-    ...mapGetters('items', { findOrdersInStore: 'find' }),
-    ...mapGetters(['price_type', 'store'])
-  },
-  methods: {
-    rub(num) {
-      return num ? Number(num).rub() : ''
-    },
-    set_breadcrumbs() {
-      this.breadcrumbs = []
-      // if (this.offer) {
-      //   this.breadcrumbs.unshift({ to: `/offer/`, name: 'Акции' })
-      // } else {
-        this.breadcrumbs.unshift({ to: `/products/${this.id}/`, name: this.product.name })
-        let find = this.$store.state.categories_.find(e => e.id === this.product.category)
-        if (find) {
-          do {
-            this.breadcrumbs.unshift({ to: `/categories/${find.id}/`, name: find.name })
-            find = find.parent
-          } while(find.parent)
-        }
-      // }
-      this.breadcrumbs.unshift({ to: `/`, name: 'Главная' })
-    },
-    viewed_image(item) {
-      return process.env.IMAGE_PREFIX + item.image
-    },
-    getCartItemCount(index) {
-      const cart_item = this.$store.state.cart.list.find(e => e.id === this.id)
-      return cart_item ? cart_item.quantity : 0
-    },
-    skuPrev() {
-      // if (this.skus.length > 0 && this.index > 0) this.index --
-    },
-    skuNext() {
-      // if (this.skus.length > 0 && this.skus.length > this.index + 1) this.index ++
-    },
-    increase() {
-      this.quantity++
-    },
-    decrease() {
-      if (this.quantity > 1) this.quantity--
-    },
-    addcart() {
-      if (this.cart === this.quantity)  this.$router.push({ path: '/cart' })
-      else {
-        this.$store.commit('cart/add', { _id: this.product._id, quantity: this.quantity })
-        this.showCartMessage()
-      }
-    },
-    getname() {
-      return this.cart ? (this.cart === this.quantity ? "В корзине" : "Изменить") : "В корзину"
-    },
-    handleScroll(event) {
-      this.fix_goods_show = (window.pageYOffset >= this.$refs.goods__border.offsetTop + this.$refs.goods__border.clientHeight)
-    },
-    ...mapActions('items', { findViewed: 'find' })
-  },
-  notifications: {
-    showCartMessage: {
-      message: 'Товар добавлен в корзину',
-      type: 'success'
-    }
+  {
+    watch: [viewedIds],
+    default: () => []
+  }
+)
+
+const rubFormat = (num: number | string) => {
+  if (!num) return ''
+  return rub(Number(num))
+}
+
+const setBreadcrumbs = () => {
+  breadcrumbs.value = []
+  breadcrumbs.value.unshift({ to: `/products/${id.value}/`, name: product.value.name || '' })
+  
+  const found = categories.value.find((e: any) => e.id === product.value.category)
+  if (found) {
+    let current = found
+    do {
+      breadcrumbs.value.unshift({ to: `/categories/${current.id}/`, name: current.name })
+      current = current.parent
+    } while (current && current.parent)
+  }
+  
+  breadcrumbs.value.unshift({ to: '/', name: 'Главная' })
+}
+
+const viewedImage = (item: any) => {
+  const prefix = config.public.imagePrefix as string
+  return prefix + (item.image || 'noimage.jpg')
+}
+
+const getCartItemCount = () => {
+  return cartStore.getQuantity(id.value)
+}
+
+const increase = () => {
+  quantity.value++
+}
+
+const decrease = () => {
+  if (quantity.value > 1) quantity.value--
+}
+
+const addcart = () => {
+  if (cart.value === quantity.value) {
+    router.push({ path: '/cart' })
+  } else {
+    cartStore.add({ _id: product.value._id, quantity: quantity.value })
+    success('Товар добавлен в корзину')
   }
 }
+
+const getname = () => {
+  return cart.value ? (cart.value === quantity.value ? 'В корзине' : 'Изменить') : 'В корзину'
+}
+
+const handleScroll = () => {
+  if (goodsBorder.value) {
+    fixGoodsShow.value = window.pageYOffset >= goodsBorder.value.offsetTop + goodsBorder.value.clientHeight
+  }
+}
+
+// Load product
+onMounted(async () => {
+  window.addEventListener('scroll', handleScroll)
+  
+  try {
+    const res = await getItem(id.value)
+    viewedStore.add(res._id)
+    title.value = res.name
+    product.value = res
+    quantity.value = getCartItemCount() || 1
+    setBreadcrumbs()
+  } catch (error) {
+    console.error('Error loading product:', error)
+  }
+})
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll)
+})
+
+watch(categories, () => {
+  if (product.value.category) {
+    setBreadcrumbs()
+  }
+})
+
+// SEO
+useHead({
+  title: computed(() => title.value || 'Товар')
+})
 </script>
 
 <style lang="scss">
@@ -435,10 +452,8 @@ export default {
   display: flex;
 }
 .goods__spec {
-  /* margin-right: 18px; */
   align-items: center;
 }
-// .goods__exist, .goods__fabric, .goods__spec_arrows {
 .goods__spec_arrows {
   margin-top: 7px;
 }
@@ -520,9 +535,7 @@ export default {
   z-index: 4000;
   pointer-events: none;
   transform: translateY(-100%);
-  transition: -webkit-transform .25s ease;
   transition: transform .25s ease;
-  transition: transform .25s ease,-webkit-transform .25s ease;
 }
 .fix-goods_show {
   pointer-events: auto;
@@ -597,9 +610,6 @@ export default {
 .fix-goods__exist {
   margin-left: 14px;
 }
-.fix-goods__base, .fix-goods__side {
-  display: flex;
-}
 .fix-goods__side {
   justify-content: flex-end;
   width: 220px;
@@ -642,7 +652,6 @@ export default {
   padding: 6px 16px 10px;
   font-size: 24px;
   line-height: 24px;
-  -webkit-transition: background-color .25s ease;
   transition: background-color .25s ease;
 }
 .tabs__item_active .tabs__link {
@@ -656,7 +665,6 @@ export default {
 .tabs__text {
   color: #000;
   border-bottom: 1px dotted #000;
-  -webkit-transition: color .25s ease,border-color .25s ease;
   transition: color .25s ease,border-color .25s ease;
 }
 .tabs__item_active .tabs__link:hover .tabs__text, .tabs__item_active .tabs__text {
@@ -696,9 +704,6 @@ export default {
 }
 .content blockquote:last-child, .content ol:last-child, .content p:last-child, .content ul:last-child {
   margin-bottom: 0;
-}
-.desc, .desc__content, .desc__row, .description {
-  margin-top: 30px;
 }
 .desc__char {
   margin-top: 35px;
@@ -850,17 +855,8 @@ export default {
 .su-note-warning.su-note-icon:after {
   content: "\f071";
 }
-.su-note-icon:after {
-  font-size: 24px;
-  line-height: 24px;
-  font-family: FontAwesome;
-  position: absolute;
-  top: 50%;
-  margin-top: -12px;
-}
 .table-box {
   font-size: 14px;
-  // max-width: 1024px;
   @media (max-width: 640px) {
     overflow-x: scroll;
   }
