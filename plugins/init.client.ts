@@ -5,6 +5,26 @@ import { useConstants } from '~/composables/useConstants'
 import { useAuth } from '~/composables/useAuth'
 
 export default defineNuxtPlugin(async (nuxtApp) => {
+  // Wait for FeathersJS plugin to be available
+  // Check if feathers is available, if not wait a bit
+  let feathersAvailable = false
+  let retries = 0
+  const maxRetries = 10
+  
+  while (!feathersAvailable && retries < maxRetries) {
+    if (nuxtApp.$feathers) {
+      feathersAvailable = true
+    } else {
+      await new Promise(resolve => setTimeout(resolve, 100))
+      retries++
+    }
+  }
+  
+  if (!feathersAvailable) {
+    console.error('FeathersJS plugin not available after waiting')
+    return
+  }
+
   // Initialize stores
   const authStore = useAuthStore()
   const uiStore = useUIStore()

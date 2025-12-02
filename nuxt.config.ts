@@ -38,14 +38,14 @@ export default defineNuxtConfig({
   // CSS
   css: [],
 
-  // Plugins
+  // Plugins (order matters - feathers must load before init)
   plugins: [
     { src: '~/plugins/feathers.client.ts', mode: 'client' },
     { src: '~/plugins/prototypes.ts' },
     { src: '~/plugins/vue-notifications.client.ts', mode: 'client' },
     { src: '~/plugins/pinia-persist.client.ts', mode: 'client' },
     { src: '~/plugins/init.server.ts', mode: 'server' },
-    { src: '~/plugins/init.client.ts', mode: 'client' }
+    { src: '~/plugins/init.client.ts', mode: 'client', order: 'post' }
   ],
 
   // Modules
