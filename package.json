@@ -20,7 +20,6 @@
     "@feathersjs/socketio-client": "^4.5.2",
     "@naumstory/nuxtjs-yandex-metrika": "^1.0.5",
     "@nuxtjs/font-awesome": "^1.0.4",
-    "@nuxtjs/svg-sprite": "^0.2.0",
     "@pinia/nuxt": "^0.5.1",
     "2gis-maps": "^3.5.15",
     "autoprefixer": "^10.4.14",
