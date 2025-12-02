@@ -50,7 +50,7 @@
             <a href="#" class="menu__close" @click.prevent="menuOpen = false">
               <span class="icon icon_close_medium">
                 <svg class="icon__item">
-                  <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#close_medium"></use>
+                  <use xmlns:xlink="http://www.w3.org/1999/xlink" :xlink:href="`/images/icons-sprite.svg#close_medium`"></use>
                 </svg>
               </span>
             </a>
@@ -107,7 +107,7 @@
               >
                 <span class="icon icon_view1">
                   <svg class="icon__item">
-                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#view1"></use>
+                    <use xmlns:xlink="http://www.w3.org/1999/xlink" :xlink:href="`/images/icons-sprite.svg#view1`"></use>
                   </svg>
                 </span>
               </a>
@@ -119,7 +119,7 @@
               >
                 <span class="icon icon_view2">
                   <svg class="icon__item">
-                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#view2"></use>
+                    <use xmlns:xlink="http://www.w3.org/1999/xlink" :xlink:href="`/images/icons-sprite.svg#view2`"></use>
                   </svg>
                 </span>
               </a>
@@ -158,7 +158,7 @@
           <span class="b-search__button">
             <span class="icon icon_search">
               <svg class="icon__item">
-                <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#search"></use>
+                <use xmlns:xlink="http://www.w3.org/1999/xlink" :xlink:href="`/images/icons-sprite.svg#search`"></use>
               </svg>
             </span>
           </span>

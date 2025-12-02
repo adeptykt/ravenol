@@ -9,7 +9,7 @@
                 <input type="number" placeholder="Номер заказа" class="form__input form__input_search" v-model.number="number">
                 <span class="form__submit">
                   <span class="icon icon_search">
-                    <svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#search"></use></svg>
+                    <svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" :xlink:href="`/images/icons-sprite.svg#search`"></use></svg>
                   </span>
                 </span>
               </div>

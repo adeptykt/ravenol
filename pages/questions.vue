@@ -4,7 +4,7 @@
     <div class="flex flex_search" v-bind:class="{ flex_opened: flex_opened }" v-if="isAdmin">
       <div class="flex__btn">
         <a href="#" class="btn btn_type_flat btn_size_big" @click.prevent="flex_opened=!flex_opened">
-          <span class="btn__icon icon icon_plus_big"><svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#plus_big"></use></svg></span>
+          <span class="btn__icon icon icon_plus_big"><svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" :xlink:href="`/images/icons-sprite.svg#plus_big`"></use></svg></span>
           <span class="btn__text">Добавить вопрос</span>
         </a>
       </div>
@@ -19,7 +19,7 @@
           <div class="form__side">
             <div class="form__user">
               <div class="user"><span class="user__icon icon icon_user-light">
-                <svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#user"></use></svg></span>
+                <svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" :xlink:href="`/images/icons-sprite.svg#user`"></use></svg></span>
               </div>
             </div>
           </div>

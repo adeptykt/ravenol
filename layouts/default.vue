@@ -18,10 +18,10 @@
             <div class="header__base">
               <div class="header__actions header__actions_mob">
                 <a href="#" class="header__button button button_search" @click.prevent="search_opened=true">
-                  <span class="button__icon icon icon_search-white"><svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#search"></use></svg></span>
+                  <span class="button__icon icon icon_search-white"><svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" :xlink:href="`/images/icons-sprite.svg#search`"></use></svg></span>
                 </a>
                 <nuxt-link to="/cart" class="header__button button button_cart">
-                  <span class="button__icon icon icon_cart"><svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#cart"></use></svg></span>
+                  <span class="button__icon icon icon_cart"><svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" :xlink:href="`/images/icons-sprite.svg#cart`"></use></svg></span>
                   <span class="button__text">Корзина</span>
                   <client-only>
                     <span class="button__counter" v-if="cart_total">{{cart_total}}</span>
@@ -64,7 +64,7 @@
                           <div class="phones__item phones__item_time">
                             <div class="phones__work">
                               <span class="phones__icon icon icon_clock">
-                                <svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#clock"></use>
+                                <svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" :xlink:href="`/images/icons-sprite.svg#clock`"></use>
                                 </svg>
                               </span>
                               <div class="phones__text">
@@ -85,7 +85,7 @@
                       <input type="text" placeholder="Быстрый поиск, например «BG 109», «Очиститель тормозов»" class="b-search__input" v-model="global_search">
                       <span class="b-search__button">
                         <span class="icon icon_search-light">
-                          <svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#search"></use></svg>
+                          <svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" :xlink:href="`/images/icons-sprite.svg#search`"></use></svg>
                         </span>
                       </span>
                     </div>
@@ -99,7 +99,7 @@
                         <div class="auth__item">
                           <div class="auth__icon">
                             <span class="icon icon_user-light">
-                              <svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#user"></use></svg>
+                              <svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" :xlink:href="`/images/icons-sprite.svg#user`"></use></svg>
                             </span>
                           </div>
                           <div class="auth__text">
@@ -126,7 +126,7 @@
                         <div class="auth__item">
                           <div class="auth__icon">
                             <span class="icon icon_user-light">
-                              <svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#user"></use></svg>
+                              <svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" :xlink:href="`/images/icons-sprite.svg#user`"></use></svg>
                             </span>
                           </div>
                           <div class="auth__text">
@@ -169,7 +169,7 @@
                 </div>
                 <div class="header__actions header__actions_desktop">
                   <nuxt-link to="/cart" class="header__button button button_cart">
-                    <span class="button__icon icon icon_cart"><svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#cart"></use></svg></span>
+                    <span class="button__icon icon icon_cart"><svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" :xlink:href="`/images/icons-sprite.svg#cart`"></use></svg></span>
                     <span class="button__text">Корзина</span>
                     <client-only>
                       <span class="button__counter" v-if="cart_total">{{cart_total}}</span>

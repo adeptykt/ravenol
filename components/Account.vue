@@ -22,7 +22,7 @@
             Реквизиты
             <span class="side-nav__arrow icon icon_arrow_down">
               <svg class="icon__item">
-                <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#arrow_down"></use>
+                <use xmlns:xlink="http://www.w3.org/1999/xlink" :xlink:href="`/images/icons-sprite.svg#arrow_down`"></use>
               </svg>
             </span>
           </a>
@@ -32,7 +32,7 @@
                 <NuxtLink :to="item.to" class="side-nav__link">{{ item.name }}</NuxtLink>
                 <span class="side-nav__icon icon icon_fields_remain" v-if="item.remain">
                   <svg class="icon__item">
-                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#fields_remain"></use>
+                    <use xmlns:xlink="http://www.w3.org/1999/xlink" :xlink:href="`/images/icons-sprite.svg#fields_remain`"></use>
                   </svg>
                 </span>
               </li>

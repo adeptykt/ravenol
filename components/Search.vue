@@ -23,7 +23,7 @@
       <a href="#" class="search__close" @click="onCloseSearch">
         <span class="icon icon_close_big">
           <svg class="icon__item">
-            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#close_big"></use>
+            <use xmlns:xlink="http://www.w3.org/1999/xlink" :xlink:href="`/images/icons-sprite.svg#close_big`"></use>
           </svg>
         </span>
       </a>

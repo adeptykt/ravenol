@@ -5,7 +5,7 @@
         <span class="filter__title">{{ title }}</span>
         <span class="filter__arrow icon icon_arrow_down2">
           <svg class="icon__item">
-            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#arrow_down"></use>
+            <use xmlns:xlink="http://www.w3.org/1999/xlink" :xlink:href="`/images/icons-sprite.svg#arrow_down`"></use>
           </svg>
         </span>
       </a>

@@ -4,7 +4,7 @@
       <div class="form form_direct_row form_width_sm form_media_sm">
         <div class="empl empl_editable">
           <div class="empl__pic">
-            <div class="user"><span class="user__icon icon icon_user-ava"><svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#user"></use></svg></span></div>
+            <div class="user"><span class="user__icon icon icon_user-ava"><svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" :xlink:href="`/images/icons-sprite.svg#user`"></use></svg></span></div>
           </div>
           <div class="empl__base">
             <input type="text" placeholder="Введите ФИО" class="empl__textarea form__textarea form__textarea_no-border" v-model="user.firstName" @change="onChangeUser">
@@ -24,7 +24,7 @@
           <div class="expand__caption">
             <a href="#" class="expand__title" @click.prevent="expand_opened = !expand_opened">
               <span class="expand__icon icon icon_dropdown">
-                <svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#dropdown"></use></svg>
+                <svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" :xlink:href="`/images/icons-sprite.svg#dropdown`"></use></svg>
               </span>
               <div class="expand__box"><span class="expand__text">Изменить пароль</span></div>
             </a>

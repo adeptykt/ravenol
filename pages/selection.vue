@@ -20,7 +20,7 @@
         <a href="#" class="menu__close" @click.prevent="menuOpen = false">
           <span class="icon icon_close_medium">
             <svg class="icon__item">
-              <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#close_medium"></use>
+              <use xmlns:xlink="http://www.w3.org/1999/xlink" :xlink:href="`/images/icons-sprite.svg#close_medium`"></use>
             </svg>
           </span>
         </a>

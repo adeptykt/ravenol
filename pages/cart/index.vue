@@ -4,7 +4,7 @@
       <h1 class="top__base title">Корзина</h1>
       <div class="top__side">
         <!-- <a href="#" class="btn btn_type_grey btn_size_min">
-          <span class="btn__icon icon icon_plus_xsmall"><svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#plus_small"></use></svg></span>
+          <span class="btn__icon icon icon_plus_xsmall"><svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" :xlink:href="`/images/icons-sprite.svg#plus_small`"></use></svg></span>
           <span class="btn__text">Добавить товары по артикулу</span>
         </a> -->
       </div>
@@ -73,7 +73,7 @@
             </div>
             <div class="items__cell items__cell_delete hidden-print">
               <a href="#" class="items__delete" @click.prevent="deleteitem(row)">
-                <span class="icon icon_cart_delete"><svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#cart_delete"></use></svg></span>
+                <span class="icon icon_cart_delete"><svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" :xlink:href="`/images/icons-sprite.svg#cart_delete`"></use></svg></span>
               </a>
             </div>
           </div>
@@ -84,7 +84,7 @@
       <div class="result__base hidden-print">
         <!-- <div class="print">
           <a href="#" class="print__link">
-            <span class="print__icon icon icon_print"><svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#print"></use></svg></span>
+            <span class="print__icon icon icon_print"><svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" :xlink:href="`/images/icons-sprite.svg#print`"></use></svg></span>
             <div class="print__text">Распечатать список товаров</div>
           </a>
         </div> -->

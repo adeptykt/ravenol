@@ -26,7 +26,7 @@
               >
                 <span class="arrow__btn-icon icon icon_plus_small">
                   <svg class="icon__item">
-                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#arrow_left"></use>
+                    <use xmlns:xlink="http://www.w3.org/1999/xlink" :xlink:href="`/images/icons-sprite.svg#arrow_left`"></use>
                   </svg>
                 </span>
               </a>
@@ -40,7 +40,7 @@
               >
                 <span class="arrow__btn-icon icon icon_plus_small">
                   <svg class="icon__item">
-                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#arrow_right"></use>
+                    <use xmlns:xlink="http://www.w3.org/1999/xlink" :xlink:href="`/images/icons-sprite.svg#arrow_right`"></use>
                   </svg>
                 </span>
               </a>
@@ -75,7 +75,7 @@
               <span class="product__btn-text">{{ cartName }}</span>
               <span class="product__btn-icon icon icon_plus_small">
                 <svg class="icon__item">
-                  <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#plus_small"></use>
+                  <use xmlns:xlink="http://www.w3.org/1999/xlink" :xlink:href="`/images/icons-sprite.svg#plus_small`"></use>
                 </svg>
               </span>
             </a>

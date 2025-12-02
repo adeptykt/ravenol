@@ -3,7 +3,7 @@
     <a href="#" class="history__caption history__caption_item" @click.prevent="history__item_opened = !history__item_opened">
       <div class="history__cell history__cell_order">
         <span class="history__arrow icon icon_dropdown">
-          <svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#dropdown"></use></svg>
+          <svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" :xlink:href="`/images/icons-sprite.svg#dropdown`"></use></svg>
         </span>
         <div class="history__number">№ {{order && order.number}}</div>
         <time class="history__date">{{order.date.toLocalLong()}}</time>

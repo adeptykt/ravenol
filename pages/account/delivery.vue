@@ -60,7 +60,7 @@
             <!---->
           </div>
         </div>
-        <div class="form__add"><a href="#" class="add-btn"><span class="add-btn__icon icon icon_plus_small"><svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#plus_small"></use></svg></span><div class="add-btn__box"><span class="add-btn__text">Добавить</span></div></a></div>
+        <div class="form__add"><a href="#" class="add-btn"><span class="add-btn__icon icon icon_plus_small"><svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" :xlink:href="`/images/icons-sprite.svg#plus_small`"></use></svg></span><div class="add-btn__box"><span class="add-btn__text">Добавить</span></div></a></div>
         <div class="form__fieldset">
           <div class="form__caption">Адрес торговой точки</div>
           <div class="form__point wall">
@@ -122,7 +122,7 @@
         <div class="form__add">
           <a href="#" class="add-btn">
             <span class="add-btn__icon icon icon_plus_small">
-              <svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#plus_small"></use></svg>
+              <svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" :xlink:href="`/images/icons-sprite.svg#plus_small`"></use></svg>
             </span>
             <div class="add-btn__box"><span class="add-btn__text">Добавить</span></div>
           </a>

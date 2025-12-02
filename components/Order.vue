@@ -5,7 +5,7 @@
       <div class="order__summ">{{ formatPrice(total) }}&nbsp;&#8381;</div>
       <span class="order__arrow icon icon_arrow_down">
         <svg class="icon__item">
-          <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#arrow_down"></use>
+          <use xmlns:xlink="http://www.w3.org/1999/xlink" :xlink:href="`/images/icons-sprite.svg#arrow_down`"></use>
         </svg>
       </span>
     </a>

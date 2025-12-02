@@ -4,7 +4,7 @@
       <div class="question__side">
         <span class="question__icon icon icon_comment_feedback">
           <svg class="icon__item">
-            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#comment_feedback"></use>
+            <use xmlns:xlink="http://www.w3.org/1999/xlink" :xlink:href="`/images/icons-sprite.svg#comment_feedback`"></use>
           </svg>
         </span>
       </div>
@@ -19,7 +19,7 @@
         <a href="#" class="expand__title" @click.prevent="expandOpened = !expandOpened">
           <span class="expand__icon icon icon_dropdown">
             <svg class="icon__item">
-              <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#dropdown"></use>
+              <use xmlns:xlink="http://www.w3.org/1999/xlink" :xlink:href="`/images/icons-sprite.svg#dropdown`"></use>
             </svg>
           </span>
           <div class="expand__box">
@@ -31,7 +31,7 @@
           <a href="#" class="items__delete" @click.prevent="$emit('onDelete')">
             <span class="icon icon_cart_delete">
               <svg class="icon__item">
-                <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#cart_delete"></use>
+                <use xmlns:xlink="http://www.w3.org/1999/xlink" :xlink:href="`/images/icons-sprite.svg#cart_delete`"></use>
               </svg>
             </span>
           </a>

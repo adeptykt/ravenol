@@ -23,13 +23,13 @@
         <div class="steps">
           <div class="steps__item">
             <div class="steps__counter">1</div>
-            <div class="steps__text">Корзина</div><span class="steps__icon icon icon_cart_arrow"><svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#cart_arrow"></use></svg></span></div>
+            <div class="steps__text">Корзина</div><span class="steps__icon icon icon_cart_arrow"><svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" :xlink:href="`/images/icons-sprite.svg#cart_arrow`"></use></svg></span></div>
           <div class="steps__item">
             <div class="steps__counter">2</div>
             <div class="steps__text">
               Контактные
               <br> данные
-            </div><span class="steps__icon icon icon_cart_arrow"><svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#cart_arrow"></use></svg></span></div>
+            </div><span class="steps__icon icon icon_cart_arrow"><svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" :xlink:href="`/images/icons-sprite.svg#cart_arrow`"></use></svg></span></div>
           <div class="steps__item">
             <div class="steps__counter">3</div>
             <div class="steps__text">

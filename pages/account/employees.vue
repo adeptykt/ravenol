@@ -7,7 +7,7 @@
             <div class="empl__pic">
               <div class="user">
                 <span class="user__icon icon icon_user-ava">
-                  <svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#user"></use></svg>
+                  <svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" :xlink:href="`/images/icons-sprite.svg#user`"></use></svg>
                 </span>
               </div>
               &lt;

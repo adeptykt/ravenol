@@ -4,7 +4,7 @@
       <NuxtLink :to="{ path: route.path, query: { page: 1 } }" class="paginator__btn">
         <span class="icon icon_plus_small">
           <svg class="icon__item">
-            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#arrow_left"></use>
+            <use xmlns:xlink="http://www.w3.org/1999/xlink" :xlink:href="`/images/icons-sprite.svg#arrow_left`"></use>
           </svg>
         </span>
       </NuxtLink>
@@ -24,7 +24,7 @@
       <NuxtLink :to="{ path: route.path, query: { page: pages } }" class="paginator__btn">
         <span class="icon icon_plus_small">
           <svg class="icon__item">
-            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#arrow_right"></use>
+            <use xmlns:xlink="http://www.w3.org/1999/xlink" :xlink:href="`/images/icons-sprite.svg#arrow_right`"></use>
           </svg>
         </span>
       </NuxtLink>

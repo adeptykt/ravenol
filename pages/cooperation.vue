@@ -8,37 +8,37 @@
     <div class="line">
       <ul class="services">
         <li class="services__item">
-          <div class="services__icon"><span class="icon icon_cooperation_5"><svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#cooperation_5"></use></svg></span></div>
+          <div class="services__icon"><span class="icon icon_cooperation_5"><svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" :xlink:href="`/images/icons-sprite.svg#cooperation_5`"></use></svg></span></div>
           <div class="services__title">
             Личного специалиста по работе с продукцией
           </div>
         </li>
         <li class="services__item">
-          <div class="services__icon"><span class="icon icon_cooperation_6"><svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#cooperation_6"></use></svg></span></div>
+          <div class="services__icon"><span class="icon icon_cooperation_6"><svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" :xlink:href="`/images/icons-sprite.svg#cooperation_6`"></use></svg></span></div>
           <div class="services__title">
             Регулярный мерчендайзинг, контроль ассортимента, своевременную ротацию
           </div>
         </li>
         <li class="services__item">
-          <div class="services__icon"><span class="icon icon_cooperation_1"><svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#cooperation_1"></use></svg></span></div>
+          <div class="services__icon"><span class="icon icon_cooperation_1"><svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" :xlink:href="`/images/icons-sprite.svg#cooperation_1`"></use></svg></span></div>
           <div class="services__title">
             Активную маркетинговую поддержку брендов
           </div>
         </li>
         <li class="services__item">
-          <div class="services__icon"><span class="icon icon_cooperation_4"><svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#cooperation_4"></use></svg></span></div>
+          <div class="services__icon"><span class="icon icon_cooperation_4"><svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" :xlink:href="`/images/icons-sprite.svg#cooperation_4`"></use></svg></span></div>
           <div class="services__title">
             Различные условия оплаты — по мере реализации продукции, предоплата и отсрочка платежа
           </div>
         </li>
         <li class="services__item">
-          <div class="services__icon"><span class="icon icon_cooperation_3"><svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#cooperation_3"></use></svg></span></div>
+          <div class="services__icon"><span class="icon icon_cooperation_3"><svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" :xlink:href="`/images/icons-sprite.svg#cooperation_3`"></use></svg></span></div>
           <div class="services__title">
             Гибкую систему скидок в соответствии с положением о скидках
           </div>
         </li>
         <li class="services__item">
-          <div class="services__icon"><span class="icon icon_cooperation_8"><svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#cooperation_8"></use></svg></span></div>
+          <div class="services__icon"><span class="icon icon_cooperation_8"><svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" :xlink:href="`/images/icons-sprite.svg#cooperation_8`"></use></svg></span></div>
           <div class="services__title">
             Системную логистику и бесперебойные поставки
           </div>
@@ -50,7 +50,7 @@
       <div class="grid grid_content">
         <div class="grid__cell">
           <figure class="shadow"><img src="~assets/img/dogovor.jpg" alt="" class="shadow__img"></figure>
-          <div class="mark"><span class="mark__icon icon icon_info_big"><svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#info"></use></svg></span>
+          <div class="mark"><span class="mark__icon icon icon_info_big"><svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" :xlink:href="`/images/icons-sprite.svg#info"></use></svg></span>
             <div class="mark__text">
               Для заключения договора и определения форм взаимовыгодного сотрудничества просим Вас внимательно подойти к предоставлению информации и подготовке документов. Конфиденциальность полученной информации гарантируем.
             </div>
@@ -124,7 +124,7 @@
     					Доставка и оплата:
     				</h2></div>
         <div class="memo">
-          <div class="memo__side"><span class="memo__icon icon icon_cooperation_small1"><svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#cooperation_small1"></use></svg></span></div>
+          <div class="memo__side"><span class="memo__icon icon icon_cooperation_small1"><svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" :xlink:href="`/images/icons-sprite.svg#cooperation_small1`"></use></svg></span></div>
           <div class="memo__text content">
             <p>
               Доставка нашими водителями осуществляется 1 раз в 2 недели, при необходимости товар можно забирать самостоятельно
@@ -132,7 +132,7 @@
           </div>
         </div>
         <div class="memo">
-          <div class="memo__side"><span class="memo__icon icon icon_cooperation_small2"><svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#cooperation_small2"></use></svg></span></div>
+          <div class="memo__side"><span class="memo__icon icon icon_cooperation_small2"><svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" :xlink:href="`/images/icons-sprite.svg#cooperation_small2`"></use></svg></span></div>
           <div class="memo__text content">
             <p>
               Условия оплаты регулируются в зависимости от условий договора о сотрудничестве – по мере реализации продукции, предоплата и отсрочка платежа
