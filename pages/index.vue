@@ -12,7 +12,24 @@
         <div></div>
       </template>
     </ClientOnly>
-    <Category v-model:page="page" />
+    <ClientOnly>
+      <Category v-model:page="page" />
+      <template #fallback>
+        <div class="box">
+          <div class="sep sep_catalog">
+            <div class="sep__side">
+              <div class="sticky-side">
+                <div class="menu">
+                  <div class="menu__box">
+                    <div class="menu__title">Загрузка категорий...</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </template>
+    </ClientOnly>
   </div>
 </template>
 
