@@ -169,6 +169,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref, computed, watch, onMounted } from 'vue'
 import { useUIStore } from '~/stores/ui'
 import { useCartStore } from '~/stores/cart'
 import { useSettingsStore } from '~/stores/settings'
@@ -316,10 +317,11 @@ const getitems = async () => {
         Object.assign(query, { category: { $in: ids } })
       }
       
-      // Load brands aggregate
+      // Load brands aggregate (Express /aggregate endpoint via axios)
       try {
-        const aggregateRes = await findAggregate({ query: { match: query, property: 'brand' } })
-        brands.value = (aggregateRes.data || aggregateRes || []).map((item: any) => ({ value: item._id }))
+        const aggregateRes = await findAggregate({ match: query, property: 'brand' })
+        const data = Array.isArray(aggregateRes?.data) ? aggregateRes.data : (aggregateRes || [])
+        brands.value = data.map((item: any) => ({ value: item._id }))
       } catch (err) {
         console.error('Error loading brands:', err)
       }

@@ -1,19 +1,36 @@
-import { useFeathers } from '~/composables/useFeathers'
+import axios from 'axios'
+import { useRuntimeConfig } from '#app'
+import { useAuthStore } from '~/stores/auth'
 
+// Aggregate endpoint is an Express route, not a Feathers service.
+// We call it directly via axios and передаём JWT в заголовке Authorization.
 export const useAggregate = () => {
-  const feathers = useFeathers()
-  
-  const find = async (query: any) => {
+  const config = useRuntimeConfig()
+  const authStore = useAuthStore()
+
+  const find = async (params: any) => {
     try {
-      const aggregateService = feathers.service('aggregate')
-      const result = await aggregateService.find({ query })
-      return result
+      const baseUrl = (config.public.apiUrl || '').replace(/\/+$/, '')
+      const url = `${baseUrl}/aggregate`
+
+      const headers: Record<string, string> = {}
+      if (authStore.accessToken) {
+        headers.Authorization = `Bearer ${authStore.accessToken}`
+      }
+
+      const response = await axios.get(url, {
+        params,
+        headers,
+        withCredentials: true
+      })
+
+      return response.data
     } catch (error) {
       console.error('Aggregate find error:', error)
       throw error
     }
   }
-  
+
   return {
     find
   }
