@@ -41,7 +41,7 @@
   },
   "devDependencies": {
     "@mdi/font": "^3.9.97",
-    "@nuxtjs/google-analytics": "^3.0.0",
+    "@nuxtjs/google-analytics": "^2.4.0",
     "@babel/eslint-parser": "^7.23.0",
     "babel-plugin-transform-commonjs-es2015-modules": "^4.0.1",
     "babel-plugin-transform-imports": "^1.4.1",
