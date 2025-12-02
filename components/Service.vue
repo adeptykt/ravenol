@@ -2,7 +2,7 @@
   <Dialog v-model="dialog" max-width="540px">
     <div class="service">
       <div class="dialog-action">
-        <v-btn icon @click="dialog=false">
+        <v-btn icon @click="dialog = false">
           <v-icon small>clear</v-icon>
         </v-btn>
       </div>
@@ -12,7 +12,7 @@
       <div class="dialog-container">
         <v-stepper v-model="step">
           <v-stepper-header>
-            <v-stepper-step step="1" :complete="step>1" editable>Выберите услуги</v-stepper-step>
+            <v-stepper-step step="1" :complete="step > 1" editable>Выберите услуги</v-stepper-step>
             <v-divider></v-divider>
             <v-stepper-step step="2" editable>Выберите время</v-stepper-step>
             <v-divider></v-divider>
@@ -22,12 +22,17 @@
             <v-stepper-content step="1">
               <div class="service-form-n1">
                 <div class="service-item-content">
-                  <template v-for="(service, i) in services">
-                    <Checkbox v-model="selected" :label="service.name" :value="service.value" :key="i" color='#ef9a20'></Checkbox>
+                  <template v-for="(service, i) in services" :key="i">
+                    <Checkbox 
+                      v-model="selected" 
+                      :label="service.name" 
+                      :value="service.value" 
+                      color="#ef9a20"
+                    ></Checkbox>
                   </template>
                   <hr style="margin-right: 10px;">
                   <p>
-                    Работы займут: <b><span class="mm-serv-form-ttw">{{total_time}}</span> мин.</b>
+                    Работы займут: <b><span class="mm-serv-form-ttw">{{ totalTime }}</span> мин.</b>
                   </p>
                 </div>
               </div>
@@ -39,9 +44,13 @@
                 </div>
                 <div class="service-calendar-item">
                   <ul class="mm-serv-sh-time-n">
-                    <template v-for="(time, t) in times">
-                      <li data-vacant="Свободных мест: <b>1</b>" :key="t" v-bind:class="{selected: time.selected, busy: time.busy}" @click="calendar_click(day, time, t)">
-                        {{time.time}}
+                    <template v-for="(time, t) in times" :key="t">
+                      <li 
+                        data-vacant="Свободных мест: <b>1</b>" 
+                        :class="{ selected: time.selected, busy: time.busy }" 
+                        @click="calendarClick(day, time, t)"
+                      >
+                        {{ time.time }}
                       </li>
                     </template>
                   </ul>
@@ -52,10 +61,16 @@
               <div class="service-f-b2">
                 <div class="required">
                   <v-text-field v-model="name" label="Ваше имя" hide-details required></v-text-field>
-                  <v-text-field v-model="phone" label="Ваш номер телефона" hide-details required mask="(###) ###-##-##"></v-text-field>
+                  <v-text-field 
+                    v-model="phone" 
+                    label="Ваш номер телефона" 
+                    hide-details 
+                    required 
+                    mask="(###) ###-##-##"
+                  ></v-text-field>
                 </div>
                 <v-autocomplete
-                  :items="this.sharedState.vendor_list"
+                  :items="vendorList"
                   v-model="vendor"
                   flat
                   hide-no-data
@@ -65,7 +80,7 @@
                   return-object
                 ></v-autocomplete>
                 <v-autocomplete
-                  :items="this.sharedState.model_list"
+                  :items="modelList"
                   v-model="model"
                   flat
                   hide-no-data
@@ -75,7 +90,7 @@
                   return-object
                 ></v-autocomplete>
                 <v-autocomplete
-                  :items="this.sharedState.generation_list"
+                  :items="generationList"
                   v-model="generation"
                   flat
                   hide-no-data
@@ -84,8 +99,10 @@
                   item-text="name"
                   return-object
                 ></v-autocomplete>
-                <v-textarea v-model="comment" label="Комментарий" rows=4></v-textarea>
-                <div class="note">Поля, помеченные звездочкой (<span style="color: red">*</span>), обязательны к заполнению</div>
+                <v-textarea v-model="comment" label="Комментарий" rows="4"></v-textarea>
+                <div class="note">
+                  Поля, помеченные звездочкой (<span style="color: red">*</span>), обязательны к заполнению
+                </div>
               </div>
             </v-stepper-content>
           </v-stepper-items>
@@ -95,120 +112,137 @@
   </Dialog>
 </template>
 
-<script>
-import Dialog from '~/components/Dialog.vue'
-import Checkbox from '~/components/Checkbox.vue'
+<script setup lang="ts">
+import { useUIStore } from '~/stores/ui'
+import { useModels } from '~/composables/useModels'
 
-export default {
-  components: {
-    Dialog,
-    Checkbox
-  },
-  props: {
-    value: Boolean
-  },
-  data () {
-    return {
-      dialog: false,
-      sharedState: this.$store.state,
-      step: "1",
-      orders: [],
-      total_time: 0,
-      selected: [],
-      services: [
-        { name: 'Замена масла', value: 1, time: 30 },
-        { name: 'Замена масла в АКПП (частичная)', value: 2, time: 30 },
-        { name: 'Замена масла в АКПП (полная)', value: 3, time: 150 },
-        { name: 'Замена масла в МКПП', value: 4, time: 30 },
-        { name: 'Замена масла в ГУР', value: 5, time: 30 },
-        { name: 'Промывка ДВС', value: 6, time: 30 },
-        { name: 'Замена фильтров', value: 7, time: 30 },
-        { name: 'Тормозная система', value: 8, time: 60 },
-        { name: 'Охлаждающая жидкость', value: 9, time: 90 },
-        { name: 'Аккумулятор', value: 10, time: 30 },
-        { name: 'Свечи зажигания', value: 11, time: 30 },
-      ],
-      date: new Date().toISOString().substr(0, 10),
-      times: [],
-      name: "",
-      phone: "",
-      comment: "",
-      vendor: "",
-      model: "",
-      generation: "",
-    }
-  },
-  watch: {
-    dialog (val) {
-      this.$emit("input", val)
-    },
-    value (val) {
-      this.dialog = val
-    },
-    selected(val) {
-      this.total_time = 0
-      this.services.filter(s => this.selected.includes(s.value)).map(service => {
-        this.total_time += service.time
-      })
-      // this.clear_calendar()
-    },
-    date(val) {
-      this.fillTimes()
-    },
-    vendor(val) {
-      this.$store.dispatch('get_models', { vendor: val, category_id: 1 })
-    },
-    model(val) {
-      this.$store.dispatch('get_generations', val)
-    }
-  },
-  created() {
-    // this.$store.dispatch('get_vendors', this.sharedState.category_list[0])
-    this.mindate = this.picker_date(new Date)
-    this.fillTimes()
-  },
-  methods: {
-    fillTimes() {
-      const current_date = new Date()
-      const year = Number(this.date.substr(0, 4))
-      const month = Number(this.date.substr(5, 2)) - 1
-      const day = Number(this.date.substr(8, 2))
-      let d = new Date(year, month, day, 9)
-      let times = []
-
-      for (var t = 0; t < 22; t++) {
-        let busy = false
-        if (d < current_date) busy = true
-        else {
-          const order = this.orders.find(order => {
-            const local_date = new Date(d)
-            if (new Date(order.startDate) <= local_date && new Date(order.endDate) > local_date) {
-              console.log('orders find', local_date, new Date(order.startDate), order.endDate);
-              return true
-            }
-            return false
-          })
-          if (order) busy = true
-        }
-        times.push({ time: this.local_time(d), busy, selected: false, index: t })
-        d.setMinutes(d.getMinutes() + 30)
-      }
-      this.times = times
-    },
-    picker_date(date) {
-      const two = (s) => { return ("0" + s).slice(-2) }
-      var d = new Date(date)
-      return d.getFullYear() + "-" + two(d.getMonth() + 1) + "-" + two(d.getDate())
-    },
-    local_time(date) {
-      const two = (s) => { return ("0" + s).slice(-2) }
-      var d = new Date(date)
-      //d.setMinutes(d.getMinutes() - d.getTimezoneOffset())
-      return two(d.getHours()) + ":" + two(d.getMinutes())
-      // + ":" + two(d.getSeconds())
-    }
-  }
+interface Props {
+  modelValue: boolean
 }
+
+const props = defineProps<Props>()
+
+const emit = defineEmits<{
+  'update:modelValue': [value: boolean]
+}>()
+
+const uiStore = useUIStore()
+const { getModels, getGenerations } = useModels()
+
+const dialog = ref(props.modelValue)
+const step = ref('1')
+const orders = ref<any[]>([])
+const totalTime = ref(0)
+const selected = ref<any[]>([])
+const date = ref(new Date().toISOString().substr(0, 10))
+const times = ref<any[]>([])
+const mindate = ref('')
+const name = ref('')
+const phone = ref('')
+const comment = ref('')
+const vendor = ref<any>(null)
+const model = ref<any>(null)
+const generation = ref<any>(null)
+const day = ref(null)
+
+const services = [
+  { name: 'Замена масла', value: 1, time: 30 },
+  { name: 'Замена масла в АКПП (частичная)', value: 2, time: 30 },
+  { name: 'Замена масла в АКПП (полная)', value: 3, time: 150 },
+  { name: 'Замена масла в МКПП', value: 4, time: 30 },
+  { name: 'Замена масла в ГУР', value: 5, time: 30 },
+  { name: 'Промывка ДВС', value: 6, time: 30 },
+  { name: 'Замена фильтров', value: 7, time: 30 },
+  { name: 'Тормозная система', value: 8, time: 60 },
+  { name: 'Охлаждающая жидкость', value: 9, time: 90 },
+  { name: 'Аккумулятор', value: 10, time: 30 },
+  { name: 'Свечи зажигания', value: 11, time: 30 }
+]
+
+const vendorList = computed(() => uiStore.vendor_list)
+const modelList = computed(() => uiStore.model_list)
+const generationList = computed(() => uiStore.generation_list)
+
+watch(() => props.modelValue, (val) => {
+  dialog.value = val
+})
+
+watch(dialog, (val) => {
+  emit('update:modelValue', val)
+})
+
+watch(selected, (val) => {
+  totalTime.value = 0
+  services.filter(s => val.includes(s.value)).forEach(service => {
+    totalTime.value += service.time
+  })
+})
+
+watch(date, () => {
+  fillTimes()
+})
+
+watch(vendor, async (val) => {
+  if (val && val._id) {
+    await getModels(val._id, 1)
+  }
+})
+
+watch(model, async (val) => {
+  if (val) {
+    await getGenerations(val)
+  }
+})
+
+const pickerDate = (date: Date) => {
+  const two = (s: number) => ('0' + s).slice(-2)
+  const d = new Date(date)
+  return d.getFullYear() + '-' + two(d.getMonth() + 1) + '-' + two(d.getDate())
+}
+
+const localTime = (date: Date) => {
+  const two = (s: number) => ('0' + s).slice(-2)
+  const d = new Date(date)
+  return two(d.getHours()) + ':' + two(d.getMinutes())
+}
+
+const fillTimes = () => {
+  const currentDate = new Date()
+  const year = Number(date.value.substr(0, 4))
+  const month = Number(date.value.substr(5, 2)) - 1
+  const dayNum = Number(date.value.substr(8, 2))
+  let d = new Date(year, month, dayNum, 9)
+  const timesList: any[] = []
+
+  for (let t = 0; t < 22; t++) {
+    let busy = false
+    if (d < currentDate) {
+      busy = true
+    } else {
+      const order = orders.value.find(order => {
+        const localDate = new Date(d)
+        if (new Date(order.startDate) <= localDate && new Date(order.endDate) > localDate) {
+          return true
+        }
+        return false
+      })
+      if (order) busy = true
+    }
+    timesList.push({ time: localTime(d), busy, selected: false, index: t })
+    d.setMinutes(d.getMinutes() + 30)
+  }
+  times.value = timesList
+}
+
+const calendarClick = (day: any, time: any, index: number) => {
+  // Handle calendar click
+  times.value[index].selected = !times.value[index].selected
+}
+
+onMounted(() => {
+  mindate.value = pickerDate(new Date())
+  fillTimes()
+})
 </script>
 
 <style>
