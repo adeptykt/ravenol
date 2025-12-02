@@ -166,12 +166,12 @@
 7. ✅ Создать composable `useNotifications.ts` как альтернативу vue-notifications
 8. ⏳ Протестировать все плагины (требует запуска приложения)
 
-### Этап 6: Миграция компонентов (10-15 дней)
-1. Начать с простых компонентов (Button, Input)
-2. Мигрировать средние компоненты (ProductItem, Search)
-3. Мигрировать сложные компоненты (Category, Account)
-4. Заменить все `this.$store` на `useStore()` (Pinia)
-5. Заменить `.sync` на `v-model` с `defineModel()`
+### Этап 6: Миграция компонентов (10-15 дней) ⏳
+1. ✅ Начать с простых компонентов (Breadcrumbs, SvgIcon, Dialog, DialogForm, Question, Checkbox, Paginator, FilterItem)
+2. ✅ Мигрировать средние компоненты (ProductItem, Search)
+3. ⏳ Мигрировать сложные компоненты (Category, Account, Authorization, Login, Register, etc.)
+4. ⏳ Заменить все `this.$store` на Pinia stores (частично выполнено)
+5. ⏳ Заменить `.sync` на `v-model` (не найдено использований `.sync`)
 
 ### Этап 7: Миграция страниц (5-7 дней)
 1. Заменить `asyncData()` на `useAsyncData()`
