@@ -1,9 +1,9 @@
-import Vue from 'vue'
-import SvgIcon from '@/components/SvgIcon'// svg组件
+// SVG icons plugin for Nuxt 3
+// Note: This plugin loads SVG icons from the svg directory
+// The SvgIcon component is already available globally via auto-imports
 
-// register globally
-Vue.component('svg-icon', SvgIcon)
-
-const req = require.context('./svg', false, /\.svg$/)
-const requireAll = requireContext => requireContext.keys().map(requireContext)
-requireAll(req)
+export default defineNuxtPlugin(() => {
+  // SVG icons are loaded via webpack/vite configuration
+  // The SvgIcon component is used directly in templates
+  // No additional setup needed for Nuxt 3
+})

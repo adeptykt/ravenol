@@ -166,20 +166,22 @@
 7. ✅ Создать composable `useNotifications.ts` как альтернативу vue-notifications
 8. ⏳ Протестировать все плагины (требует запуска приложения)
 
-### Этап 6: Миграция компонентов (10-15 дней) ⏳
+### Этап 6: Миграция компонентов (10-15 дней) ✅
 1. ✅ Начать с простых компонентов (Breadcrumbs, SvgIcon, Dialog, DialogForm, Question, Checkbox, Paginator, FilterItem)
 2. ✅ Мигрировать средние компоненты (ProductItem, Search)
 3. ✅ Мигрировать компоненты авторизации (Account, Login, Register, Authorization, AuthReset, Profile)
-4. ✅ Мигрировать остальные компоненты (Order, Service)
-5. ⏳ Мигрировать сложные компоненты (Category, Category_, Product)
-6. ⏳ Заменить все `this.$store` на Pinia stores (частично выполнено - ~75%)
+4. ✅ Мигрировать остальные компоненты (Order, Service, Product)
+5. ✅ Мигрировать сложные компоненты (Category, Category_)
+6. ✅ Заменить все `this.$store` на Pinia stores (~95% выполнено)
 7. ✅ Заменить `.sync` на `v-model` (не найдено использований `.sync`)
+8. ⏳ Осталось: RegisterOld.vue (старый компонент, можно удалить)
 
-### Этап 7: Миграция страниц (5-7 дней)
-1. Заменить `asyncData()` на `useAsyncData()`
-2. Заменить `fetch()` на `useFetch()`
-3. Обновить `head()` на `useHead()` или `useSeoMeta()`
-4. Обновить middleware на страницах
+### Этап 7: Миграция страниц (5-7 дней) ✅
+1. ✅ Заменить `asyncData()` на `useAsyncData()` или `useRoute()` (8 страниц)
+2. ✅ Заменить `fetch()` на `useAsyncData()` (index.vue)
+3. ✅ Обновить `head()` на `useHead()` (9 страниц)
+4. ✅ Обновить `validate()` на `definePageMeta()` (2 страницы)
+5. ✅ Мигрировать все страницы, включая products/_id.vue и selection.vue
 
 ### Этап 8: Тестирование и фиксы (5-7 дней)
 1. Протестировать все страницы

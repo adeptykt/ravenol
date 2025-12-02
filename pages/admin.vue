@@ -25,10 +25,10 @@
               </v-toolbar-items>
             </v-toolbar>
             <v-list>
-              <template v-for="(subitem, index) in subitems">
-                <v-divider v-if="index>0" :key="index"></v-divider>
+              <template v-for="(subitem, index) in subitems" :key="subitem._id">
+                <v-divider v-if="index>0"></v-divider>
 
-                <v-list-tile :key="subitem._id" avatar @click="openeditdialog(subitem._id)">
+                <v-list-tile avatar @click="openeditdialog(subitem._id)">
                   <v-list-tile-content>
                     <v-list-tile-title>{{subitem.name}}</v-list-tile-title>
                   </v-list-tile-content>
