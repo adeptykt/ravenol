@@ -4,8 +4,18 @@ export const useConstants = () => {
   const uiStore = useUIStore()
   
   const loadConstants = async () => {
+    // Only load on client side
+    if (process.server) {
+      return
+    }
+    
     try {
       const constantsService = useConstantsService()
+      if (!constantsService) {
+        console.warn('Constants service not available (FeathersJS not loaded)')
+        return
+      }
+      
       const response = await constantsService.find({}) as any
       const data = Array.isArray(response) ? response : response.data || []
       
@@ -16,7 +26,7 @@ export const useConstants = () => {
       }
     } catch (error) {
       console.error('Error loading constants:', error)
-      throw error
+      // Don't throw error, just log it
     }
   }
   

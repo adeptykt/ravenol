@@ -1,7 +1,16 @@
 import type { Application, Service } from '@feathersjs/feathers'
 
-export function useFeathersService<T = any>(serviceName: string): Service<T> {
+export function useFeathersService<T = any>(serviceName: string): Service<T> | null {
+  // Only available on client side
+  if (process.server) {
+    return null
+  }
+  
   const feathers = useFeathers()
+  if (!feathers) {
+    return null
+  }
+  
   return feathers.service(serviceName)
 }
 

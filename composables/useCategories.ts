@@ -5,8 +5,18 @@ export const useCategories = () => {
   const uiStore = useUIStore()
   
   const loadCategories = async () => {
+    // Only load on client side
+    if (process.server) {
+      return
+    }
+    
     try {
       const categoriesService = useFeathersService('categories')
+      if (!categoriesService) {
+        console.warn('Categories service not available (FeathersJS not loaded)')
+        return
+      }
+      
       const response = await categoriesService.find({ paginate: false }) as any
       const data = Array.isArray(response) ? response : response.data || []
       
@@ -42,7 +52,7 @@ export const useCategories = () => {
       return { categories, tree }
     } catch (error) {
       console.error('Error loading categories:', error)
-      throw error
+      // Don't throw error, just log it
     }
   }
   
