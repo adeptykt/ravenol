@@ -14,6 +14,7 @@ import { useRoute } from 'vue-router'
 import { useFeathersService } from '~/composables/useFeathersService'
 
 const route = useRoute()
+const nuxtApp = useNuxtApp()
 const bannersService = useFeathersService('banners')
 
 const page = ref(Number(route.query.page) || 1)
