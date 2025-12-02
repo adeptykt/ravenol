@@ -15,8 +15,9 @@ export default {
     Category
   },
   async asyncData({ query, params }) {
+    const page = query.page ? Number(query.page) : 1
     return {
-      page: parseInt(query.page) || 1,
+      page: page,
       id: params.id
     }
   },

@@ -14,7 +14,12 @@
         </div>
       </div>
     </div> -->
-    <!-- <img src="/images/promo0421.jpg" class="action_image"> -->
+    <!-- <img src="/images/promo0122.jpg" class="action_image"> -->
+    <p v-if="$fetchState.pending">Loading....</p>
+    <p v-else-if="$fetchState.error">Error while fetching mountains</p>
+    <template v-else v-for="(banner, i) in banners">
+      <img :key="i" :src="banner.image" class="action_image">
+    </template>
     <Category :page.sync="page" />
     <!-- <div class="box">
       <div class="cover cover_main mb mb_large" ref="youtube">
@@ -86,22 +91,29 @@ export default {
       items: [],
       image: 'high',
       dialog: false,
-      videoId: null
+      videoId: null,
+      banners: []
+    }
+  },
+  activated() {
+    // Call fetch again if last fetch more than 30 sec ago
+    if (this.$fetchState.timestamp <= Date.now() - 30000) {
+      this.$fetch()
     }
   },
   created() {
-    axios.get("https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=UCrqB0H9Bs4d_RHXPfZLxKAg&maxResults=4&order=date&type=video&key=" + process.env.youtube_key)
-      .then(async res => {
-        this.items = await Promise.all(res.data.items.map(async item => {
-          return axios.get("https://www.googleapis.com/youtube/v3/videos?part=contentDetails,statistics&id=" + item.id.videoId + "&key=" + process.env.youtube_key).then(result => {
-            const info = result.data.items[0]
-            const new_item = Object.assign({}, item, info)
-            new_item.duration = new_item.contentDetails.duration.duration()
-            new_item.date = item.snippet.publishedAt.toLocal()
-            return new_item
-          })
-        }))
-      })
+    // axios.get("https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=UCrqB0H9Bs4d_RHXPfZLxKAg&maxResults=4&order=date&type=video&key=" + process.env.youtube_key)
+    //   .then(async res => {
+    //     this.items = await Promise.all(res.data.items.map(async item => {
+    //       return axios.get("https://www.googleapis.com/youtube/v3/videos?part=contentDetails,statistics&id=" + item.id.videoId + "&key=" + process.env.youtube_key).then(result => {
+    //         const info = result.data.items[0]
+    //         const new_item = Object.assign({}, item, info)
+    //         new_item.duration = new_item.contentDetails.duration.duration()
+    //         new_item.date = item.snippet.publishedAt.toLocal()
+    //         return new_item
+    //       })
+    //     }))
+    //   })
   },
   mounted() {
     this.$nextTick(() => window.addEventListener('resize', this.handleResize))
@@ -123,6 +135,17 @@ export default {
     },
     ready() {
     }
+  },
+  async fetch() {
+    const now = Date.now()
+    this.banners = await this.$store.dispatch(`banners/find`, {
+      query: {
+        $and: [
+          { $or: [ { begin: { $exists: true, $ne: null, $lte: now } }, { begin: { $eq: null } } ] },
+          { $or: [ { end: { $exists: true, $ne: null, $gte: now } }, { end: { $eq: null } } ] },
+        ]
+      }
+    }).then(res => res.data)
   }
 }
 </script>

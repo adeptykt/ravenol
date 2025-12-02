@@ -25,10 +25,10 @@
             </div>
             <div class="goods__border" ref="goods__border">
               <div class="goods__box">
-                <div class="goods__prices">
-                  <!----><span class="goods__price">{{product.price}}&nbsp;&#8381;</span>
-                  <!---->
+                <div class="goods__prices" v-if="show_price">
+                  <span class="goods__price">{{rub(product.price)}}</span>
                 </div>
+                <div class="product__price_info" v-else>Авторизируйтесь, чтобы посмотреть цены</div>
                 <div class="goods__actions" v-if="product.haveRest">
                   <div class="goods__counter">
                     <div class="counter counter_big">
@@ -66,10 +66,10 @@
               <div class="fix-goods__row">
                 <div class="fix-goods__title">{{product.name}}</div>
                 <div class="fix-goods__flex">
-                  <div class="fix-goods__prices">
-                    <!----><span class="fix-goods__price">{{product.price}}&nbsp;&#8381;</span>
-                    <!---->
+                  <div class="fix-goods__prices" v-if="show_price">
+                    <span class="fix-goods__price">{{rub(product.price)}}</span>
                   </div>
+                  <div class="product__price_info" v-else>Авторизируйтесь, чтобы посмотреть цены</div>
                   <!-- <div class="fix-goods__spec">
                     <a class="btn arrow__btn-item_left btn_type_small" @click="skuPrev()" v-if="this.skus.length > 1" v-bind:class="{btn_disable: index === 0}">
                       <span class="arrow__btn-icon icon icon_plus_small"><svg class="icon__item"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/icons-sprite.svg#arrow_left"></use></svg></span>
@@ -271,6 +271,11 @@ export default {
     }
   },
   computed: {
+    show_price() {
+      if (this.$store.state.auth.user) return true
+      if (this.product.brand == 'BG') return false
+      return true
+    },
     balance_name() {
       return balances[this.balance_level]
     },
@@ -301,6 +306,9 @@ export default {
     ...mapGetters(['price_type', 'store'])
   },
   methods: {
+    rub(num) {
+      return num ? Number(num).rub() : ''
+    },
     set_breadcrumbs() {
       this.breadcrumbs = []
       // if (this.offer) {
@@ -872,5 +880,9 @@ export default {
   h2 {
     font-size: 18px;
   }
+}
+.product__price_info {
+  font-size: 14px;
+  color: grey;
 }
 </style>
