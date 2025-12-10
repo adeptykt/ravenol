@@ -12,12 +12,16 @@
 </template>
 
 <script setup lang="ts">
+import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
+import { useHead } from 'nuxt/app'
 import { useFeathersService } from '~/composables/useFeathersService'
 import { useUIStore } from '~/stores/ui'
 
+declare const definePageMeta: (meta: { validate?: (route: { params: { id?: string } }) => boolean }) => void
+
 definePageMeta({
-  validate: (route) => {
+  validate: (route: { params: { id?: string } }) => {
     return /^[0-9a-z]{24}$/.test(route.params.id as string)
   }
 })
@@ -42,6 +46,7 @@ const largescreen = computed(() => ({
 }))
 
 onMounted(async () => {
+  if (!registersService) return
   try {
     await registersService.get(id.value)
     loading.value = false

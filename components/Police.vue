@@ -46,7 +46,6 @@ export default {
 }
 .dialog-police .dialog-action .v-btn {
   height: auto;
-  display: inline-block;
   float: right;
 }
 .dialog-police .dialog-header {

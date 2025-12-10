@@ -204,6 +204,8 @@
 </template>
 
 <script setup lang="ts">
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import { useAsyncData, useHead } from 'nuxt/app'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '~/stores/auth'
 import { useCartStore } from '~/stores/cart'
@@ -213,10 +215,12 @@ import { useCategories } from '~/composables/useCategories'
 import { useItems } from '~/composables/useItems'
 import { useFormat } from '~/composables/useFormat'
 import { useNotifications } from '~/composables/useNotifications'
-import { useRuntimeConfig } from '#app'
+import { useRuntimeConfig } from 'nuxt/app'
+
+declare const definePageMeta: (meta: { validate?: (route: { params: { id?: string } }) => boolean }) => void
 
 definePageMeta({
-  validate: (route) => {
+  validate: (route: { params: { id?: string } }) => {
     return /^[0-9a-f-]{36}$/.test(route.params.id as string)
   }
 })

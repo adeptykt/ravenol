@@ -61,7 +61,12 @@
           <div class="product__counter" v-if="item.haveRest">
             <div class="counter">
               <div class="counter__btn counter__btn_minus" @click="decrease()">-</div>
-              <input type="tel" class="counter__number" v-model.number="quantity" :ref="el => inputRef = el">
+              <input
+                type="tel"
+                class="counter__number"
+                v-model.number="quantity"
+                ref="inputRef"
+              >
               <div class="counter__btn counter__btn_plus" @click="increase()">+</div>
             </div>
           </div>
@@ -94,11 +99,13 @@
 </template>
 
 <script setup lang="ts">
+import { computed, onMounted, ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import { useAuthStore } from '~/stores/auth'
 import { useCartStore } from '~/stores/cart'
 import { useFormat } from '~/composables/useFormat'
 import { useNotifications } from '~/composables/useNotifications'
-import { useRuntimeConfig } from '#app'
+import { useRuntimeConfig } from 'nuxt/app'
 
 interface Package {
   sku?: string

@@ -11,7 +11,7 @@
               <li class="switch__item" v-bind:class="{ switch__item_active: (tab == 1) }"><a href="#" class="switch__link link" @click.prevent="onTabClick(1)">Регистрация</a></li>
             </ul>
           </div>
-          <form action v-if="tab==0" @submit.prevent="login">
+          <form v-if="tab==0" @submit.prevent="login">
             <div class="form__row">
               <label class="form__label">Email</label>
               <div class="form__control">
@@ -31,7 +31,7 @@
               <a href="#" @click="inverse('showReset')" class="form__link link link_sm">Забыли пароль?</a>
             </div>
           </form>
-          <form action v-if="tab==1" @submit.prevent="register">
+          <form v-if="tab==1" @submit.prevent="register">
             <div class="form__row">
               <label class="form__label">Тип регистрации</label>
               <div class="form__control">
@@ -91,6 +91,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
+import { useHead } from 'nuxt/app'
 import { useRouter } from 'vue-router'
 import { useAuth } from '~/composables/useAuth'
 import { useFeathersService } from '~/composables/useFeathersService'

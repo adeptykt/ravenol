@@ -11,55 +11,75 @@
   </div>
 </template>
 
-<script>
-export default {
-  props: {
-    url: String,
-    value: Boolean
-  },
-  data () {
-    return {
-      dialog: false,
-      maxWidth: '0px',
-      maxHeight: '0px',
-      canvasWidth: 0,
-      canvasHeight: 0
-    }
-  },
-  computed: {
-    filename() {
-      return this.url.replace(/^.*[\\\/]/, '')
-    }
-  },
-  mounted() {
-    this.$nextTick(() => window.addEventListener('resize', this.handleResize))
-    this.handleResize()
-  },
-  destroyed() {
-    window.removeEventListener('resize', this.handleResize)
-  },
-  watch: {
-    dialog (val) {
-      this.$emit("input", val)
-      this.$nextTick(() => this.handleResize())
-    },
-    value (val) {
-      this.dialog = val
-    }
-  },
-  methods: {
-    handleResize() {
-      const wWidth = Math.min(this.$refs.canvas.clientWidth * 0.9, 727)
-      const wHeight = 800 / 727 * wWidth
-      const hHeight = Math.min(this.$refs.canvas.clientHeight * 0.9, 800)
-      const hWidth = 727 / 800 * hHeight
-      this.canvasWidth = this.$refs.canvas.clientWidth
-      this.canvasHeight = this.$refs.canvas.clientHeight
-      this.maxWidth = Math.min(wWidth, hWidth) + 'px'
-      this.maxHeight = Math.min(wHeight, hHeight) + 'px'
-    }
-  }
+<script setup lang="ts">
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+
+interface Props {
+  url?: string
+  modelValue?: boolean
+  value?: boolean
 }
+
+const props = defineProps<Props>()
+
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: boolean): void
+  (e: 'update:value', value: boolean): void
+  (e: 'input', value: boolean): void
+}>()
+
+const canvas = ref<HTMLElement | null>(null)
+const image = ref<HTMLElement | null>(null)
+
+const dialog = ref<boolean>(props.modelValue ?? props.value ?? false)
+const maxWidth = ref('0px')
+const maxHeight = ref('0px')
+const canvasWidth = ref(0)
+const canvasHeight = ref(0)
+
+const filename = computed(() => props.url?.replace(/^.*[\\\/]/, '') || '')
+
+const handleResize = () => {
+  if (!canvas.value) return
+  const wWidth = Math.min(canvas.value.clientWidth * 0.9, 727)
+  const wHeight = (800 / 727) * wWidth
+  const hHeight = Math.min(canvas.value.clientHeight * 0.9, 800)
+  const hWidth = (727 / 800) * hHeight
+  canvasWidth.value = canvas.value.clientWidth
+  canvasHeight.value = canvas.value.clientHeight
+  maxWidth.value = Math.min(wWidth, hWidth) + 'px'
+  maxHeight.value = Math.min(wHeight, hHeight) + 'px'
+}
+
+onMounted(() => {
+  nextTick(() => window.addEventListener('resize', handleResize))
+  handleResize()
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', handleResize)
+})
+
+watch(dialog, (val) => {
+  emit('update:modelValue', val)
+  emit('update:value', val)
+  emit('input', val)
+  nextTick(() => handleResize())
+})
+
+watch(
+  () => props.modelValue,
+  (val) => {
+    if (typeof val === 'boolean') dialog.value = val
+  }
+)
+
+watch(
+  () => props.value,
+  (val) => {
+    if (typeof val === 'boolean') dialog.value = val
+  }
+)
 </script>
 
 <style>

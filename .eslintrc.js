@@ -12,5 +12,16 @@ module.exports = {
   ],
   // add your custom rules here
   rules: {},
-  globals: {}
+  globals: {},
+  settings: {
+    'import/resolver': {
+      alias: {
+        map: [
+          ['~', '.'],
+          ['@', '.']
+        ],
+        extensions: ['.ts', '.js', '.vue', '.json']
+      }
+    }
+  }
 }

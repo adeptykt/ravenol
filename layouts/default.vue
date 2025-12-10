@@ -103,7 +103,7 @@
                             </span>
                           </div>
                           <div class="auth__text">
-                            <span class="auth__name">{{authStore.user.email}}</span>
+                            <span class="auth__name">{{ userEmail }}</span>
                           </div>
                         </div>
                       </nuxt-link>
@@ -130,7 +130,7 @@
                             </span>
                           </div>
                           <div class="auth__text">
-                            <span class="auth__name" v-if="authStore.user">{{authStore.user.email}}</span>
+                            <span class="auth__name" v-if="authStore.user">{{ userEmail }}</span>
                             <span class="auth__name" v-else>Вход</span>
                           </div>
                         </div>
@@ -262,7 +262,14 @@ const cart_count = ref(0)
 const topbar = ref<HTMLElement | null>(null)
 const footer = ref<HTMLElement | null>(null)
 
-const items = [
+type NavItem = {
+  title: string
+  to: string
+  items?: Array<{ title: string; to: string }>
+  opened?: boolean
+}
+
+const items: NavItem[] = [
   { title: 'Каталог', to: '/categories' },
   { title: 'Доставка', to: '/delivery' },
   { title: 'Оплата', to: '/payment' },
@@ -282,6 +289,8 @@ const global_search = computed({
 const menu_items = computed(() => uiStore.menu_items)
 
 const isAdmin = computed(() => authStore.user && (authStore.user as any).role === 'admin')
+
+const userEmail = computed(() => authStore.user?.email ?? '')
 
 const cart_total = computed(() => {
   return cartStore.totalItems

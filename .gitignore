@@ -10,7 +10,8 @@ npm-debug.log
 # Nuxt generate
 dist
 
-static/images
+public/images
+public/uploads
 
 .env
 package-lock.json

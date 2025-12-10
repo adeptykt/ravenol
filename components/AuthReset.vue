@@ -35,6 +35,8 @@
 </template>
 
 <script setup lang="ts">
+import { ref, watch } from 'vue'
+import { useNuxtApp, useRuntimeConfig } from 'nuxt/app'
 import { useUIStore } from '~/stores/ui'
 import { useFeathers } from '~/composables/useFeathers'
 
@@ -71,14 +73,15 @@ const onSubmit = async () => {
   try {
     // Try to use auth-reset service, or fallback to direct API call
     try {
-      const authResetService = feathers.service('auth-reset')
+      const authResetService = feathers?.service('auth-reset')
+      if (!authResetService) throw new Error('auth-reset service unavailable')
       await authResetService.create({ email: email.value })
     } catch (err) {
       // Fallback: might need to use a different service or endpoint
       // Adjust based on your backend implementation
       const { $fetch } = useNuxtApp()
       const config = useRuntimeConfig()
-      await $fetch(`${config.public.apiUrl}auth-reset`, {
+      await ($fetch as any)(`${config.public.apiUrl}auth-reset`, {
         method: 'POST',
         body: { email: email.value }
       })

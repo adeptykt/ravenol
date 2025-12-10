@@ -10,7 +10,7 @@
           <ul class="menu__list">
             <template v-for="(item, i) in sharedState.category_list" :key="i">
               <li class="menu__item">
-                <a class="menu__link" @click="onTabClick(item.value)">
+            <a class="menu__link" @click="onTabClick(Number(item.value))">
                   <span class="menu__text">{{ item.name }}</span>
                 </a>
               </li>
@@ -41,7 +41,7 @@
         <div class="selection-category item-img" v-if="sharedState.selection_mode === 'vendors'">
           <div class="flex xs6 sm4 md3 lg3" v-for="(item, n) in vendorList" :key="n">
             <a @click="getmodels(item)">
-              <img :src="item.img" style="maxHeight: 100px">
+              <img :src="item.img" style="max-height: 100px">
               {{ item.name }}
             </a>
           </div>
@@ -49,7 +49,7 @@
         <div class="selection-category item-img" v-if="sharedState.selection_mode === 'models'">
           <div class="flex xs6 sm4 md3 lg3" v-for="(item, n) in sharedState.model_list" :key="n">
             <a @click="getgenerations(item)">
-              <img :src="item.img" style="maxHeight: 150px">
+              <img :src="item.img" style="max-height: 150px">
               {{ item.name }}<br>
               {{ item.begin }}&nbsp;-&nbsp;{{ item.end }}
             </a>
@@ -99,6 +99,8 @@
 </template>
 
 <script setup lang="ts">
+import { computed, ref } from 'vue'
+import { useHead } from 'nuxt/app'
 import { useUIStore } from '~/stores/ui'
 import { useModels } from '~/composables/useModels'
 import { useFeathersService } from '~/composables/useFeathersService'
@@ -140,9 +142,11 @@ const onTabClick = (value: number) => {
 }
 
 const getvendors = async (category: any) => {
+  const vendorsService = useFeathersService('vendors')
+  if (!vendorsService) return
+
   categoryId.value = category._id
   try {
-    const vendorsService = useFeathersService('vendors')
     const response = await vendorsService.find({ 
       query: { $limit: null, $sort: 'name', category_id: category._id } 
     })
@@ -168,6 +172,7 @@ const getgenerations = async (model: any) => {
 }
 
 const getgears = async (generation: any) => {
+  if (!gearsService) return
   try {
     let model, vendor, category
     const history = [...sharedState.value.history]

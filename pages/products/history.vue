@@ -37,6 +37,8 @@
 </template>
 
 <script setup lang="ts">
+import { computed, ref, watch } from 'vue'
+import { useAsyncData, useHead } from 'nuxt/app'
 import { useRoute } from 'vue-router'
 import { useViewedStore } from '~/stores/viewed'
 import { useItems } from '~/composables/useItems'

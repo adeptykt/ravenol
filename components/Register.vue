@@ -21,7 +21,6 @@
       />
       <v-text-field
         label="Пароль"
-        type="password"
         hint="Придумайте пароль"
         v-model="user.password"
         :append-icon="showpassword ? 'visibility_off' : 'visibility'"
@@ -32,7 +31,6 @@
       />
       <v-text-field
         label="Подтверждение пароля"
-        type="password"
         hint="Подтвердите пароль"
         v-model="checkpassword"
         :append-icon="showpassword ? 'visibility_off' : 'visibility'"
@@ -53,6 +51,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref, watch } from 'vue'
 import { useEmailCheck } from '~/composables/useEmailCheck'
 import { useTempUsers } from '~/composables/useTempUsers'
 import { useUIStore } from '~/stores/ui'

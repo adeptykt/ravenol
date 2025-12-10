@@ -23,7 +23,7 @@
             {{ buttonText }}
           </v-btn>
         </div>
-        <div class="flex" style="textAlign: right">
+        <div class="flex" style="text-align: right">
           <a @click="$emit('linkClick')">{{ linkText }}</a>
         </div>
       </div>
@@ -32,6 +32,8 @@
 </template>
 
 <script setup lang="ts">
+import { ref, watch } from 'vue'
+
 interface Props {
   modelValue: boolean
   title?: string
@@ -80,7 +82,6 @@ watch(dialog, (val) => {
 }
 .i-dialog-action .v-btn {
   height: auto;
-  display: inline-block;
   float: right;
 }
 .i-dialog-header {
@@ -103,12 +104,10 @@ watch(dialog, (val) => {
 .i-dialog-footer .flex {
   flex: 1 1 100px;
 }
-.i-dialog-footer .v-btn {
+.i-dialog-footer .theme--light.v-btn {
   margin: 0;
   text-transform: none;
   font-weight: normal;
-}
-.i-dialog-footer .theme--light.v-btn {
   color: white;
 }
 .i-dialog .error-message {

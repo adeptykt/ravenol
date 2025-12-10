@@ -81,6 +81,8 @@
 </template>
 
 <script setup lang="ts">
+import { computed, ref } from 'vue'
+import { useRoute } from 'vue-router'
 import { useUIStore } from '~/stores/ui'
 
 const route = useRoute()

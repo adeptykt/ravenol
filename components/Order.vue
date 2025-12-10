@@ -1,5 +1,5 @@
 <template>
-  <div class="order" :class="{ order_opened }">
+  <div class="order" :class="{ order_opened: orderOpened }">
     <a href="#" class="order__caption" @click.prevent="orderOpened = !orderOpened">
       <div class="order__title">Показать содержание заказа</div>
       <div class="order__summ">{{ formatPrice(total) }}&nbsp;&#8381;</div>
@@ -66,11 +66,12 @@
 </template>
 
 <script setup lang="ts">
+import { computed, onMounted, ref } from 'vue'
 import { useCartStore } from '~/stores/cart'
 import { useUIStore } from '~/stores/ui'
 import { useFormat } from '~/composables/useFormat'
 import { useFeathers } from '~/composables/useFeathers'
-import { useRuntimeConfig } from '#app'
+import { useRuntimeConfig } from 'nuxt/app'
 
 const cartStore = useCartStore()
 const uiStore = useUIStore()
@@ -102,7 +103,7 @@ onMounted(async () => {
   const query = { $skip: 0, $limit: null, _id: { $in: idList } }
   
   try {
-    const itemsService = feathers.service('items')
+    const itemsService = feathers?.service('items')
     const itemsResult = await itemsService.find({ query })
     const items = itemsResult.data || []
     

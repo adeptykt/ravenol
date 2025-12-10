@@ -8,6 +8,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue'
+import { useHead } from 'nuxt/app'
 import { useRoute } from 'vue-router'
 import { useFeathersService } from '~/composables/useFeathersService'
 
@@ -21,6 +22,7 @@ const categoriesService = useFeathersService('categories')
 
 // Load category name for title
 onMounted(async () => {
+  if (!categoriesService) return
   try {
     const category = await categoriesService.get(id.value)
     title.value = category.name || ''

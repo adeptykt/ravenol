@@ -1,23 +1,14 @@
+import { defineNuxtPlugin, useRuntimeConfig } from 'nuxt/app'
+import type { NuxtApp } from 'nuxt/app'
 import feathers from '@feathersjs/feathers'
 import socketio from '@feathersjs/socketio-client'
 import auth from '@feathersjs/authentication-client'
 import io from 'socket.io-client'
-import Cookies from 'js-cookie'
+import feathersStorage from '~/utils/feathers-storage'
 
-// Create storage adapter for FeathersJS auth using js-cookie
-const cookieStorage = {
-  getItem: (key: string) => Cookies.get(key) || null,
-  setItem: (key: string, value: string) => {
-    Cookies.set(key, value, { expires: 365 }) // 1 year expiration
-  },
-  removeItem: (key: string) => {
-    Cookies.remove(key)
-  }
-}
-
-export default defineNuxtPlugin((nuxtApp) => {
+export default defineNuxtPlugin((nuxtApp: NuxtApp) => {
   // Only run on client side
-  if (process.server) {
+  if (import.meta.server) {
     return
   }
 
@@ -28,22 +19,69 @@ export default defineNuxtPlugin((nuxtApp) => {
   }
 
   const config = useRuntimeConfig()
-  const apiUrl = config.public.apiUrl
+  let apiUrl = String(config.public.apiUrl || '')
+  
+  // Убираем trailing slash, если есть (как в старом коде)
+  if (apiUrl.endsWith('/')) {
+    apiUrl = apiUrl.slice(0, -1)
+  }
 
-  // Create socket connection (only on client)
-  const socket = io(apiUrl, { 
-    transports: ['websocket'],
-    reconnection: true,
-    reconnectionDelay: 1000,
-    reconnectionAttempts: 5
-  })
+  console.log('FeathersJS plugin: Connecting to', apiUrl)
+
+  // Create socket connection (точно как в старом рабочем коде api/index.js)
+  const socket = io(apiUrl, { transports: ['websocket'] })
   
   const transport = socketio(socket)
 
-  // Create FeathersJS client
+  // Create FeathersJS client (точно как в старом рабочем коде api/index.js)
   const feathersClient = feathers()
     .configure(transport)
-    .configure(auth({ storage: cookieStorage }))
+    .configure(
+      auth({
+        storage: feathersStorage as any,
+        aud: 'web'
+      } as any)
+    )
+    // Добавляем хук для обработки ошибок NotAuthenticated на публичных сервисах
+    .hooks({
+      error: {
+        all: [
+          async (context: any) => {
+            // Публичные сервисы, которые не требуют аутентификации
+            const publicServices = ['items', 'categories', 'constants', 'search']
+            
+            // Если это ошибка NotAuthenticated для публичного сервиса и в params было authenticated: false
+            if (
+              context.error?.name === 'NotAuthenticated' &&
+              publicServices.includes(context.path) &&
+              context.params?.authenticated === false
+            ) {
+              // Удаляем authentication из params и повторяем запрос
+              const originalParams = { ...context.params }
+              delete originalParams.authenticated
+              delete originalParams.authentication
+              
+              try {
+                // Повторяем запрос без аутентификации
+                const service = feathersClient.service(context.path)
+                const method = context.method
+                const result = await service[method](context.id || context.data, originalParams)
+                
+                context.result = result
+                return context
+              } catch (retryError) {
+                // Если повторный запрос тоже не удался, возвращаем оригинальную ошибку
+                return context
+              }
+            }
+            return context
+          }
+        ]
+      }
+    })
+
+  // Сохраняем ссылку на сокет в клиенте для доступа из composables
+  ;(feathersClient as any).io = socket
 
   // Handle socket connection events
   socket.on('connect', () => {
@@ -54,7 +92,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     console.log('FeathersJS socket disconnected')
   })
 
-  socket.on('connect_error', (error) => {
+  socket.on('connect_error', (error: unknown) => {
     console.error('FeathersJS socket connection error:', error)
   })
 
@@ -68,4 +106,3 @@ export default defineNuxtPlugin((nuxtApp) => {
     }
   }
 })
-

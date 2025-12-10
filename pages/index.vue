@@ -34,7 +34,8 @@
 </template>
 
 <script setup lang="ts">
-import { onActivated } from 'vue'
+import { onActivated, ref, watch } from 'vue'
+import { useAsyncData, useHead, useNuxtApp } from 'nuxt/app'
 import { useRoute } from 'vue-router'
 import { useFeathersService } from '~/composables/useFeathersService'
 
@@ -45,9 +46,13 @@ const bannersService = useFeathersService('banners')
 const page = ref(Number(route.query.page) || 1)
 
 // Update page when query changes
-watch(() => route.query.page, (val) => {
-  page.value = val ? Number(val) : 1
-})
+watch(
+  () => route.query.page,
+  (val) => {
+    const next = Array.isArray(val) ? val[0] : val
+    page.value = next ? Number(next) : 1
+  }
+)
 
 // Fetch banners with caching
 const { data: banners, pending, error, refresh } = await useAsyncData(

@@ -11,6 +11,8 @@
 </template>
 
 <script setup lang="ts">
+import { computed, ref, watch } from 'vue'
+
 interface Props {
   modelValue: boolean
   maxWidth?: string

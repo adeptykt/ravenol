@@ -33,6 +33,9 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted, ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
+
 interface PaginationItem {
   value: number | string
   page: number
@@ -69,8 +72,8 @@ const onClick = (pageNum: number) => {
 }
 
 const backToTop = () => {
-  if (process.client && window.smoothscroll) {
-    window.smoothscroll()
+  if (process.client && (window as any).smoothscroll) {
+    ;(window as any).smoothscroll()
   }
   emit('scrolled')
 }
@@ -135,14 +138,14 @@ watch(() => props.pages, () => {
 
 onMounted(() => {
   if (process.client) {
-    window.smoothscroll = () => {
+    ;(window as any).smoothscroll = () => {
       const currentScroll = document.documentElement.scrollTop || document.body.scrollTop
       const element = document.getElementById('container')
       if (element) {
         const scrollTo = element.offsetTop
         if (currentScroll > scrollTo) {
-          window.requestAnimationFrame(window.smoothscroll)
-          window.scrollTo(0, Math.floor(currentScroll - (currentScroll / 5)))
+          window.requestAnimationFrame((window as any).smoothscroll)
+          window.scrollTo(0, Math.floor(currentScroll - currentScroll / 5))
         }
       }
     }

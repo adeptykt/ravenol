@@ -333,8 +333,6 @@ export default {
 .service-container h2 > span:after {
   margin-left: 2%;
 }
-.service-content {
-}
 .service-form {
   display: flex;
   flex-flow: row wrap;

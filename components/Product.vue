@@ -16,14 +16,14 @@
           <v-toolbar-title :style="{ marginLeft: '20px' }">{{ product.name }}</v-toolbar-title>
           <v-spacer></v-spacer>
           <v-tabs centered color="transparent" slider-color="black" v-model="model" height="30px" slot="extension">
-            <v-tab 
-              v-for="(tab, i) in tabs" 
-              :key="i" 
-              :href="`#ptab-${i}`" 
-              v-if="!tab.condition || (product[tab.condition] && (!Array.isArray(product[tab.condition]) || product[tab.condition].length))"
-            >
-              {{ tab.name }}
-            </v-tab>
+            <template v-for="(tab, i) in tabs" :key="i">
+              <v-tab
+                v-if="!tab.condition || (product[tab.condition] && (!Array.isArray(product[tab.condition]) || product[tab.condition].length))"
+                :href="`#ptab-${i}`"
+              >
+                {{ tab.name }}
+              </v-tab>
+            </template>
           </v-tabs>
           <v-btn icon @click="dialog = false">
             <v-icon small>clear</v-icon>
@@ -114,6 +114,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref, watch } from 'vue'
 import { useFeathers } from '~/composables/useFeathers'
 
 interface Props {
@@ -135,13 +136,13 @@ const product = ref<any>({})
 const current = ref(0)
 const currentpack = ref<any>({})
 
-const tabs = [
+const tabs = ref<Array<{ name: string; condition?: string }>>([
   { name: 'Информация' },
   { name: 'Описание', condition: 'text' },
   { name: 'Фасовка', condition: 'packages' },
   { name: 'Применение', condition: 'usage' },
   { name: 'Параметры', condition: 'characteristics' }
-]
+])
 
 watch(() => props.modelValue, (val) => {
   dialog.value = val
@@ -154,7 +155,8 @@ watch(dialog, (val) => {
 watch(() => props.id, async (id) => {
   if (id) {
     try {
-      const itemsService = feathers.service('items')
+      const itemsService = feathers?.service('items')
+      if (!itemsService) return
       const res = await itemsService.get(id)
       product.value = res
       current.value = 0

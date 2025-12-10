@@ -61,7 +61,7 @@
 <script setup lang="ts">
 import { useUIStore } from '~/stores/ui'
 import { useSearch } from '~/composables/useSearch'
-import { useRuntimeConfig } from '#app'
+import { useRuntimeConfig } from 'nuxt/app'
 
 interface Props {
   modelValue: boolean

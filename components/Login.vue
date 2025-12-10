@@ -19,7 +19,6 @@
       />
       <v-text-field
         label="Пароль"
-        type="password"
         v-model="user.password"
         :append-icon="showpassword ? 'visibility_off' : 'visibility'"
         :type="showpassword ? 'text' : 'password'"
@@ -32,6 +31,9 @@
 </template>
 
 <script setup lang="ts">
+import { ref, watch } from 'vue'
+import { useNuxtApp } from 'nuxt/app'
+import { useAuth } from '~/composables/useAuth'
 import { useAuthStore } from '~/stores/auth'
 import { useUIStore } from '~/stores/ui'
 

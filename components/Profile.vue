@@ -21,6 +21,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref, watch } from 'vue'
 import { useAuthStore } from '~/stores/auth'
 import { useUIStore } from '~/stores/ui'
 import { useFeathers } from '~/composables/useFeathers'
@@ -88,7 +89,8 @@ const onSubmit = async () => {
   }
   
   try {
-    const usersService = feathers.service('users')
+    const usersService = feathers?.service('users')
+    if (!usersService) return
     await usersService.patch(authStore.user._id, data, {
       headers: {
         Authorization: `Bearer ${authStore.accessToken}`
